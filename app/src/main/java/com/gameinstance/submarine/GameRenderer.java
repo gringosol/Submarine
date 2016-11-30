@@ -29,6 +29,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     private float [] mStaticViewMatrix =  new float[16];
     private float [] mDynamicViewMatrix =  new float[16];
     Sprite sprite;
+    Sprite sprite2;
     float angle = 0;
 
     Primitive primitive;
@@ -57,10 +58,13 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         final int vertexShaderHandle = ShaderUtils.compileShader(GLES20.GL_VERTEX_SHADER, vertexShader);
         final int fragmentShaderHandle = ShaderUtils.compileShader(GLES20.GL_FRAGMENT_SHADER, fragmentShader);
         mPerVertexProgramHandle = ShaderUtils.createAndLinkProgram(vertexShaderHandle, fragmentShaderHandle,
-                new String[] {"a_Position"});
+                new String[] {"a_Position", "a_TexCoordinate"});
         int mPositionHandle = GLES20.glGetAttribLocation(mPerVertexProgramHandle, "a_Position");
+        int mTexCordHandle = GLES20.glGetAttribLocation(mPerVertexProgramHandle, "a_TexCoordinate");
         int mTramsformMatrixHandle = GLES20.glGetUniformLocation(mPerVertexProgramHandle, "u_MTransform");
-        primitive = new Primitive(mPositionHandle, mTramsformMatrixHandle);
+        int mTextureDataHandle = TextureHelper.loadTexture(mActivityContext, R.drawable.arrow);
+        int mTextureUniformHandle = GLES20.glGetUniformLocation(mPerVertexProgramHandle, "u_Texture");
+        primitive = new Primitive(mPositionHandle, mTexCordHandle, mTextureDataHandle, mTextureUniformHandle, mTramsformMatrixHandle);
         Matrix.setIdentityM(mProjectionMatrix, 0);
         Matrix.setIdentityM(mStaticViewMatrix, 0);
         Matrix.translateM(mStaticViewMatrix, 0, 0, 0.5f, 0);
@@ -68,6 +72,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         sprite = new Sprite(primitive, 1.0f, 0.5f);
         sprite.setPosition(0.5f, 0);
         sprite.setRotation(30.0f);
+        GLES20.glEnable(GLES20.GL_BLEND);
+        sprite2 = new Sprite(primitive, 0.5f, 0.5f);
+        sprite.setPosition(-0.5f, 0);
     }
 
     @Override
@@ -86,5 +93,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         sprite.setRotation(angle);
         angle += 1.0f;
         sprite.draw(mStaticViewMatrix, mProjectionMatrix);
+        sprite2.draw(mStaticViewMatrix, mProjectionMatrix);
     }
 }
