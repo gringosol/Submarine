@@ -62,19 +62,18 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         int mPositionHandle = GLES20.glGetAttribLocation(mPerVertexProgramHandle, "a_Position");
         int mTexCordHandle = GLES20.glGetAttribLocation(mPerVertexProgramHandle, "a_TexCoordinate");
         int mTramsformMatrixHandle = GLES20.glGetUniformLocation(mPerVertexProgramHandle, "u_MTransform");
-        int mTextureDataHandle = TextureHelper.loadTexture(mActivityContext, R.drawable.arrow);
         int mTextureUniformHandle = GLES20.glGetUniformLocation(mPerVertexProgramHandle, "u_Texture");
-        primitive = new Primitive(mPositionHandle, mTexCordHandle, mTextureDataHandle, mTextureUniformHandle, mTramsformMatrixHandle);
+        primitive = new Primitive(mPositionHandle, mTexCordHandle, mTextureUniformHandle, mTramsformMatrixHandle);
         Matrix.setIdentityM(mProjectionMatrix, 0);
         Matrix.setIdentityM(mStaticViewMatrix, 0);
         Matrix.translateM(mStaticViewMatrix, 0, 0, 0.5f, 0);
         Matrix.setIdentityM(mDynamicViewMatrix, 0);
-        sprite = new Sprite(primitive, 1.0f, 0.5f);
+        sprite = new Sprite(this, R.drawable.arrow, primitive, 1.0f, 0.5f);
         sprite.setPosition(0.5f, 0);
         sprite.setRotation(30.0f);
         GLES20.glEnable(GLES20.GL_BLEND);
-        sprite2 = new Sprite(primitive, 0.5f, 0.5f);
-        sprite.setPosition(-0.5f, 0);
+        sprite2 = new Sprite(this, R.drawable.yellow, primitive, 0.5f, 0.5f);
+        sprite2.setPosition(-0.5f, 0);
     }
 
     @Override

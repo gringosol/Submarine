@@ -1,5 +1,6 @@
 package com.gameinstance.submarine;
 
+import android.opengl.GLES20;
 import android.opengl.Matrix;
 
 /**
@@ -17,11 +18,14 @@ public class Sprite {
     float [] scaleMatrix = new float[16];
     float [] translateMatrix = new float[16];
     float [] rotateMatrix = new float[16];
+    int texHandle;
 
-    public Sprite(Primitive primitive, float width, float height) {
+    public Sprite(GameRenderer renderer, int texResourseId, Primitive primitive, float width,
+                  float height) {
         this.primitive = primitive;
         scaleX = width;
         scaleY = height;
+        texHandle = TextureManager.getTextureHandle(renderer.getActivityContext(), texResourseId);
     }
 
     public void draw(float [] viewMatrix, float [] projectionMatrix) {
@@ -34,6 +38,9 @@ public class Sprite {
         Matrix.rotateM(rotateMatrix, 0, angle, 0, 0, 1.0f);
         Matrix.multiplyMM(modelMatrix, 0, rotateMatrix, 0, scaleMatrix, 0);
         Matrix.multiplyMM(modelMatrix, 0, translateMatrix, 0, modelMatrix, 0);
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texHandle);
         primitive.draw(projectionMatrix, viewMatrix, modelMatrix);
     }
 

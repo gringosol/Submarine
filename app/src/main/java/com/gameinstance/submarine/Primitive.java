@@ -21,11 +21,9 @@ public class Primitive {
     final int mPositionDataSize = 4;
     int vertexCount = 0;
     int mTransformMatrixHandle;
-    int mTexDataHandle;
     int mTextureUniformHandle;
 
-    public Primitive(int mPositionHandle, int mTexCoordHandle, int mTexDataHandle, int mTextureUniformHandle, int mTransformMatrixHandle) {
-        this.mTexDataHandle = mTexDataHandle;
+    public Primitive(int mPositionHandle, int mTexCoordHandle, int mTextureUniformHandle, int mTransformMatrixHandle) {
         this.mTextureUniformHandle = mTextureUniformHandle;
         final float[] positions =
                 {
@@ -49,7 +47,7 @@ public class Primitive {
         mTexCoordinates = ByteBuffer.allocateDirect(texCoordinateData.length * mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer();
         mTexCoordinates.put(texCoordinateData).position(0);
         vertexCount = positions.length / mPositionDataSize;
-        GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+        //GLES20.glDisable(GLES20.GL_DEPTH_TEST);
         this.mTransformMatrixHandle = mTransformMatrixHandle;
         mPositions.position(0);
         mTexCoordinates.position(0);
@@ -66,9 +64,8 @@ public class Primitive {
         Matrix.multiplyMM(resultMatrix, 0, viewMatrix, 0, modelMatrix, 0);
         Matrix.multiplyMM(resultMatrix, 0, projectionMatrix, 0, resultMatrix, 0);
         GLES20.glUniformMatrix4fv(mTransformMatrixHandle, 1, false, resultMatrix, 0);
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTexDataHandle);
         GLES20.glUniform1i(mTextureUniformHandle, 0);
+        mTexCoordinates.position(0);
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
     }
 }
