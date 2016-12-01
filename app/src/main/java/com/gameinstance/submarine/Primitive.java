@@ -22,9 +22,11 @@ public class Primitive {
     int vertexCount = 0;
     int mTransformMatrixHandle;
     int mTextureUniformHandle;
+    int mColorHandle = -1;
 
-    public Primitive(int mPositionHandle, int mTexCoordHandle, int mTextureUniformHandle, int mTransformMatrixHandle) {
+    public Primitive(int mPositionHandle, int mTexCoordHandle, int mTextureUniformHandle, int mTransformMatrixHandle, int mColorHandle) {
         this.mTextureUniformHandle = mTextureUniformHandle;
+        this.mColorHandle = mColorHandle;
         final float[] positions =
                 {
                         -0.5f, 0.5f, 0f, 1.0f,
@@ -57,6 +59,9 @@ public class Primitive {
         GLES20.glEnableVertexAttribArray(mTexCoordHandle);
     }
 
+    public Primitive(int mPositionHandle, int mTexCoordHandle, int mTextureUniformHandle, int mTransformMatrixHandle) {
+        this(mPositionHandle, mTexCoordHandle, mTextureUniformHandle, mTransformMatrixHandle, -1);
+    }
 
     public void draw(float [] projectionMatrix, float [] viewMatrix, float [] modelMatrix) {
         float [] resultMatrix = new float[16];
@@ -65,6 +70,18 @@ public class Primitive {
         Matrix.multiplyMM(resultMatrix, 0, projectionMatrix, 0, resultMatrix, 0);
         GLES20.glUniformMatrix4fv(mTransformMatrixHandle, 1, false, resultMatrix, 0);
         GLES20.glUniform1i(mTextureUniformHandle, 0);
+        mTexCoordinates.position(0);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
+    }
+
+    public void draw(float [] projectionMatrix, float [] viewMatrix, float [] modelMatrix, float [] color) {
+        float [] resultMatrix = new float[16];
+        Matrix.setIdentityM(resultMatrix, 0);
+        Matrix.multiplyMM(resultMatrix, 0, viewMatrix, 0, modelMatrix, 0);
+        Matrix.multiplyMM(resultMatrix, 0, projectionMatrix, 0, resultMatrix, 0);
+        GLES20.glUniformMatrix4fv(mTransformMatrixHandle, 1, false, resultMatrix, 0);
+        GLES20.glUniform1i(mTextureUniformHandle, 0);
+        GLES20.glUniform4fv(mColorHandle, 1, color, 0);
         mTexCoordinates.position(0);
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
     }

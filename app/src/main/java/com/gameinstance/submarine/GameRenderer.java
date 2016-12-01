@@ -7,13 +7,6 @@ import android.opengl.Matrix;
 
 import com.gameinstance.submarine.utils.RawResourceReader;
 import com.gameinstance.submarine.utils.ShaderUtils;
-import com.gameinstance.submarine.utils.TextureHelper;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -24,15 +17,18 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public class GameRenderer implements GLSurfaceView.Renderer {
     private final Context mActivityContext;
-    private int mPerVertexProgramHandle = 0;
+    private int mDefaultProgramHandle = 0;
+    private int mSimpleProgramHandle = 0;
     private float [] mProjectionMatrix =  new float[16];
     private float [] mStaticViewMatrix =  new float[16];
     private float [] mDynamicViewMatrix =  new float[16];
     Sprite sprite;
     Sprite sprite2;
     float angle = 0;
+    float [] color = new float[] {1.0f, 0.0f, 0.0f, 1.0f };
 
     Primitive primitive;
+    Primitive primitive2;
 
     public Context getActivityContext() {
         return mActivityContext;
@@ -57,12 +53,29 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 R.raw.default_fragment_shader);
         final int vertexShaderHandle = ShaderUtils.compileShader(GLES20.GL_VERTEX_SHADER, vertexShader);
         final int fragmentShaderHandle = ShaderUtils.compileShader(GLES20.GL_FRAGMENT_SHADER, fragmentShader);
-        mPerVertexProgramHandle = ShaderUtils.createAndLinkProgram(vertexShaderHandle, fragmentShaderHandle,
+        mDefaultProgramHandle = ShaderUtils.createAndLinkProgram(vertexShaderHandle, fragmentShaderHandle,
                 new String[] {"a_Position", "a_TexCoordinate"});
-        int mPositionHandle = GLES20.glGetAttribLocation(mPerVertexProgramHandle, "a_Position");
-        int mTexCordHandle = GLES20.glGetAttribLocation(mPerVertexProgramHandle, "a_TexCoordinate");
-        int mTramsformMatrixHandle = GLES20.glGetUniformLocation(mPerVertexProgramHandle, "u_MTransform");
-        int mTextureUniformHandle = GLES20.glGetUniformLocation(mPerVertexProgramHandle, "u_Texture");
+        int mPositionHandle = GLES20.glGetAttribLocation(mDefaultProgramHandle, "a_Position");
+        int mTexCordHandle = GLES20.glGetAttribLocation(mDefaultProgramHandle, "a_TexCoordinate");
+        int mTramsformMatrixHandle = GLES20.glGetUniformLocation(mDefaultProgramHandle, "u_MTransform");
+        int mTextureUniformHandle = GLES20.glGetUniformLocation(mDefaultProgramHandle, "u_Texture");
+
+        final String vertexShader2 = RawResourceReader.readTextFileFromRawResource(mActivityContext,
+                R.raw.simple_vertex_shader);
+        final String fragmentShader2 = RawResourceReader.readTextFileFromRawResource(mActivityContext,
+                R.raw.simple_fragment_shader);
+        final int vertexShaderHandle2 = ShaderUtils.compileShader(GLES20.GL_VERTEX_SHADER, vertexShader2);
+        final int fragmentShaderHandle2 = ShaderUtils.compileShader(GLES20.GL_FRAGMENT_SHADER, fragmentShader2);
+        mSimpleProgramHandle = ShaderUtils.createAndLinkProgram(vertexShaderHandle2, fragmentShaderHandle2,
+                new String[] {"a_Position", "a_TexCoordinate"});
+        int mPositionHandle2 = GLES20.glGetAttribLocation(mSimpleProgramHandle, "a_Position");
+        int mTexCordHandle2 = GLES20.glGetAttribLocation(mSimpleProgramHandle, "a_TexCoordinate");
+        int mTramsformMatrixHandle2 = GLES20.glGetUniformLocation(mSimpleProgramHandle, "u_MTransform");
+        int mTextureUniformHandle2 = GLES20.glGetUniformLocation(mSimpleProgramHandle, "u_Texture");
+        int mColorHandle = GLES20.glGetUniformLocation(mSimpleProgramHandle, "u_Color");
+
+
+
         primitive = new Primitive(mPositionHandle, mTexCordHandle, mTextureUniformHandle, mTramsformMatrixHandle);
         Matrix.setIdentityM(mProjectionMatrix, 0);
         Matrix.setIdentityM(mStaticViewMatrix, 0);
@@ -72,7 +85,10 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         sprite.setPosition(0.5f, 0);
         sprite.setRotation(30.0f);
         GLES20.glEnable(GLES20.GL_BLEND);
-        sprite2 = new Sprite(this, R.drawable.yellow, primitive, 0.5f, 0.5f);
+
+
+        primitive2 = new Primitive(mPositionHandle2, mTexCordHandle2, mTextureUniformHandle2, mTramsformMatrixHandle2, mColorHandle);
+        sprite2 = new Sprite(this, R.drawable.yellow, primitive2, 0.5f, 0.5f);
         sprite2.setPosition(-0.5f, 0);
     }
 
@@ -88,10 +104,11 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onDrawFrame(GL10 gl) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-        GLES20.glUseProgram(mPerVertexProgramHandle);
+        GLES20.glUseProgram(mDefaultProgramHandle);
         sprite.setRotation(angle);
         angle += 1.0f;
         sprite.draw(mStaticViewMatrix, mProjectionMatrix);
-        sprite2.draw(mStaticViewMatrix, mProjectionMatrix);
+        GLES20.glUseProgram(mSimpleProgramHandle);
+        sprite2.draw(mStaticViewMatrix, mProjectionMatrix, color);
     }
 }
