@@ -28,6 +28,15 @@ public class Sprite {
         texHandle = TextureManager.getTextureHandle(renderer.getActivityContext(), texResourseId);
     }
 
+    public Sprite(GameRenderer renderer, int texHandle, Primitive primitive, float size,
+                  float [] position) {
+        this.primitive = primitive;
+        scaleX = size;
+        scaleY = size;
+        this.texHandle = texHandle;
+        this.position = position;
+    }
+
     public void draw(float [] viewMatrix, float [] projectionMatrix) {
         Matrix.setIdentityM(modelMatrix, 0);
         Matrix.setIdentityM(scaleMatrix, 0);
@@ -67,5 +76,9 @@ public class Sprite {
 
     public void setRotation(float angle) {
         this.angle = angle;
+    }
+
+    public float [] getPosition() {
+        return position;
     }
 }

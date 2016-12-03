@@ -2,6 +2,7 @@ package com.gameinstance.submarine;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 
 
 public class GameActivity extends Activity {
@@ -20,5 +21,11 @@ public class GameActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        InputController.onScreenTouch((int)event.getX(), (int)event.getY());
+        return super.onTouchEvent(event);
     }
 }
