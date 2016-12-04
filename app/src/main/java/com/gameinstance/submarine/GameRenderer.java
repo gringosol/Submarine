@@ -26,9 +26,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     Sprite sprite;
     Sprite sprite2;
     float angle = 0;
-    float [] color = new float[] {1.0f, 0.0f, 0.0f, 1.0f };
-    float [] target = new float[] {0, 0};
-    float speed = 0.01f;
+    float [] color = new float[] {1.0f, 0.0f, 0.0f, 0.5f };
 
     Primitive primitive;
     Primitive primitive2;
@@ -53,7 +51,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        GLES20.glClearColor(0.5f, 0.0f, 0.7f, 1.0f);
+        GLES20.glClearColor(0, 0, 0, 0);
         GLES20.glDisable(GLES20.GL_DEPTH_TEST);
         GLES20.glDisable(GLES20.GL_CULL_FACE);
 
@@ -161,9 +159,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         Sprite [] sprites = new Sprite[m * n];
         float left = -(n * unitSize) / 2.0f + 0.5f * unitSize;
         float top = (m * unitSize) / 2.0f - 0.5f * unitSize;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                sprites[i * n + j] = new Sprite(this, texHandles[i * n + j + 2], primitive,
+        for (int j = 0; j < m; j++) {
+            for (int i = 0; i < n; i++) {
+                sprites[j * n + i] = new Sprite(this, texHandles[j * n + i + 2], primitive,
                         unitSize, new float[] {left + i * unitSize, top - j * unitSize});
             }
         }

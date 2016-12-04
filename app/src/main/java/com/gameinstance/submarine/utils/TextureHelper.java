@@ -41,11 +41,11 @@ public class TextureHelper {
         textureHandle[1] = m;
         GLES20.glGenTextures(m * n, textureHandle, 2);
         if (textureHandle[2] != 0) {
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < m; j++) {
+            for (int j = 0; j < m; j++) {
+                for (int i = 0; i < n; i++) {
                     Bitmap bitmap1 = Bitmap.createBitmap(bitmap,  i * cellSize, j * cellSize,
                             cellSize, cellSize);
-                    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[2 + i * n + j]);
+                    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[2 + j * n + i]);
                     GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
                     GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
                     GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap1, 0);
