@@ -81,4 +81,8 @@ public class Sprite {
     public float [] getPosition() {
         return position;
     }
+
+    public void setTexHandle(int texHandle) {
+        this.texHandle = texHandle;
+    }
 }
