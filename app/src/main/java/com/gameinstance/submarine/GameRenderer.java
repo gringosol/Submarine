@@ -46,8 +46,13 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     int height;
     int width;
+    int backWidth = 256;
+    int bachHeight = 256;
+
+    float aspect = 1.0f;
 
     ByteBuffer ib;
+    ByteBuffer ib2;
 
     public Context getActivityContext() {
         return mActivityContext;
@@ -127,18 +132,20 @@ public class GameRenderer implements GLSurfaceView.Renderer {
             }
         });
         texhandle2[0] = TextureHelper.loadTexture(getActivityContext(), R.drawable.submarine);
-        backBuffer = new byte[256 * 256 * 4];
+        backBuffer = new byte[backWidth * bachHeight * 4];
         for (int i = 0; i < backBuffer.length; i++){
             //if (i % 2 == 0)
               backBuffer[i] = (byte)255;
         }
         ib = ByteBuffer.wrap(backBuffer);
         ib.position(0);
+        ib2 = ByteBuffer.wrap(new byte[backWidth * bachHeight * 4]);
+        ib2.position(0);
         GLES20.glGenTextures(1, backTexHandle, 0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, backTexHandle[0]);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D,GLES20.GL_TEXTURE_MIN_FILTER,GLES20.GL_NEAREST);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D,GLES20.GL_TEXTURE_MAG_FILTER,GLES20.GL_NEAREST);
-        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, 256, 256, 0,
+        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, backWidth, bachHeight, 0,
                 GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, ib);
         GLES20.glGenFramebuffers(1, backBufferHandle, 0);
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, backBufferHandle[0]);
@@ -146,7 +153,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     }
 
     private float [] convertCoords(int x, int y) {
-        float aspect = height / (float)width;
+        aspect = height / (float)width;
         float xx1 = 2 * x / (width * aspect) - 1.0f / aspect - mStaticViewMatrix[12];
         float y1 = - 2 * y / (float)height + 1.0f - mStaticViewMatrix[13];
         return new float[] {xx1, y1};
@@ -159,6 +166,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         Matrix.scaleM(mProjectionMatrix, 0, aspect, 1.0f, 1.0f);
         this.width = width;
         this.height = height;
+        //sprite3.setScale(1.0f / aspect, 1.0f);
     }
 
 
@@ -166,8 +174,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onDrawFrame(GL10 gl) {
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, backBufferHandle[0]);
-        GLES20.glViewport(0, 0, 256, 256);
-        GLES20.glClearColor(1.0f, 0, 0, 0);
+        GLES20.glViewport(0, 0, backWidth, bachHeight);
+        GLES20.glClearColor(1.0f, 0, 0, 1.0f);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         GLES20.glUseProgram(mDefaultProgramHandle);
         sprite.setRotation(angle);
@@ -175,12 +183,18 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         for (Sprite sp : landscape) {
             sp.draw(mStaticViewMatrix, mProjectionMatrix);
         }
-        sprite.draw(mStaticViewMatrix, mProjectionMatrix);
+        //sprite.draw(mStaticViewMatrix, mProjectionMatrix);
         GLES20.glUseProgram(mSimpleProgramHandle);
         movable.move();
         sprite2.draw(mStaticViewMatrix, mProjectionMatrix, color);
         Matrix.setIdentityM(mStaticViewMatrix,  0);
         Matrix.translateM(mStaticViewMatrix, 0, -sprite2.getPosition()[0], -sprite2.getPosition()[1], 0);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, backTexHandle[0]);
+        GLES20.glReadPixels(0, 0, backWidth, bachHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, ib2);
+        boolean collide = movable.collideWithLandscape(ib2.array(), bachHeight, aspect, mStaticViewMatrix);
+        if (collide) {
+            movable.resetMotion();
+        }
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
         GLES20.glViewport(0, 0, width, height);
         GLES20.glClearColor(0, 0, 0, 0);
@@ -196,20 +210,20 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         for (Sprite sp : landscape) {
             sp.draw(mStaticViewMatrix, mProjectionMatrix);
         }
-        sprite.draw(mStaticViewMatrix, mProjectionMatrix);
+        //sprite.draw(mStaticViewMatrix, mProjectionMatrix);
 
 
 
         GLES20.glUseProgram(mSimpleProgramHandle);
 
-        movable.move();
+        //movable.move();
         sprite2.draw(mStaticViewMatrix, mProjectionMatrix, color);
 
         Matrix.setIdentityM(mStaticViewMatrix,  0);
         Matrix.translateM(mStaticViewMatrix, 0, -sprite2.getPosition()[0], -sprite2.getPosition()[1], 0);
 
 
-        //GLES20.glReadPixels(0, 0, width, height, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, ib);
+
         GLES20.glUseProgram(mDefaultProgramHandle);
         sprite3.setTexHandle(backTexHandle[0]);
         sprite3.draw(mDynamicViewMatrix, mProjectionMatrix);

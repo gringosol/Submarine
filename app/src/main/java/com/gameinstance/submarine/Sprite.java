@@ -85,4 +85,17 @@ public class Sprite {
     public void setTexHandle(int texHandle) {
         this.texHandle = texHandle;
     }
+
+    public void setScale(float sx, float sy) {
+        scaleX = sx;
+        scaleY = sy;
+    }
+
+    public float getScaleX() {
+        return scaleX;
+    }
+
+    public float getScaleY() {
+        return scaleY;
+    }
 }
