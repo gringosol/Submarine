@@ -31,17 +31,24 @@ public class Movable {
             dir[1] /= l;
         }
         float angle2 = (float)(-Math.acos(dir[1]) * Math.signum(dir[0]));
-        if (angle - angle2 > angularSpeed && l > speed * 2) {
+        if (Math.abs(angle - angle2) > angularSpeed && l > speed * 2 && ((angle > angle2 && angle - angle2 < Math.PI) || (angle < angle2 && angle2 - angle > Math.PI))) {
             angle -= angularSpeed;
-        } else if (angle - angle2 < -angularSpeed && l > speed * 2) {
+        } else if (Math.abs(angle - angle2) > angularSpeed && l > speed * 2) {
             angle += angularSpeed;
         }
+        if (Math.abs(angle) > Math.PI)
+            angle = (float)(angle - 2.0f * Math.PI * Math.signum(angle));
         float [] dir1 = new float[2];
         dir1[0] = (float)-Math.sin(angle);
         dir1[1] = (float)Math.cos(angle);
-        sprite.setRotation(angle * (180 / (float)Math.PI));
-        if (l > speed * 2)
-          sprite.setPosition(dir1[0] * speed + curPos[0], dir1[1] * speed + curPos[1]);
+        float angleDeg = angle * (180 / (float)Math.PI);
+        float deltaDeg = (angle2 - angle) * (180 / (float)Math.PI);
+        sprite.setRotation(angleDeg);
+        if (l > speed * 2 && Math.abs(deltaDeg) < 60) {
+            sprite.setPosition(dir1[0] * speed + curPos[0], dir1[1] * speed + curPos[1]);
+        } else if (l > speed * 2 && Math.abs(deltaDeg) > 120) {
+            sprite.setPosition(dir[0] * speed + curPos[0], dir[1] * speed + curPos[1]);
+        }
     }
 
     public void setTarget(float [] newTarget) {
