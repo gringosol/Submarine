@@ -4,7 +4,9 @@ import com.gameinstance.submarine.utils.TextureHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by gringo on 11.12.2016 20:16.
@@ -14,7 +16,7 @@ public class GameManager {
     static Scene scene;
     static GameRenderer renderer;
 
-    public static void initGame(GameRenderer renderer) {
+    public static void initGame(final GameRenderer renderer) {
         scene = new Scene(renderer);
         GameManager.renderer = renderer;
         scene.addLayerSet("BackBuffer", Arrays.asList("landscape_back", "mobs_back"));
@@ -38,15 +40,29 @@ public class GameManager {
         Sprite [] landscp = createLandScape(R.drawable.background, 64, 1, texPrimitive);
         List<Sprite> landslist = new ArrayList<>(Arrays.asList(landscp));
         Primitive colPrimitive = renderer.createPrimitiveColored();
-        Sprite submarineBack = new Sprite(renderer, R.drawable.submarine, colPrimitive, 0.2f, 0.2f);
-        Sprite submarine = new Sprite(renderer, R.drawable.submarine, texPrimitive, 0.2f, 0.2f);
+        Map<Integer, Primitive> primitiveMap = new HashMap<>();
+        primitiveMap.put(renderer.getProgramHandle("SimpleProgramHandle"), colPrimitive);
+        primitiveMap.put(renderer.getProgramHandle("DefaultProgramHandle"), texPrimitive);
+        Sprite submarineBack = new Sprite(renderer, R.drawable.submarine, primitiveMap, 0.2f, 0.2f);
+        //Sprite submarine = new Sprite(renderer, R.drawable.submarine, texPrimitive, 0.2f, 0.2f);
         landscape_back.addSprites(landslistB);
         mobs_back.addSprite(submarineBack);
         landscape.addSprites(landslist);
-        submarines.addSprite(submarine);
+        submarines.addSprite(submarineBack);
+        final Movable submarineMovable = new Movable(submarineBack);
+        scene.addMovable(submarineMovable);
+        InputController.addTouchHandler(new InputController.TouchHandler() {
+            @Override
+            public void touch(int x, int y) {
+                submarineMovable.setTarget(renderer.convertCoords(x, y));
+            }
+        });
+        renderer.setCameraTarget(submarineBack);
     }
 
     private static Sprite [] createLandScape(int textureId, int pixelsPerUnit, float unitSize, Primitive primitive) {
+        Map<Integer, Primitive> primitiveMap = new HashMap<>();
+        primitiveMap.put(renderer.getProgramHandle("DefaultProgramHandle"), primitive);
         int [] texHandles = TextureHelper.loadTexture2(renderer.getActivityContext(), textureId, pixelsPerUnit);
         int n = texHandles[0];
         int m = texHandles[1];
@@ -55,7 +71,7 @@ public class GameManager {
         float top = (m * unitSize) / 2.0f - 0.5f * unitSize;
         for (int j = 0; j < m; j++) {
             for (int i = 0; i < n; i++) {
-                sprites[j * n + i] = new Sprite(renderer, texHandles[j * n + i + 2], primitive,
+                sprites[j * n + i] = new Sprite(renderer, texHandles[j * n + i + 2], primitiveMap,
                         unitSize, new float[] {left + i * unitSize, top - j * unitSize});
             }
         }

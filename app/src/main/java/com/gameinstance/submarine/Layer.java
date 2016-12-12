@@ -31,11 +31,11 @@ public class Layer {
         if (sprites != null) {
             if (color == null) {
                 for (Sprite sprite : sprites) {
-                    sprite.draw(viewMatrix, projectionMatrix);
+                    sprite.draw(viewMatrix, projectionMatrix, programHandle);
                 }
             } else {
                 for (Sprite sprite : sprites) {
-                    sprite.draw(viewMatrix, projectionMatrix, color);
+                    sprite.draw(viewMatrix, projectionMatrix, color, programHandle);
                 }
             }
         }

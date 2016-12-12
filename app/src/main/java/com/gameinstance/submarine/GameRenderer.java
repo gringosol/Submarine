@@ -28,9 +28,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     private float [] mProjectionMatrix =  new float[16];
     private float [] mStaticViewMatrix =  new float[16];
     private float [] mDynamicViewMatrix =  new float[16];
-    Sprite sprite;
-    Sprite sprite2;
-    Sprite sprite3;
+
     float angle = 0;
     float [] color = new float[] {1.0f, 0.0f, 0.0f, 0.5f };
     byte [] backBuffer;
@@ -68,6 +66,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     int mTramsformMatrixHandle2;
     int mTextureUniformHandle2;
     int mColorHandle;
+
+    Sprite cameraTarget = null;
 
     Scene mScene;
 
@@ -124,32 +124,19 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         Matrix.setIdentityM(mStaticViewMatrix, 0);
         Matrix.translateM(mStaticViewMatrix, 0, 0, 0.5f, 0);
         Matrix.setIdentityM(mDynamicViewMatrix, 0);
-        sprite = new Sprite(this, R.drawable.arrow, primitive, 1.0f, 0.5f);
-        sprite.setPosition(0.5f, 0);
-        sprite.setRotation(30.0f);
+
         GLES20.glDisable(GLES20.GL_DEPTH_TEST);
         GLES20.glEnable(GLES20.GL_BLEND);
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
 
         primitive2 = new Primitive(mPositionHandle2, mTexCordHandle2, mTextureUniformHandle2, mTramsformMatrixHandle2, mColorHandle);
-        sprite2 = new Sprite(this, R.drawable.submarine, primitive2, 0.2f, 0.2f);
-        sprite2.setPosition(-0.5f, 0);
-        movable = new Movable(sprite2);
 
 
 
-        landscape = createLandScape(R.drawable.background, 64, 1, primitive);
 
-        sprite3 = new Sprite(this, R.drawable.yellow, primitive, 1.0f, 1.0f);
-        sprite3.setPosition(0.9f, 0.5f);
 
-        InputController.addTouchHandler(new InputController.TouchHandler() {
-            @Override
-            public void touch(int x, int y) {
-                movable.setTarget(convertCoords(x, y));
-            }
-        });
+
         texhandle2[0] = TextureHelper.loadTexture(getActivityContext(), R.drawable.submarine);
         backBuffer = new byte[backWidth * bachHeight * 4];
         for (int i = 0; i < backBuffer.length; i++){
@@ -175,7 +162,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         mScene = GameManager.getScene();
     }
 
-    private float [] convertCoords(int x, int y) {
+    public float [] convertCoords(int x, int y) {
         aspect = height / (float)width;
         float xx1 = 2 * x / (width * aspect) - 1.0f / aspect - mStaticViewMatrix[12];
         float y1 = - 2 * y / (float)height + 1.0f - mStaticViewMatrix[13];
@@ -223,9 +210,13 @@ public class GameRenderer implements GLSurfaceView.Renderer {
             movable.resetMotion();
         }*/
 
+        mScene.move();
+        updateCamera();
         mScene.setLayerSet("BackBuffer");
         mScene.draw(mStaticViewMatrix, mProjectionMatrix);
-
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, backTexHandle[0]);
+        GLES20.glReadPixels(0, 0, backWidth, bachHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, ib2);
+        mScene.collide(ib2.array(), bachHeight, aspect, mStaticViewMatrix);
 
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
         GLES20.glViewport(0, 0, width, height);
@@ -266,21 +257,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         mScene.draw(mStaticViewMatrix, mProjectionMatrix);
     }
 
-    private Sprite [] createLandScape(int textureId, int pixelsPerUnit, float unitSize, Primitive primitive) {
-        int [] texHandles = TextureHelper.loadTexture2(getActivityContext(), textureId, pixelsPerUnit);
-        int n = texHandles[0];
-        int m = texHandles[1];
-        Sprite [] sprites = new Sprite[m * n];
-        float left = -(n * unitSize) / 2.0f + 0.5f * unitSize;
-        float top = (m * unitSize) / 2.0f - 0.5f * unitSize;
-        for (int j = 0; j < m; j++) {
-            for (int i = 0; i < n; i++) {
-                sprites[j * n + i] = new Sprite(this, texHandles[j * n + i + 2], primitive,
-                        unitSize, new float[] {left + i * unitSize, top - j * unitSize});
-            }
-        }
-        return sprites;
-    }
+
 
     public Integer getProgramHandle(String name) {
         return programHandles.get(name);
@@ -292,5 +269,17 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     public Primitive createPrimitiveColored() {
         return new Primitive(mPositionHandle2, mTexCordHandle2, mTextureUniformHandle2, mTramsformMatrixHandle2, mColorHandle);
+    }
+
+    public void setCameraTarget(Sprite target) {
+        cameraTarget = target;
+    }
+
+    public void updateCamera() {
+        if (cameraTarget != null) {
+            Matrix.setIdentityM(mStaticViewMatrix,  0);
+            Matrix.translateM(mStaticViewMatrix, 0, -cameraTarget.getPosition()[0],
+                    -cameraTarget.getPosition()[1], 0);
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.gameinstance.submarine;
 
 import android.opengl.GLES20;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import java.util.Map;
 public class Scene {
     Map<String, List<String>> layerSets = new HashMap<>();
     Map<String, Layer> layers = new HashMap<>();
+    List<Movable> movables = new ArrayList<>();
     GameRenderer renderer;
     String currentSet = null;
 
@@ -41,6 +43,24 @@ public class Scene {
                     layer.drawLayer(viewMatrix, projectionMatrix);
                 }
             }
+        }
+    }
+
+    public void addMovable(Movable movable) {
+        movables.add(movable);
+    }
+
+    public void move() {
+        for (Movable movable : movables) {
+            movable.move();
+        }
+    }
+
+    public void collide(byte [] colMap, int scrH, float aspect, float [] viewMatr) {
+        for (Movable movable : movables) {
+            boolean col = movable.collideWithLandscape(colMap, scrH, aspect, viewMatr);
+            if (col)
+                movable.resetMotion();
         }
     }
 }

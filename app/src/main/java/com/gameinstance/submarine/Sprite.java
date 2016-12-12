@@ -3,6 +3,8 @@ package com.gameinstance.submarine;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
+import java.util.Map;
+
 /**
  * Created by gringo on 28.11.2016 20:38.
  *
@@ -11,7 +13,7 @@ import android.opengl.Matrix;
 public class Sprite {
     float [] position = new float [] {0, 0};
     float angle;
-    Primitive primitive;
+    Map<Integer, Primitive> primitives;
     float scaleX;
     float scaleY;
     float [] modelMatrix = new float[16];
@@ -20,24 +22,24 @@ public class Sprite {
     float [] rotateMatrix = new float[16];
     int texHandle;
 
-    public Sprite(GameRenderer renderer, int texResourseId, Primitive primitive, float width,
+    public Sprite(GameRenderer renderer, int texResourseId, Map<Integer, Primitive> primitives, float width,
                   float height) {
-        this.primitive = primitive;
+        this.primitives = primitives;
         scaleX = width;
         scaleY = height;
         texHandle = TextureManager.getTextureHandle(renderer.getActivityContext(), texResourseId);
     }
 
-    public Sprite(GameRenderer renderer, int texHandle, Primitive primitive, float size,
+    public Sprite(GameRenderer renderer, int texHandle, Map<Integer, Primitive> primitives, float size,
                   float [] position) {
-        this.primitive = primitive;
+        this.primitives = primitives;
         scaleX = size;
         scaleY = size;
         this.texHandle = texHandle;
         this.position = position;
     }
 
-    public void draw(float [] viewMatrix, float [] projectionMatrix) {
+    public void draw(float [] viewMatrix, float [] projectionMatrix, int programHandle) {
         Matrix.setIdentityM(modelMatrix, 0);
         Matrix.setIdentityM(scaleMatrix, 0);
         Matrix.setIdentityM(translateMatrix, 0);
@@ -50,10 +52,10 @@ public class Sprite {
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texHandle);
-        primitive.draw(projectionMatrix, viewMatrix, modelMatrix);
+        primitives.get(programHandle).draw(projectionMatrix, viewMatrix, modelMatrix);
     }
 
-    public void draw(float [] viewMatrix, float [] projectionMatrix, float [] color) {
+    public void draw(float [] viewMatrix, float [] projectionMatrix, float [] color, int programHandle) {
         Matrix.setIdentityM(modelMatrix, 0);
         Matrix.setIdentityM(scaleMatrix, 0);
         Matrix.setIdentityM(translateMatrix, 0);
@@ -66,7 +68,7 @@ public class Sprite {
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texHandle);
-        primitive.draw(projectionMatrix, viewMatrix, modelMatrix, color);
+        primitives.get(programHandle).draw(projectionMatrix, viewMatrix, modelMatrix, color);
     }
 
     public void setPosition(float x, float y) {
