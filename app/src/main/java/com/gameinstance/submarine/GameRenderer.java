@@ -10,7 +10,7 @@ import com.gameinstance.submarine.utils.ShaderUtils;
 import com.gameinstance.submarine.utils.TextureHelper;
 
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,11 +26,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     private int mDefaultProgramHandle = 0;
     private int mSimpleProgramHandle = 0;
     private float [] mProjectionMatrix =  new float[16];
-    private float [] mStaticViewMatrix =  new float[16];
-    private float [] mDynamicViewMatrix =  new float[16];
+    private float [] mViewMatrix =  new float[16];
+    private float [] mGuiViewMatrix =  new float[16];
 
-    float angle = 0;
-    float [] color = new float[] {1.0f, 0.0f, 0.0f, 0.5f };
     byte [] backBuffer;
     int [] backTexHandle = new int[1];
     int [] backBufferHandle = new int[1];
@@ -38,13 +36,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     Map<String, Integer> programHandles = new HashMap<>();
 
-
-    Primitive primitive;
-    Primitive primitive2;
-
-    Movable movable;
-
-    Sprite [] landscape;
+    Primitive primitiveTex;
+    Sprite backMap;
 
     int height;
     int width;
@@ -79,8 +72,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         super();
         mActivityContext = con;
     }
-
-
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -117,25 +108,17 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         mTextureUniformHandle2 = GLES20.glGetUniformLocation(mSimpleProgramHandle, "u_Texture");
         mColorHandle = GLES20.glGetUniformLocation(mSimpleProgramHandle, "u_Color");
 
+        primitiveTex = new Primitive(mPositionHandle, mTexCordHandle, mTextureUniformHandle, mTramsformMatrixHandle);
 
 
-        primitive = new Primitive(mPositionHandle, mTexCordHandle, mTextureUniformHandle, mTramsformMatrixHandle);
         Matrix.setIdentityM(mProjectionMatrix, 0);
-        Matrix.setIdentityM(mStaticViewMatrix, 0);
-        Matrix.translateM(mStaticViewMatrix, 0, 0, 0.5f, 0);
-        Matrix.setIdentityM(mDynamicViewMatrix, 0);
+        Matrix.setIdentityM(mViewMatrix, 0);
+        Matrix.translateM(mViewMatrix, 0, 0, 0.5f, 0);
+        Matrix.setIdentityM(mGuiViewMatrix, 0);
 
         GLES20.glDisable(GLES20.GL_DEPTH_TEST);
         GLES20.glEnable(GLES20.GL_BLEND);
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-
-
-        primitive2 = new Primitive(mPositionHandle2, mTexCordHandle2, mTextureUniformHandle2, mTramsformMatrixHandle2, mColorHandle);
-
-
-
-
-
 
         texhandle2[0] = TextureHelper.loadTexture(getActivityContext(), R.drawable.submarine);
         backBuffer = new byte[backWidth * bachHeight * 4];
@@ -157,6 +140,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, backBufferHandle[0]);
         GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, backTexHandle[0], 0);
 
+        Map<Integer, Primitive> primitiveMap = Collections.singletonMap(mDefaultProgramHandle, primitiveTex);
+        backMap = new Sprite(this, backTexHandle[0], primitiveMap, 1.0f, new float [] {-1.0f, 0.5f});
 
         GameManager.initGame(this);
         mScene = GameManager.getScene();
@@ -164,8 +149,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     public float [] convertCoords(int x, int y) {
         aspect = height / (float)width;
-        float xx1 = 2 * x / (width * aspect) - 1.0f / aspect - mStaticViewMatrix[12];
-        float y1 = - 2 * y / (float)height + 1.0f - mStaticViewMatrix[13];
+        float xx1 = 2 * x / (width * aspect) - 1.0f / aspect - mViewMatrix[12];
+        float y1 = - 2 * y / (float)height + 1.0f - mViewMatrix[13];
         return new float[] {xx1, y1};
     }
 
@@ -176,7 +161,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         Matrix.scaleM(mProjectionMatrix, 0, aspect, 1.0f, 1.0f);
         this.width = width;
         this.height = height;
-        //sprite3.setScale(1.0f / aspect, 1.0f);
     }
 
 
@@ -188,73 +172,24 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         GLES20.glClearColor(1.0f, 0, 0, 1.0f);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
-
-        /*GLES20.glUseProgram(mDefaultProgramHandle);
-        sprite.setRotation(angle);
-        angle += 1.0f;
-        for (Sprite sp : landscape) {
-            sp.draw(mStaticViewMatrix, mProjectionMatrix);
-        }
-        //sprite.draw(mStaticViewMatrix, mProjectionMatrix);
-        GLES20.glUseProgram(mSimpleProgramHandle);
-        movable.move();
-        sprite2.draw(mStaticViewMatrix, mProjectionMatrix, color);
-        Matrix.setIdentityM(mStaticViewMatrix,  0);
-        Matrix.translateM(mStaticViewMatrix, 0, -sprite2.getPosition()[0], -sprite2.getPosition()[1], 0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, backTexHandle[0]);
-        GLES20.glReadPixels(0, 0, backWidth, bachHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, ib2);
-
-
-        boolean collide = movable.collideWithLandscape(ib2.array(), bachHeight, aspect, mStaticViewMatrix);
-        if (collide) {
-            movable.resetMotion();
-        }*/
-
         mScene.move();
         updateCamera();
         mScene.setLayerSet("BackBuffer");
-        mScene.draw(mStaticViewMatrix, mProjectionMatrix);
+        mScene.draw(mViewMatrix, mProjectionMatrix);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, backTexHandle[0]);
         GLES20.glReadPixels(0, 0, backWidth, bachHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, ib2);
-        mScene.collide(ib2.array(), bachHeight, aspect, mStaticViewMatrix);
+        mScene.collide(ib2.array(), bachHeight, aspect, mViewMatrix);
 
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
         GLES20.glViewport(0, 0, width, height);
         GLES20.glClearColor(0, 0, 0, 0);
 
-
-
-
-
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
-
-        /*GLES20.glUseProgram(mDefaultProgramHandle);
-        sprite.setRotation(angle);
-        angle += 1.0f;
-        for (Sprite sp : landscape) {
-            sp.draw(mStaticViewMatrix, mProjectionMatrix);
-        }
-        //sprite.draw(mStaticViewMatrix, mProjectionMatrix);
-
-
-
-        GLES20.glUseProgram(mSimpleProgramHandle);
-
-        //movable.move();
-        sprite2.draw(mStaticViewMatrix, mProjectionMatrix, color);
-
-        Matrix.setIdentityM(mStaticViewMatrix,  0);
-        Matrix.translateM(mStaticViewMatrix, 0, -sprite2.getPosition()[0], -sprite2.getPosition()[1], 0);
-
-
-
-        GLES20.glUseProgram(mDefaultProgramHandle);
-        sprite3.setTexHandle(backTexHandle[0]);
-        sprite3.draw(mDynamicViewMatrix, mProjectionMatrix);*/
-
         mScene.setLayerSet("Front");
-        mScene.draw(mStaticViewMatrix, mProjectionMatrix);
+        mScene.draw(mViewMatrix, mProjectionMatrix);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, backTexHandle[0]);
+        backMap.draw(mGuiViewMatrix, mProjectionMatrix, mDefaultProgramHandle);
     }
 
 
@@ -277,8 +212,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     public void updateCamera() {
         if (cameraTarget != null) {
-            Matrix.setIdentityM(mStaticViewMatrix,  0);
-            Matrix.translateM(mStaticViewMatrix, 0, -cameraTarget.getPosition()[0],
+            Matrix.setIdentityM(mViewMatrix,  0);
+            Matrix.translateM(mViewMatrix, 0, -cameraTarget.getPosition()[0],
                     -cameraTarget.getPosition()[1], 0);
         }
     }
