@@ -44,7 +44,6 @@ public class GameManager {
         primitiveMap.put(renderer.getProgramHandle("SimpleProgramHandle"), colPrimitive);
         primitiveMap.put(renderer.getProgramHandle("DefaultProgramHandle"), texPrimitive);
         Sprite submarineBack = new Sprite(renderer, R.drawable.submarine, primitiveMap, 0.2f, 0.2f);
-        //Sprite submarine = new Sprite(renderer, R.drawable.submarine, texPrimitive, 0.2f, 0.2f);
         landscape_back.addSprites(landslistB);
         mobs_back.addSprite(submarineBack);
         landscape.addSprites(landslist);

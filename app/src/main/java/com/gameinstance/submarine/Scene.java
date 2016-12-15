@@ -1,7 +1,5 @@
 package com.gameinstance.submarine;
 
-import android.opengl.GLES20;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
