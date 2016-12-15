@@ -13,6 +13,7 @@ public class Layer {
     int programHandle;
     List<Sprite> sprites = new ArrayList<>();
     float [] color = null;
+    public boolean isGui = false;
 
     public Layer(int programHandle) {
         this.programHandle = programHandle;

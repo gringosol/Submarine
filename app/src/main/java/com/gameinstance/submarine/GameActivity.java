@@ -26,6 +26,12 @@ public class GameActivity extends Activity {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         InputController.onScreenTouch((int)event.getX(), (int)event.getY());
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            InputController.onScreenDown((int)event.getX(), (int)event.getY());
+        }
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            InputController.onScreenUp((int)event.getX(), (int)event.getY());
+        }
         return super.onTouchEvent(event);
     }
 }

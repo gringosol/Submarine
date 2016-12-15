@@ -33,12 +33,16 @@ public class Scene {
             currentSet = name;
     }
 
-    public void draw(float [] viewMatrix, float [] projectionMatrix) {
+    public void draw(float [] viewMatrix, float [] projectionMatrix, float [] guiViewMatrix) {
         if (currentSet != null) {
             for (String layerName : layerSets.get(currentSet)) {
                 if (layers.containsKey(layerName)) {
                     Layer layer = layers.get(layerName);
-                    layer.drawLayer(viewMatrix, projectionMatrix);
+                    if (layer.isGui) {
+                        layer.drawLayer(guiViewMatrix, projectionMatrix);
+                    } else {
+                        layer.drawLayer(viewMatrix, projectionMatrix);
+                    }
                 }
             }
         }

@@ -12,12 +12,15 @@ public class Movable {
     float angle = 0;
     float previousAngle = 0;
     float [] previousPosition = new float[] {0, 0};
+    boolean motionEnabled;
 
     public Movable(Sprite sprite) {
         this.sprite = sprite;
     }
 
     public void move() {
+        if (!motionEnabled)
+            return;
         previousAngle = angle;
         previousPosition[0] = sprite.getPosition()[0];
         previousPosition[1] = sprite.getPosition()[1];
@@ -54,6 +57,7 @@ public class Movable {
     public void setTarget(float [] newTarget) {
         target[0] = newTarget[0];
         target[1] = newTarget[1];
+        motionEnabled = true;
     }
 
     public boolean collideWithLandscape(byte [] backBuffer, int scrH, float aspect, float [] vM) {
@@ -95,5 +99,9 @@ public class Movable {
     public void resetMotion() {
         angle = previousAngle;
         sprite.setPosition(previousPosition[0], previousPosition[1]);
+    }
+
+    public void setMotionEnabled(boolean enabled) {
+        motionEnabled = enabled;
     }
 }

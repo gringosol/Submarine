@@ -102,7 +102,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         mScene.move();
         updateCamera();
         mScene.setLayerSet("BackBuffer");
-        mScene.draw(mViewMatrix, mProjectionMatrix);
+        mScene.draw(mViewMatrix, mProjectionMatrix, mGuiViewMatrix);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, backTexHandle[0]);
         GLES20.glReadPixels(0, 0, backWidth, bachHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, ib2);
         mScene.collide(ib2.array(), bachHeight, aspect, mViewMatrix);
@@ -112,7 +112,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         GLES20.glClearColor(0, 0, 0, 0);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         mScene.setLayerSet("Front");
-        mScene.draw(mViewMatrix, mProjectionMatrix);
+        mScene.draw(mViewMatrix, mProjectionMatrix, mGuiViewMatrix);
        if (drawBackMap)
            drawBackBufferToScene();
     }
@@ -212,10 +212,10 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         Matrix.setIdentityM(mGuiViewMatrix, 0);
     }
 
-    public float [] convertCoords(int x, int y) {
+    public float [] convertCoords(int x, int y, boolean gui) {
         aspect = height / (float)width;
-        float xx1 = 2 * x / (width * aspect) - 1.0f / aspect - mViewMatrix[12];
-        float y1 = - 2 * y / (float)height + 1.0f - mViewMatrix[13];
+        float xx1 = 2 * x / (width * aspect) - 1.0f / aspect - (gui ? mGuiViewMatrix[12] : mViewMatrix[12]);
+        float y1 = - 2 * y / (float)height + 1.0f - (gui ? mGuiViewMatrix[13] : mViewMatrix[13]);
         return new float[] {xx1, y1};
     }
 

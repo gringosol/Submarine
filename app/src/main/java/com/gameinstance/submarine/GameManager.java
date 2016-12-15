@@ -20,7 +20,8 @@ public class GameManager {
         scene = new Scene(renderer);
         GameManager.renderer = renderer;
         scene.addLayerSet("BackBuffer", Arrays.asList("landscape_back", "mobs_back"));
-        scene.addLayerSet("Front", Arrays.asList("landscape", "submarines", "ships_and_tanks", "aircrafts"));
+        scene.addLayerSet("Front", Arrays.asList("landscape", "submarines", "ships_and_tanks",
+                "aircrafts", "hud"));
         Layer landscape_back = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
         scene.addLayer("landscape_back", landscape_back);
         Layer mobs_back = new Layer(renderer.getProgramHandle("SimpleProgramHandle"));
@@ -34,6 +35,9 @@ public class GameManager {
         scene.addLayer("ships_and_tanks", shipsAndTanks);
         Layer aircrafts = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
         scene.addLayer("aircrafts", aircrafts);
+        Layer hud = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
+        hud.isGui = true;
+        scene.addLayer("hud", hud);
         Primitive texPrimitive = renderer.createPrimitiveTextured();
         Sprite [] landscpB = createLandScape(R.drawable.background, 64, 1, texPrimitive);
         List<Sprite> landslistB = new ArrayList<>(Arrays.asList(landscpB));
@@ -50,12 +54,31 @@ public class GameManager {
         submarines.addSprite(submarineBack);
         final Movable submarineMovable = new Movable(submarineBack);
         scene.addMovable(submarineMovable);
-        InputController.addTouchHandler(new InputController.TouchHandler() {
+        InputController.addTouchHandler(new TouchHandler(1) {
             @Override
-            public void touch(int x, int y) {
-                submarineMovable.setTarget(renderer.convertCoords(x, y));
+            public boolean touch(int x, int y) {
+                submarineMovable.setTarget(renderer.convertCoords(x, y, false));
+                return false;
+            }
+
+            @Override
+            public boolean onDown(int x, int y) {
+                return false;
+            }
+
+            @Override
+            public boolean onUp(int x, int y) {
+                return false;
             }
         });
+        Button stopButton = new Button(renderer, new int [] {R.drawable.stop, R.drawable.stop1},
+                primitiveMap, 0.5f, 0.5f, new Button.ClickListener() {
+            @Override
+            public void onClick() {
+              submarineMovable.setMotionEnabled(false);
+            }
+        }, new float[] {1.5f, 0.75f});
+        hud.addSprite(stopButton);
         renderer.setCameraTarget(submarineBack);
     }
 
