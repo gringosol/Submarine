@@ -52,7 +52,9 @@ public class GameManager {
         mobs_back.addSprite(submarineBack);
         landscape.addSprites(landslist);
         submarines.addSprite(submarineBack);
-        final Movable submarineMovable = new Movable(submarineBack);
+        final Submarine submarineMovable = new Submarine(submarineBack,
+                new int[] {R.drawable.submarine, R.drawable.submarine1, R.drawable.submarine2},
+                renderer);
         scene.addMovable(submarineMovable);
         InputController.addTouchHandler(new TouchHandler(1) {
             @Override
@@ -77,8 +79,27 @@ public class GameManager {
             public void onClick() {
               submarineMovable.setMotionEnabled(false);
             }
-        }, new float[] {1.5f, 0.75f});
+        }, new float[] {1.5f, -0.75f});
+
+        Button emergeButton = new Button(renderer, new int [] {R.drawable.emerge, R.drawable.emerge1},
+                primitiveMap, 0.5f, 0.5f, new Button.ClickListener() {
+            @Override
+            public void onClick() {
+                submarineMovable.emerge();
+            }
+        }, new float[] {0.95f, 0.0f});
+
+        Button plungeButton = new Button(renderer, new int [] {R.drawable.plunge, R.drawable.plunge1},
+                primitiveMap, 0.5f, 0.5f, new Button.ClickListener() {
+            @Override
+            public void onClick() {
+                submarineMovable.plunge();
+            }
+        }, new float[] {1.5f, 0.0f});
+
         hud.addSprite(stopButton);
+        hud.addSprite(emergeButton);
+        hud.addSprite(plungeButton);
         renderer.setCameraTarget(submarineBack);
     }
 
