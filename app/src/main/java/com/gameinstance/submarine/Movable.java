@@ -75,6 +75,14 @@ public class Movable {
         int y1 = (int)p2[1];
         int x2 = (int)p2[0];
         int y2 = (int)p1[1];
+        if (x1 < 0)
+            x1 = 0;
+        if (x2 >= scrH)
+            x2  = scrH - 1;
+        if (y1 < 0)
+            y1 = 0;
+        if (y2 >= scrH)
+            y2  = scrH - 1;
         for (int i = x1; i <= x2; i++) {
             for (int j = y1; j <= y2; j++) {
                 int r = backBuffer[(j * scrH + i) * 4];
