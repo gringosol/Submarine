@@ -2,6 +2,8 @@ package com.gameinstance.submarine;
 
 import android.opengl.GLES20;
 
+import com.gameinstance.submarine.ui.TextLine;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,7 @@ import java.util.List;
 public class Layer {
     int programHandle;
     List<Sprite> sprites = new ArrayList<>();
+    List<TextLine> textLines = new ArrayList<>();
     float [] color = null;
     public boolean isGui = false;
 
@@ -27,6 +30,15 @@ public class Layer {
         this.sprites.addAll(sprites);
     }
 
+    public void addTextline(TextLine textLine) {
+        if (!textLines.contains(textLine))
+          textLines.add(textLine);
+    }
+
+    public void  removeTextLine(TextLine textLine) {
+        textLines.remove(textLine);
+    }
+
     public void drawLayer(float [] viewMatrix, float [] projectionMatrix) {
         GLES20.glUseProgram(programHandle);
         if (sprites != null) {
@@ -39,6 +51,9 @@ public class Layer {
                     sprite.draw(viewMatrix, projectionMatrix, color, programHandle);
                 }
             }
+        }
+        for (TextLine textLine : textLines) {
+            textLine.draw(viewMatrix, projectionMatrix, programHandle);
         }
     }
 

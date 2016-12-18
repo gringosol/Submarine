@@ -1,14 +1,23 @@
 package com.gameinstance.submarine;
 
+import com.gameinstance.submarine.ui.TextLine;
+
+import java.util.Calendar;
+
 /**
  * Created by gringo on 16.12.2016 20:22.
  *
  */
 public class Submarine extends Movable {
+    private static final Integer messageInterval = 500;
     int depth = 0;
     int [] resIds;
     int [] texHandles;
     int maxDepth = 2;
+    static TextLine shallowWarning = null;
+    GameRenderer renderer;
+    boolean shallow = false;
+    int lastMessageShallowShow = 0;
 
     public Submarine(Sprite sprite, int [] resIds, GameRenderer renderer) {
         super(sprite);
@@ -18,6 +27,10 @@ public class Submarine extends Movable {
             texHandles[i] = TextureManager.getTextureHandle(renderer.getActivityContext(), resIds[i]);
         }
         sprite.setTexHandle(texHandles[0]);
+        this.renderer = renderer;
+        if (shallowWarning == null) {
+            shallowWarning = new TextLine("Слишком мелко", new float[] {-0.3f, 0.5f}, 0.2f, renderer);
+        }
     }
 
     public int getDepth() {
@@ -103,11 +116,23 @@ public class Submarine extends Movable {
         if (maxDepth < depth) {
             stop = true;
             onBottom();
+        } else {
+            if (shallow) {
+                Calendar c = Calendar.getInstance();
+                int curTime = c.get(Calendar.MILLISECOND);
+                if (curTime - lastMessageShallowShow > messageInterval || (curTime < lastMessageShallowShow)) {
+                    GameManager.getScene().hideText(shallowWarning, "hud");
+                    shallow = false;
+                }
+            }
         }
         return stop;
     }
 
     public void onBottom() {
-
+        shallow = true;
+        Calendar c = Calendar.getInstance();
+        lastMessageShallowShow = c.get(Calendar.MILLISECOND);
+        GameManager.getScene().showText(shallowWarning, "hud");
     }
 }

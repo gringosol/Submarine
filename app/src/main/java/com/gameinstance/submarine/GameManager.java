@@ -1,5 +1,6 @@
 package com.gameinstance.submarine;
 
+import com.gameinstance.submarine.ui.TextLine;
 import com.gameinstance.submarine.utils.TextureHelper;
 
 import java.util.ArrayList;

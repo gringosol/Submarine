@@ -1,5 +1,7 @@
 package com.gameinstance.submarine;
 
+import com.gameinstance.submarine.ui.TextLine;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,6 +65,18 @@ public class Scene {
             boolean col = movable.collideWithLandscape(colMap, scrH, aspect, viewMatr);
             if (col)
                 movable.resetMotion();
+        }
+    }
+
+    public void showText(TextLine textLine, String layer) {
+        if (layers.containsKey(layer)) {
+            layers.get(layer).addTextline(textLine);
+        }
+    }
+
+    public void hideText(TextLine textLine, String layer) {
+        if (layers.containsKey(layer)) {
+            layers.get(layer).removeTextLine(textLine);
         }
     }
 }
