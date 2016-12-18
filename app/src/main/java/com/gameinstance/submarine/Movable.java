@@ -87,16 +87,10 @@ public class Movable {
             for (int j = y1; j <= y2; j++) {
                 int r = backBuffer[(j * scrH + i) * 4];
                 int g = backBuffer[(j * scrH + i) * 4 + 1];
-                int b = backBuffer[(j * scrH + i) * 4 + 2];
-                int a = backBuffer[(j * scrH + i) * 4 + 3];
                 if (r < 0)
                     r = 256 + r;
                 if (g < 0)
                     g = 256 + g;
-                if (b < 0)
-                    b = 256 + b;
-                if (a < 0)
-                    a = 256 + a;
                 if (r > 0 && g > 0)
                     return true;
             }

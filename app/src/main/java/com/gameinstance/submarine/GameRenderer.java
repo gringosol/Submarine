@@ -54,11 +54,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     int bachHeight = 256;
     float aspect = 1.0f;
 
-
-
-
-
-    Sprite cameraTarget = null;
+    Camera camera = null;
 
     Scene mScene;
 
@@ -129,15 +125,12 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         return new Primitive(mPositionHandle2, mTexCordHandle2, mTextureUniformHandle2, mTramsformMatrixHandle2, mColorHandle);
     }
 
-    public void setCameraTarget(Sprite target) {
-        cameraTarget = target;
+    public void setCamera(Camera camera) {
+        this.camera = camera;
     }
-
     public void updateCamera() {
-        if (cameraTarget != null) {
-            Matrix.setIdentityM(mViewMatrix,  0);
-            Matrix.translateM(mViewMatrix, 0, -cameraTarget.getPosition()[0],
-                    -cameraTarget.getPosition()[1], 0);
+        if (camera != null) {
+            mViewMatrix = camera.update(mViewMatrix, aspect, 1.0f);
         }
     }
 

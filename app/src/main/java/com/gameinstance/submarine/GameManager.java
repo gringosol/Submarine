@@ -15,6 +15,10 @@ import java.util.Map;
 public class GameManager {
     static Scene scene;
     static GameRenderer renderer;
+    private static float minX = -1.0f;
+    private static float maxX = 1.0f;
+    private static float minY = -1.0f;
+    private static float maxY = 1.0f;
 
     public static void initGame(final GameRenderer renderer) {
         scene = new Scene(renderer);
@@ -100,7 +104,10 @@ public class GameManager {
         hud.addSprite(stopButton);
         hud.addSprite(emergeButton);
         hud.addSprite(plungeButton);
-        renderer.setCameraTarget(submarineBack);
+        Camera camera = new Camera();
+        camera.setTarget(submarineBack);
+        camera.setBounds(minX, maxX, minY, maxY);
+        renderer.setCamera(camera);
     }
 
     private static Sprite [] createLandScape(int textureId, int pixelsPerUnit, float unitSize, Primitive primitive) {
@@ -118,6 +125,10 @@ public class GameManager {
                         unitSize, new float[] {left + i * unitSize, top - j * unitSize});
             }
         }
+        minX =  -(n * unitSize) / 2.0f;
+        maxX =  (n * unitSize) / 2.0f;
+        minY =  -(m * unitSize) / 2.0f;
+        maxY =  (m * unitSize) / 2.0f;
         return sprites;
     }
 
