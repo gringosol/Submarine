@@ -1,6 +1,5 @@
 package com.gameinstance.submarine;
 
-import com.gameinstance.submarine.ui.TextLine;
 import com.gameinstance.submarine.utils.TextureHelper;
 
 import java.util.ArrayList;
@@ -43,6 +42,9 @@ public class GameManager {
         Layer hud = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
         hud.isGui = true;
         scene.addLayer("hud", hud);
+
+        LevelLoader.loadLevel(GameActivity.getActivity(), R.raw.testlevel);
+
         Primitive texPrimitive = renderer.createPrimitiveTextured();
         Sprite [] landscpB = createLandScape(R.drawable.background, 64, 1, texPrimitive);
         List<Sprite> landslistB = new ArrayList<>(Arrays.asList(landscpB));

@@ -6,9 +6,16 @@ import android.view.MotionEvent;
 
 
 public class GameActivity extends Activity {
+    static Activity activity;
+
+    public static Activity getActivity() {
+        return activity;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        activity = this;
         setContentView(R.layout.game_layout);
         GameSurfaceView view = (GameSurfaceView)findViewById(R.id.game_layout);
     }
