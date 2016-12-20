@@ -19,6 +19,7 @@ public class GameManager {
     private static float maxX = 1.0f;
     private static float minY = -1.0f;
     private static float maxY = 1.0f;
+    static Primitive texPrimitive;
 
     public static void initGame(final GameRenderer renderer) {
         scene = new Scene(renderer);
@@ -42,22 +43,18 @@ public class GameManager {
         Layer hud = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
         hud.isGui = true;
         scene.addLayer("hud", hud);
+        texPrimitive = renderer.createPrimitiveTextured();
 
-        LevelLoader.loadLevel(GameActivity.getActivity(), R.raw.testlevel);
+        LevelLoader.loadLevel(GameActivity.getActivity(), R.raw.testlevel, landscape_back, landscape);
 
-        Primitive texPrimitive = renderer.createPrimitiveTextured();
-        Sprite [] landscpB = createLandScape(R.drawable.background, 64, 1, texPrimitive);
-        List<Sprite> landslistB = new ArrayList<>(Arrays.asList(landscpB));
-        Sprite [] landscp = createLandScape(R.drawable.background, 64, 1, texPrimitive);
-        List<Sprite> landslist = new ArrayList<>(Arrays.asList(landscp));
         Primitive colPrimitive = renderer.createPrimitiveColored();
         Map<Integer, Primitive> primitiveMap = new HashMap<>();
         primitiveMap.put(renderer.getProgramHandle("SimpleProgramHandle"), colPrimitive);
         primitiveMap.put(renderer.getProgramHandle("DefaultProgramHandle"), texPrimitive);
         Sprite submarineBack = new Sprite(renderer, R.drawable.submarine, primitiveMap, 0.2f, 0.2f);
-        landscape_back.addSprites(landslistB);
+
         mobs_back.addSprite(submarineBack);
-        landscape.addSprites(landslist);
+
         submarines.addSprite(submarineBack);
         final Submarine submarineMovable = new Submarine(submarineBack,
                 new int[] {R.drawable.submarine, R.drawable.submarine1, R.drawable.submarine2},
@@ -113,7 +110,7 @@ public class GameManager {
         renderer.setCamera(camera);
     }
 
-    private static Sprite [] createLandScape(int textureId, int pixelsPerUnit, float unitSize, Primitive primitive) {
+    public static Sprite [] createLandScape(int textureId, int pixelsPerUnit, float unitSize, Primitive primitive) {
         Map<Integer, Primitive> primitiveMap = new HashMap<>();
         primitiveMap.put(renderer.getProgramHandle("DefaultProgramHandle"), primitive);
         int [] texHandles = TextureHelper.loadTexture2(renderer.getActivityContext(), textureId, pixelsPerUnit);
@@ -137,5 +134,9 @@ public class GameManager {
 
     public static Scene getScene() {
         return scene;
+    }
+
+    public static Primitive getTexPrimitive() {
+        return texPrimitive;
     }
 }
