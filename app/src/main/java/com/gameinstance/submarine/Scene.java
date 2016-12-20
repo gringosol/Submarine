@@ -79,4 +79,8 @@ public class Scene {
             layers.get(layer).removeTextLine(textLine);
         }
     }
+
+    public Layer getLayer(String layerName) {
+        return layers.get(layerName);
+    }
 }

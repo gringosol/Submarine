@@ -106,4 +106,13 @@ public class Movable {
     public void setMotionEnabled(boolean enabled) {
         motionEnabled = enabled;
     }
+
+    public Sprite getSprite() {
+        return sprite;
+    }
+
+    public void setAngle(float a) {
+        angle = a;
+        sprite.setRotation(a * (180 / (float)Math.PI));
+    }
 }

@@ -3,8 +3,8 @@
   "foreground" : "background",
   "submarine" : {
     "type" : "default",
-    "x" : "0.0f",
-    "y" : "0.0f",
-    "angle" : "0.0f"
+    "x" : "0.0",
+    "y" : "1.0",
+    "angle" : "1.0"
   }
 }
