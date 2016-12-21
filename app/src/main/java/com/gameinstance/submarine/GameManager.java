@@ -2,9 +2,12 @@ package com.gameinstance.submarine;
 
 import com.gameinstance.submarine.utils.TextureHelper;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by gringo on 11.12.2016 20:16.
@@ -20,6 +23,8 @@ public class GameManager {
     static Primitive texPrimitive;
     static Map<Integer, Primitive> movablePrimitiveMap;
     static Submarine submarineMovable;
+    static List<Integer> levelList = Arrays.asList(R.raw.testlevel, R.raw.testlevel2);
+    static int currentLevel = 0;
 
     public static void initGame(final GameRenderer renderer) {
         scene = new Scene(renderer);
@@ -125,10 +130,18 @@ public class GameManager {
                 submarineMovable.plunge();
             }
         }, new float[] {1.5f, 0.0f});
+        Button nextLevelButton = new Button(renderer, new int [] {R.drawable.nextlevel, R.drawable.nextlevel1},
+                movablePrimitiveMap, 0.5f, 0.5f, new Button.ClickListener() {
+            @Override
+            public void onClick() {
+                nextLevel();
+            }
+        }, new float[] {0.95f, -0.75f});
         Layer hud = scene.getLayer("hud");
         hud.addSprite(stopButton);
         hud.addSprite(emergeButton);
         hud.addSprite(plungeButton);
+        hud.addSprite(nextLevelButton);
     }
 
     public static Scene getScene() {
@@ -149,5 +162,32 @@ public class GameManager {
 
     public static void setSubmarineMovable(Submarine submarine) {
         submarineMovable = submarine;
+    }
+
+    private static void clearLevel() {
+        List<String> layerList = new ArrayList<>();
+        for (Map.Entry<String, Layer> entry : scene.getLayers().entrySet()) {
+            layerList.add(entry.getKey());
+        }
+        for (String layerName : layerList) {
+            scene.getLayer(layerName).clear();
+        }
+    }
+
+    private static void nextLevel() {
+        renderer.setPaused(true);
+        renderer.getSurfaceView().queueEvent(new Runnable() {
+            @Override
+            public void run() {
+
+                clearLevel();
+                currentLevel++;
+                if (currentLevel >= levelList.size())
+                    currentLevel = 0;
+                LevelLoader.loadLevel(GameActivity.getActivity(), levelList.get(currentLevel));
+
+            }
+        });
+        renderer.setPaused(false);
     }
 }

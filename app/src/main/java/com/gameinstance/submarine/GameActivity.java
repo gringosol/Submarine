@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 
 public class GameActivity extends Activity {
     static Activity activity;
+    GameSurfaceView view;
 
     public static Activity getActivity() {
         return activity;
@@ -17,7 +18,7 @@ public class GameActivity extends Activity {
         super.onCreate(savedInstanceState);
         activity = this;
         setContentView(R.layout.game_layout);
-        GameSurfaceView view = (GameSurfaceView)findViewById(R.id.game_layout);
+        view = (GameSurfaceView)findViewById(R.id.game_layout);
     }
 
     @Override

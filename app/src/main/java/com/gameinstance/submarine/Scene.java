@@ -83,4 +83,8 @@ public class Scene {
     public Layer getLayer(String layerName) {
         return layers.get(layerName);
     }
+
+    public Map<String, Layer> getLayers() {
+        return layers;
+    }
 }

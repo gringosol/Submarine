@@ -34,6 +34,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     int mTextureUniformHandle2;
     int mColorHandle;
     Map<String, Integer> programHandles = new HashMap<>();
+    boolean paused = false;
 
     private float [] mProjectionMatrix =  new float[16];
     private float [] mViewMatrix =  new float[16];
@@ -58,6 +59,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     Scene mScene;
 
+    GameSurfaceView view;
+
     private boolean drawBackMap = true;
 
     public Context getActivityContext() {
@@ -67,6 +70,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     public GameRenderer(Context con, GameSurfaceView view) {
         super();
         mActivityContext = con;
+        this.view = view;
     }
 
     @Override
@@ -91,6 +95,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
+        if (paused)
+            return;
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, backBufferHandle[0]);
         GLES20.glViewport(0, 0, backWidth, bachHeight);
         GLES20.glClearColor(1.0f, 0, 0, 1.0f);
@@ -215,5 +221,13 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     private void drawBackBufferToScene() {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, backTexHandle[0]);
         backMap.draw(mGuiViewMatrix, mProjectionMatrix, mDefaultProgramHandle);
+    }
+
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+    }
+
+    public GameSurfaceView getSurfaceView() {
+        return view;
     }
 }

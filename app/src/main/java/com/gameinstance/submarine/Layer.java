@@ -60,4 +60,9 @@ public class Layer {
     public void setColor(float [] color) {
         this.color = color;
     }
+
+    public void clear(){
+        sprites.clear();
+
+    }
 }
