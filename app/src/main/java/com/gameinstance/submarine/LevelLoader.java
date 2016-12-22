@@ -48,6 +48,7 @@ public class LevelLoader {
         } catch (JSONException e) {
             throw new RuntimeException("Ошибка чтения json уровня");
         }
+        GameManager.setCamera();
     }
 
 

@@ -25,6 +25,7 @@ public class GameManager {
     static Submarine submarineMovable;
     static List<Integer> levelList = Arrays.asList(R.raw.testlevel, R.raw.testlevel2);
     static int currentLevel = 0;
+    static Camera camera;
 
     public static void initGame(final GameRenderer renderer) {
         scene = new Scene(renderer);
@@ -35,7 +36,7 @@ public class GameManager {
         movablePrimitiveMap = new HashMap<>();
         movablePrimitiveMap.put(renderer.getProgramHandle("SimpleProgramHandle"), colPrimitive);
         movablePrimitiveMap.put(renderer.getProgramHandle("DefaultProgramHandle"), texPrimitive);
-
+        camera = new Camera();
         LevelLoader.loadLevel(GameActivity.getActivity(), R.raw.testlevel);
 
         InputController.addTouchHandler(new TouchHandler(1) {
@@ -56,7 +57,10 @@ public class GameManager {
             }
         });
         addGui();
-        Camera camera = new Camera();
+
+    }
+
+    public static void setCamera() {
         camera.setTarget(submarineMovable.getSprite());
         camera.setBounds(minX, maxX, minY, maxY);
         renderer.setCamera(camera);
@@ -165,13 +169,12 @@ public class GameManager {
     }
 
     private static void clearLevel() {
-        List<String> layerList = new ArrayList<>();
-        for (Map.Entry<String, Layer> entry : scene.getLayers().entrySet()) {
-            layerList.add(entry.getKey());
-        }
-        for (String layerName : layerList) {
-            scene.getLayer(layerName).clear();
-        }
+        scene.getLayer("landscape_back").clear();
+        scene.getLayer("mobs_back").clear();
+        scene.getLayer("landscape").clear();
+        scene.getLayer("submarines").clear();
+        scene.getLayer("ships_and_tanks").clear();
+        scene.getLayer("aircrafts").clear();
     }
 
     private static void nextLevel() {
