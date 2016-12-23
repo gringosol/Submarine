@@ -21,6 +21,7 @@ public class Sprite {
     float [] translateMatrix = new float[16];
     float [] rotateMatrix = new float[16];
     int texHandle;
+    Animation animation;
 
     public Sprite(GameRenderer renderer, int texResourseId, Map<Integer, Primitive> primitives, float width,
                   float height) {
@@ -99,5 +100,13 @@ public class Sprite {
 
     public float getScaleY() {
         return scaleY;
+    }
+
+    public void setAnimation(Animation animation) {
+        this.animation = animation;
+    }
+
+    public void playAnimation() {
+        animation.play(this);
     }
 }

@@ -63,6 +63,11 @@ public class GameManager {
         });
         addGui();
 
+        Sprite testAnimSprite = new Sprite(renderer, R.drawable.smile, movablePrimitiveMap, 0.5f, 0.5f);
+        Animation testAnimation = new Animation(200, true, R.drawable.smile, R.drawable.smile1);
+        testAnimSprite.setAnimation(testAnimation);
+        scene.getLayer("hud").addSprite(testAnimSprite);
+        testAnimSprite.playAnimation();
     }
 
     public static void setCamera() {
