@@ -1,14 +1,17 @@
 package com.gameinstance.submarine;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import com.gameinstance.submarine.utils.TextureHelper;
 
-import java.util.ArrayList;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 /**
  * Created by gringo on 11.12.2016 20:16.
  *
@@ -26,6 +29,8 @@ public class GameManager {
     static List<Integer> levelList = Arrays.asList(R.raw.testlevel, R.raw.testlevel2);
     static int currentLevel = 0;
     static Camera camera;
+    static int levelId = 0;
+    private static final String DEFAULT_SAVE = "quicksave";
 
     public static void initGame(final GameRenderer renderer) {
         scene = new Scene(renderer);
@@ -141,11 +146,27 @@ public class GameManager {
                 nextLevel();
             }
         }, new float[] {0.95f, -0.75f});
+        Button saveButton = new Button(renderer, new int [] {R.drawable.save, R.drawable.save1},
+                movablePrimitiveMap, 0.5f, 0.5f, new Button.ClickListener() {
+            @Override
+            public void onClick() {
+                saveGame(DEFAULT_SAVE);
+            }
+        }, new float[] {0.95f, 0.75f});
+        Button loadButton = new Button(renderer, new int [] {R.drawable.load, R.drawable.load1},
+                movablePrimitiveMap, 0.5f, 0.5f, new Button.ClickListener() {
+            @Override
+            public void onClick() {
+                loadGame(DEFAULT_SAVE);
+            }
+        }, new float[] {1.5f, 0.75f});
         Layer hud = scene.getLayer("hud");
         hud.addSprite(stopButton);
         hud.addSprite(emergeButton);
         hud.addSprite(plungeButton);
         hud.addSprite(nextLevelButton);
+        hud.addSprite(saveButton);
+        hud.addSprite(loadButton);
     }
 
     public static Scene getScene() {
@@ -192,5 +213,66 @@ public class GameManager {
             }
         });
         renderer.setPaused(false);
+    }
+
+    public static void setLevelId(int i) {
+        levelId = i;
+    }
+
+
+    public static void saveGame(String filename) {
+        JSONObject savedData = new JSONObject();
+        try {
+            savedData.put("levelId", levelId);
+            JSONObject submarine = new JSONObject();
+            submarine.put("x", submarineMovable.getSprite().getPosition()[0]);
+            submarine.put("y", submarineMovable.getSprite().getPosition()[1]);
+            submarine.put("angle", submarineMovable.getAngle());
+            savedData.put("submarine", submarine);
+        } catch (JSONException e) {
+            throw new RuntimeException("Ошибка сохраненя json");
+        }
+        String s  = savedData.toString();
+        SharedPreferences sharedPreferences = GameActivity.getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(filename, s);
+        editor.apply();
+    }
+
+    public static void loadGame(String filename) {
+        String s;
+        SharedPreferences sharedPreferences = GameActivity.getActivity().getPreferences(Context.MODE_PRIVATE);
+        s = sharedPreferences.getString(filename, "");
+        if (!s.equals("")) {
+            try {
+                JSONObject loadedData = new JSONObject(s);
+                final int levId = loadedData.getInt("levelId");
+                JSONObject submarine = loadedData.getJSONObject("submarine");
+                final float x = (float)submarine.getDouble("x");
+                final float y = (float)submarine.getDouble("y");
+                final float angle = (float)submarine.getDouble("angle");
+
+                renderer.getSurfaceView().queueEvent(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (levId != levelId) {
+                            clearLevel();
+                            currentLevel++;
+                            LevelLoader.loadLevel(GameActivity.getActivity(), levId);
+                        }
+                        submarineMovable.getSprite().setPosition(x, y);
+                        submarineMovable.setAngle(angle);
+                        submarineMovable.setTarget(new float[] {x, y});
+                    }
+                });
+
+            } catch (JSONException e) {
+                throw new RuntimeException("Ошибка чтения json");
+            }
+        }
+    }
+
+    public static Submarine getSubmarineMovable() {
+        return submarineMovable;
     }
 }

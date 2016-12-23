@@ -26,6 +26,7 @@ public class LevelLoader {
     static GameRenderer renderer;
 
     public static void loadLevel(Activity a, int levelId) {
+        GameManager.setLevelId(levelId);
         activity = a;
         res = activity.getResources();
         scene = GameManager.getScene();

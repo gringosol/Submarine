@@ -115,4 +115,8 @@ public class Movable {
         angle = a;
         sprite.setRotation(a * (180 / (float)Math.PI));
     }
+
+    public float getAngle() {
+        return angle;
+    }
 }
