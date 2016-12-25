@@ -31,11 +31,20 @@ public class Sprite {
         texHandle = TextureManager.getTextureHandle(renderer.getActivityContext(), texResourseId);
     }
 
-    public Sprite(GameRenderer renderer, int texHandle, Map<Integer, Primitive> primitives, float size,
-                  float [] position) {
+    public Sprite(int texHandle, Map<Integer, Primitive> primitives, float size,
+                   float [] position) {
         this.primitives = primitives;
         scaleX = size;
         scaleY = size;
+        this.texHandle = texHandle;
+        this.position = position;
+    }
+
+    public Sprite(int texHandle, Map<Integer, Primitive> primitives, float [] size,
+                  float [] position) {
+        this.primitives = primitives;
+        scaleX = size[0];
+        scaleY = size[1];
         this.texHandle = texHandle;
         this.position = position;
     }

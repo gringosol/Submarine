@@ -34,6 +34,7 @@ public class GameManager {
     static int levelId = 0;
     private static final String DEFAULT_SAVE = "quicksave";
     private static final float radarScale = 0.25f;
+    private static final int radarViewportSize = 512;
 
     private static boolean drawBackMap = false;
 
@@ -83,11 +84,25 @@ public class GameManager {
         Map<Integer, Primitive> primitiveMap =
                 Collections.singletonMap(renderer.getProgramHandle("DefaultProgramHandle"), viewPortPrimitive);
         if (drawBackMap) {
-            Sprite backMap = new Sprite(renderer, backTexHandle[0], primitiveMap, 1.0f, new float[]{-1.0f, 0.5f});
+            Sprite backMap = new Sprite(backTexHandle[0], primitiveMap, 1.0f, new float[]{-1.0f, 0.5f});
             scene.getLayer("hud").addSprite(backMap);
         }
-        Sprite radarViewPort = new Sprite(renderer, radarTexHandle[0], primitiveMap, 1.0f, new float[]{1.4f, 0.5f});
+        Sprite radarViewPort = new Sprite(radarTexHandle[0], primitiveMap, 1.0f, new float[]{1.4f, 0.5f});
         scene.getLayer("hud").addSprite(radarViewPort);
+        Sprite radarHudSprite = new Sprite(renderer, R.drawable.radarhud, primitiveMap,
+                2.0f / radarScale, 2.0f / radarScale);
+        scene.getLayer("radarhud").addSprite(radarHudSprite);
+        Sprite radarArrowSprite = new Sprite(renderer, R.drawable.radararrow, primitiveMap,
+                2.0f / radarScale, 2.0f / radarScale);
+        scene.getLayer("radarhud").addSprite(radarArrowSprite);
+        final Movable radarArrowMovable = new Movable(radarArrowSprite) {
+            @Override
+            public void update() {
+                setAngle(getAngle() - 0.5f);
+            }
+        };
+        scene.addMovable(radarArrowMovable);
+        radarArrowMovable.setCollide(false);
     }
 
     public static void setCamera() {
@@ -107,7 +122,7 @@ public class GameManager {
         float top = (m * unitSize) / 2.0f - 0.5f * unitSize;
         for (int j = 0; j < m; j++) {
             for (int i = 0; i < n; i++) {
-                sprites[j * n + i] = new Sprite(renderer, texHandles[j * n + i + 2], primitiveMap,
+                sprites[j * n + i] = new Sprite(texHandles[j * n + i + 2], primitiveMap,
                         unitSize, new float[] {left + i * unitSize, top - j * unitSize});
             }
         }
@@ -118,16 +133,24 @@ public class GameManager {
         return sprites;
     }
 
+    public static Sprite createRadarMap(int textureId, int pixelSize, Primitive primitive) {
+        Map<Integer, Primitive> primitiveMap = new HashMap<>();
+        primitiveMap.put(renderer.getProgramHandle("DefaultProgramHandle"), primitive);
+        int texHandle = TextureHelper.loadRadarTexture(renderer.getActivityContext(), textureId, pixelSize);
+        return new Sprite(texHandle, primitiveMap, new float[] {maxX - minX, maxY - minY},
+                new float[] {0, 0});
+    }
+
     private static void addLayers() {
         backTexHandle = renderer.createViewportTarget(256);
-        radarTexHandle = renderer.createViewportTarget(256);
+        radarTexHandle = renderer.createViewportTarget(radarViewportSize);
         scene.addLayerSet("BackBuffer", new Layerset(Arrays.asList("landscape_back", "mobs_back"),
                 backTexHandle, renderer.getDefaultProjectionMatrix(), new int[] {256, 256}, true));
         float [] radarProjMatrix = new float[16];
         Matrix.setIdentityM(radarProjMatrix, 0);
         Matrix.scaleM(radarProjMatrix, 0, radarScale, radarScale, 1.0f);
-        scene.addLayerSet("Radar", new Layerset(Arrays.asList("landscape", "submarines", "ships_and_tanks",
-                "aircrafts"), radarTexHandle, radarProjMatrix, new int[] {256, 256}, false));
+        scene.addLayerSet("Radar", new Layerset(Arrays.asList("radarmap", "radarhud", "submarines", "ships_and_tanks",
+                "aircrafts"), radarTexHandle, radarProjMatrix, new int[] {radarViewportSize, radarViewportSize}, false));
         scene.addLayerSet("Front", new Layerset(Arrays.asList("landscape", "submarines", "ships_and_tanks",
                 "aircrafts", "hud"), null, renderer.getDefaultProjectionMatrix(), null, false));
         Layer landscape_back = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
@@ -146,6 +169,11 @@ public class GameManager {
         Layer hud = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
         hud.isGui = true;
         scene.addLayer("hud", hud);
+        Layer radarmap = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
+        scene.addLayer("radarmap", radarmap);
+        Layer radarhud = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
+        radarhud.isGui = true;
+        scene.addLayer("radarhud", radarhud);
     }
 
     private static void addGui() {

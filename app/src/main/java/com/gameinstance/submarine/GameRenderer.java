@@ -107,14 +107,18 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                     entry.getValue().projectionMatrix;
             if (entry.getValue().collide) {
                 mScene.move();
-                updateCamera();
             }
-            mScene.draw(mViewMatrix, projectionMatrix, mGuiViewMatrix);
+            float [] viewMatrix = entry.getValue().viewMatrix;
+            updateCamera(1.0f / projectionMatrix[5], projectionMatrix[0] / projectionMatrix[5], viewMatrix);
+            if (entry.getValue().collide) {
+                mViewMatrix = viewMatrix;
+            }
+            mScene.draw(viewMatrix, projectionMatrix, mGuiViewMatrix);
             if (entry.getValue().collide && target != null) {
                 GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, target[0]);
                 ByteBuffer ib2 = backBufferData.get(target[0]);
                 GLES20.glReadPixels(0, 0, backWidth, bachHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, ib2);
-                mScene.collide(ib2.array(), bachHeight, aspect, mViewMatrix);
+                mScene.collide(ib2.array(), bachHeight, aspect, viewMatrix);
             }
             if (entry.getValue().target != null) {
                 GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
@@ -143,9 +147,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     public void setCamera(Camera camera) {
         this.camera = camera;
     }
-    public void updateCamera() {
+    public void updateCamera(float scale, float aspect, float [] viewMatrix) {
         if (camera != null) {
-            mViewMatrix = camera.update(mViewMatrix, aspect, 1.0f);
+            viewMatrix = camera.update(viewMatrix, aspect, scale);
         }
     }
 
@@ -250,5 +254,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     public static void setCurrentTexCoordBuffer(FloatBuffer fb) {
         currentTexCoordBuffer = fb;
+    }
+
+    public float getAspect() {
+        return aspect;
     }
 }

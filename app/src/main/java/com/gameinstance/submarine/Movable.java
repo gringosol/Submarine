@@ -13,12 +13,18 @@ public class Movable {
     float previousAngle = 0;
     float [] previousPosition = new float[] {0, 0};
     boolean motionEnabled;
+    boolean collide = true;
 
     public Movable(Sprite sprite) {
         this.sprite = sprite;
     }
 
+    public void update() {
+
+    }
+
     public void move() {
+        update();
         if (!motionEnabled)
             return;
         previousAngle = angle;
@@ -61,6 +67,8 @@ public class Movable {
     }
 
     public boolean collideWithLandscape(byte [] backBuffer, int scrH, float aspect, float [] vM) {
+        if (!collide)
+            return false;
         float radius = (float)Math.sqrt(sprite.getScaleX() * sprite.getScaleX()
                 + sprite.getScaleY() * sprite.getScaleY()) / 2.0f;
         float x = sprite.getPosition()[0] + vM[12];
@@ -118,5 +126,9 @@ public class Movable {
 
     public float getAngle() {
         return angle;
+    }
+
+    public void setCollide(boolean b) {
+        collide = b;
     }
 }

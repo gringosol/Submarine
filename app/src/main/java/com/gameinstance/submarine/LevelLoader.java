@@ -24,6 +24,7 @@ public class LevelLoader {
     static Primitive texPrimitive;
     static Scene scene;
     static GameRenderer renderer;
+    private static final int radarMapPixelSize = 512;
 
     public static void loadLevel(Activity a, int levelId) {
         GameManager.setLevelId(levelId);
@@ -57,6 +58,7 @@ public class LevelLoader {
             throws JSONException {
         Layer landscape_back = scene.getLayer("landscape_back");
         Layer landscape = scene.getLayer("landscape");
+        Layer radarmap = scene.getLayer("radarmap");
         String background =  jsonObject.getString("background");
         int backgroundR = res.getIdentifier(background, "drawable", activity.getPackageName());
         String foreground = jsonObject.getString("foreground");
@@ -67,6 +69,8 @@ public class LevelLoader {
         List<Sprite> landslist = new ArrayList<>(Arrays.asList(landscp));
         landscape_back.addSprites(landslistB);
         landscape.addSprites(landslist);
+        Sprite radarmapBackground = GameManager.createRadarMap(foregroundR, radarMapPixelSize, texPrimitive);
+        radarmap.addSprite(radarmapBackground);
     }
 
     private static void loadSubmarine(JSONObject jsonObject) throws JSONException {

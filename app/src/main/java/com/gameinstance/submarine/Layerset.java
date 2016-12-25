@@ -1,6 +1,7 @@
 package com.gameinstance.submarine;
 
-import java.util.ArrayList;
+import android.opengl.Matrix;
+
 import java.util.List;
 
 /**
@@ -12,6 +13,7 @@ public class Layerset {
     public List<String> layerNames;
     public int [] target = null;
     public float [] projectionMatrix;
+    public float [] viewMatrix = new float[16];
     public int [] viewport;
     boolean collide = false;
 
@@ -22,5 +24,6 @@ public class Layerset {
         this.projectionMatrix = projectionMatrix;
         this.viewport = viewport;
         this.collide = collide;
+        Matrix.setIdentityM(viewMatrix, 0);
     }
 }
