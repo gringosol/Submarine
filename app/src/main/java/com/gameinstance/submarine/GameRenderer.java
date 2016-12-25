@@ -9,6 +9,7 @@ import com.gameinstance.submarine.utils.RawResourceReader;
 import com.gameinstance.submarine.utils.ShaderUtils;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,6 +54,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     Scene mScene;
 
     GameSurfaceView view;
+
+    static FloatBuffer currentPosBuffer = null;
+    static FloatBuffer currentTexCoordBuffer = null;
 
     public Context getActivityContext() {
         return mActivityContext;
@@ -126,8 +130,14 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         return new Primitive(mPositionHandle, mTexCordHandle, mTextureUniformHandle, mTramsformMatrixHandle);
     }
 
+    public Primitive createPrimitiveTextured( float [] texcoord) {
+        return new Primitive(mPositionHandle, mTexCordHandle, mTextureUniformHandle,
+                mTramsformMatrixHandle, texcoord);
+    }
+
     public Primitive createPrimitiveColored() {
-        return new Primitive(mPositionHandle2, mTexCordHandle2, mTextureUniformHandle2, mTramsformMatrixHandle2, mColorHandle);
+        return new Primitive(mPositionHandle2, mTexCordHandle2, mTextureUniformHandle2,
+                mTramsformMatrixHandle2, mColorHandle, null);
     }
 
     public void setCamera(Camera camera) {
@@ -224,5 +234,21 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     public float [] getDefaultProjectionMatrix() {
         return mProjectionMatrix;
+    }
+
+    public static FloatBuffer getCurrentPosBuffer() {
+        return currentPosBuffer;
+    }
+
+    public static void setCurrentPosBuffer(FloatBuffer fb) {
+        currentPosBuffer = fb;
+    }
+
+    public static FloatBuffer getCurrentTexCoordBuffer() {
+        return currentTexCoordBuffer;
+    }
+
+    public static void setCurrentTexCoordBuffer(FloatBuffer fb) {
+        currentTexCoordBuffer = fb;
     }
 }

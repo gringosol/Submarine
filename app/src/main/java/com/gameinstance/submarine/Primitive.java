@@ -23,10 +23,14 @@ public class Primitive {
     int mTransformMatrixHandle;
     int mTextureUniformHandle;
     int mColorHandle = -1;
+    int mPositionHandle;
+    int mTexCoordHandle;
 
-    public Primitive(int mPositionHandle, int mTexCoordHandle, int mTextureUniformHandle, int mTransformMatrixHandle, int mColorHandle) {
+    public Primitive(int mPositionHandle, int mTexCoordHandle, int mTextureUniformHandle, int mTransformMatrixHandle, int mColorHandle, float [] texCoord) {
         this.mTextureUniformHandle = mTextureUniformHandle;
         this.mColorHandle = mColorHandle;
+        this.mPositionHandle = mPositionHandle;
+        this.mTexCoordHandle = mTexCoordHandle;
         final float[] positions =
                 {
                         -0.5f, 0.5f, 0f, 1.0f,
@@ -37,7 +41,7 @@ public class Primitive {
                         0.5f, -0.5f, 0, 1.0f,
                         0.5f, 0.5f, 0, 1.0f,
                 };
-        final float[] texCoordinateData = {
+        float[] texCoordinateData = texCoord !=  null ? texCoord : new float[] {
                         0.0f, 0.0f,
                         0.0f, 1.0f,
                         1.0f, 0.0f,
@@ -53,16 +57,17 @@ public class Primitive {
         this.mTransformMatrixHandle = mTransformMatrixHandle;
         mPositions.position(0);
         mTexCoordinates.position(0);
-        GLES20.glVertexAttribPointer(mPositionHandle, mPositionDataSize, GLES20.GL_FLOAT, false, 0, mPositions);
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
-        GLES20.glVertexAttribPointer(mTexCoordHandle, mTexCoordDataSize, GLES20.GL_FLOAT, false, 0, mTexCoordinates);
         GLES20.glDisable(GLES20.GL_DEPTH_TEST);
         GLES20.glEnable(GLES20.GL_BLEND);
         GLES20.glEnableVertexAttribArray(mTexCoordHandle);
     }
 
     public Primitive(int mPositionHandle, int mTexCoordHandle, int mTextureUniformHandle, int mTransformMatrixHandle) {
-        this(mPositionHandle, mTexCoordHandle, mTextureUniformHandle, mTransformMatrixHandle, -1);
+        this(mPositionHandle, mTexCoordHandle, mTextureUniformHandle, mTransformMatrixHandle, -1 , null);
+    }
+
+    public Primitive(int mPositionHandle, int mTexCoordHandle, int mTextureUniformHandle, int mTransformMatrixHandle, float [] texCoord) {
+        this(mPositionHandle, mTexCoordHandle, mTextureUniformHandle, mTransformMatrixHandle, -1 , texCoord);
     }
 
     public void draw(float [] projectionMatrix, float [] viewMatrix, float [] modelMatrix) {
@@ -73,6 +78,9 @@ public class Primitive {
         GLES20.glUniformMatrix4fv(mTransformMatrixHandle, 1, false, resultMatrix, 0);
         GLES20.glUniform1i(mTextureUniformHandle, 0);
         mTexCoordinates.position(0);
+        GLES20.glVertexAttribPointer(mPositionHandle, mPositionDataSize, GLES20.GL_FLOAT, false, 0, mPositions);
+        GLES20.glEnableVertexAttribArray(mPositionHandle);
+        GLES20.glVertexAttribPointer(mTexCoordHandle, mTexCoordDataSize, GLES20.GL_FLOAT, false, 0, mTexCoordinates);
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
     }
 
@@ -85,6 +93,15 @@ public class Primitive {
         GLES20.glUniform1i(mTextureUniformHandle, 0);
         GLES20.glUniform4fv(mColorHandle, 1, color, 0);
         mTexCoordinates.position(0);
+        if (GameRenderer.getCurrentPosBuffer() != mPositions) {
+            GameRenderer.setCurrentPosBuffer(mPositions);
+            GLES20.glVertexAttribPointer(mPositionHandle, mPositionDataSize, GLES20.GL_FLOAT, false, 0, mPositions);
+            GLES20.glEnableVertexAttribArray(mPositionHandle);
+        }
+        if (GameRenderer.getCurrentTexCoordBuffer() != mTexCoordinates) {
+            GameRenderer.setCurrentTexCoordBuffer(mTexCoordinates);
+            GLES20.glVertexAttribPointer(mTexCoordHandle, mTexCoordDataSize, GLES20.GL_FLOAT, false, 0, mTexCoordinates);
+        }
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
     }
 }

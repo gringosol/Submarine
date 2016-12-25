@@ -2,6 +2,7 @@ package com.gameinstance.submarine;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.opengl.Matrix;
 
 import com.gameinstance.submarine.utils.TextureHelper;
 
@@ -32,10 +33,12 @@ public class GameManager {
     static Camera camera;
     static int levelId = 0;
     private static final String DEFAULT_SAVE = "quicksave";
+    private static final float radarScale = 0.25f;
 
-    private static boolean drawBackMap = true;
+    private static boolean drawBackMap = false;
 
     static int [] backTexHandle;
+    static int [] radarTexHandle;
 
     public static void initGame(final GameRenderer renderer) {
         scene = new Scene(renderer);
@@ -68,12 +71,23 @@ public class GameManager {
         });
         addGui();
 
+
+        final float[] texCoordinateData =  {
+                0.0f, 1.0f,
+                0.0f, 0.0f,
+                1.0f, 1.0f,
+                0.0f, 0.0f,
+                1.0f, 0.0f,
+                1.0f, 1.0f};
+        Primitive viewPortPrimitive = renderer.createPrimitiveTextured(texCoordinateData);
+        Map<Integer, Primitive> primitiveMap =
+                Collections.singletonMap(renderer.getProgramHandle("DefaultProgramHandle"), viewPortPrimitive);
         if (drawBackMap) {
-            Map<Integer, Primitive> primitiveMap =
-                    Collections.singletonMap(renderer.getProgramHandle("DefaultProgramHandle"), texPrimitive);
             Sprite backMap = new Sprite(renderer, backTexHandle[0], primitiveMap, 1.0f, new float[]{-1.0f, 0.5f});
             scene.getLayer("hud").addSprite(backMap);
         }
+        Sprite radarViewPort = new Sprite(renderer, radarTexHandle[0], primitiveMap, 1.0f, new float[]{1.4f, 0.5f});
+        scene.getLayer("hud").addSprite(radarViewPort);
     }
 
     public static void setCamera() {
@@ -106,8 +120,14 @@ public class GameManager {
 
     private static void addLayers() {
         backTexHandle = renderer.createViewportTarget(256);
+        radarTexHandle = renderer.createViewportTarget(256);
         scene.addLayerSet("BackBuffer", new Layerset(Arrays.asList("landscape_back", "mobs_back"),
                 backTexHandle, renderer.getDefaultProjectionMatrix(), new int[] {256, 256}, true));
+        float [] radarProjMatrix = new float[16];
+        Matrix.setIdentityM(radarProjMatrix, 0);
+        Matrix.scaleM(radarProjMatrix, 0, radarScale, radarScale, 1.0f);
+        scene.addLayerSet("Radar", new Layerset(Arrays.asList("landscape", "submarines", "ships_and_tanks",
+                "aircrafts"), radarTexHandle, radarProjMatrix, new int[] {256, 256}, false));
         scene.addLayerSet("Front", new Layerset(Arrays.asList("landscape", "submarines", "ships_and_tanks",
                 "aircrafts", "hud"), null, renderer.getDefaultProjectionMatrix(), null, false));
         Layer landscape_back = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
@@ -130,49 +150,49 @@ public class GameManager {
 
     private static void addGui() {
         Button stopButton = new Button(renderer, new int [] {R.drawable.stop, R.drawable.stop1},
-                movablePrimitiveMap, 0.5f, 0.5f, new Button.ClickListener() {
+                movablePrimitiveMap, 0.25f, 0.25f, new Button.ClickListener() {
             @Override
             public void onClick() {
                 submarineMovable.setMotionEnabled(false);
             }
-        }, new float[] {1.5f, -0.75f});
+        }, new float[] {1.5f, -0.87f});
 
         Button emergeButton = new Button(renderer, new int [] {R.drawable.emerge, R.drawable.emerge1},
-                movablePrimitiveMap, 0.5f, 0.5f, new Button.ClickListener() {
+                movablePrimitiveMap, 0.25f, 0.25f, new Button.ClickListener() {
             @Override
             public void onClick() {
                 submarineMovable.emerge();
             }
-        }, new float[] {0.95f, 0.0f});
+        }, new float[] {0.95f, -0.5f});
 
         Button plungeButton = new Button(renderer, new int [] {R.drawable.plunge, R.drawable.plunge1},
-                movablePrimitiveMap, 0.5f, 0.5f, new Button.ClickListener() {
+                movablePrimitiveMap, 0.25f, 0.25f, new Button.ClickListener() {
             @Override
             public void onClick() {
                 submarineMovable.plunge();
             }
-        }, new float[] {1.5f, 0.0f});
+        }, new float[] {1.5f, -0.5f});
         Button nextLevelButton = new Button(renderer, new int [] {R.drawable.nextlevel, R.drawable.nextlevel1},
-                movablePrimitiveMap, 0.5f, 0.5f, new Button.ClickListener() {
+                movablePrimitiveMap, 0.25f, 0.25f, new Button.ClickListener() {
             @Override
             public void onClick() {
                 nextLevel();
             }
-        }, new float[] {0.95f, -0.75f});
+        }, new float[] {0.95f, -0.87f});
         Button saveButton = new Button(renderer, new int [] {R.drawable.save, R.drawable.save1},
-                movablePrimitiveMap, 0.5f, 0.5f, new Button.ClickListener() {
+                movablePrimitiveMap, 0.25f, 0.25f, new Button.ClickListener() {
             @Override
             public void onClick() {
                 saveGame(DEFAULT_SAVE);
             }
-        }, new float[] {0.95f, 0.75f});
+        }, new float[] {0.95f, -0.13f});
         Button loadButton = new Button(renderer, new int [] {R.drawable.load, R.drawable.load1},
-                movablePrimitiveMap, 0.5f, 0.5f, new Button.ClickListener() {
+                movablePrimitiveMap, 0.25f, 0.25f, new Button.ClickListener() {
             @Override
             public void onClick() {
                 loadGame(DEFAULT_SAVE);
             }
-        }, new float[] {1.5f, 0.75f});
+        }, new float[] {1.5f, -0.13f});
         Layer hud = scene.getLayer("hud");
         hud.addSprite(stopButton);
         hud.addSprite(emergeButton);
