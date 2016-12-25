@@ -9,7 +9,6 @@ import com.gameinstance.submarine.utils.RawResourceReader;
 import com.gameinstance.submarine.utils.ShaderUtils;
 
 import java.nio.ByteBuffer;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,14 +39,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     private float [] mViewMatrix =  new float[16];
     private float [] mGuiViewMatrix =  new float[16];
 
-    byte [] backBuffer;
-    int [] backTexHandle = new int[1];
-    int [] backBufferHandle = new int[1];
-    ByteBuffer ib;
-    ByteBuffer ib2;
-
-    Primitive primitiveTex;
-    Sprite backMap;
+    Map<Integer, int[]> backBufferHandles = new HashMap<>();
+    Map<Integer, ByteBuffer> backBufferData = new HashMap<>();
 
     int height;
     int width;
@@ -60,8 +53,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     Scene mScene;
 
     GameSurfaceView view;
-
-    private boolean drawBackMap = true;
 
     public Context getActivityContext() {
         return mActivityContext;
@@ -77,9 +68,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         initializeOglState();
         createShaders();
-        createBackBuffer();
         initializeMatrices();
-        createHelpers();
         GameManager.initGame(this);
         mScene = GameManager.getScene();
     }
@@ -97,26 +86,36 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 gl) {
         if (paused)
             return;
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, backBufferHandle[0]);
-        GLES20.glViewport(0, 0, backWidth, bachHeight);
-        GLES20.glClearColor(1.0f, 0, 0, 1.0f);
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-        mScene.move();
-        updateCamera();
-        mScene.setLayerSet("BackBuffer");
-        mScene.draw(mViewMatrix, mProjectionMatrix, mGuiViewMatrix);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, backTexHandle[0]);
-        GLES20.glReadPixels(0, 0, backWidth, bachHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, ib2);
-        mScene.collide(ib2.array(), bachHeight, aspect, mViewMatrix);
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-
-        GLES20.glViewport(0, 0, width, height);
-        GLES20.glClearColor(0, 0, 0, 0);
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-        mScene.setLayerSet("Front");
-        mScene.draw(mViewMatrix, mProjectionMatrix, mGuiViewMatrix);
-       if (drawBackMap)
-           drawBackBufferToScene();
+        for (Map.Entry<String, Layerset> entry : mScene.getLayerSets().entrySet())  {
+            int [] target = entry.getValue().target;
+            if (target != null) {
+                GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, backBufferHandles.get(target[0])[0]);
+            }
+            int [] viewport = entry.getValue().viewport;
+            if (viewport != null)
+                GLES20.glViewport(0, 0, viewport[0], viewport[1]);
+            else
+                GLES20.glViewport(0, 0, width, height);
+            GLES20.glClearColor(0, 0, 0, 0);
+            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+            mScene.setLayerSet(entry.getKey());
+            float [] projectionMatrix = entry.getValue().projectionMatrix == null ? mProjectionMatrix :
+                    entry.getValue().projectionMatrix;
+            if (entry.getValue().collide) {
+                mScene.move();
+                updateCamera();
+            }
+            mScene.draw(mViewMatrix, projectionMatrix, mGuiViewMatrix);
+            if (entry.getValue().collide && target != null) {
+                GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, target[0]);
+                ByteBuffer ib2 = backBufferData.get(target[0]);
+                GLES20.glReadPixels(0, 0, backWidth, bachHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, ib2);
+                mScene.collide(ib2.array(), bachHeight, aspect, mViewMatrix);
+            }
+            if (entry.getValue().target != null) {
+                GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+            }
+        }
     }
 
     public Integer getProgramHandle(String name) {
@@ -170,32 +169,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         mColorHandle = GLES20.glGetUniformLocation(mSimpleProgramHandle, "u_Color");
     }
 
-    private void createBackBuffer() {
-        backBuffer = new byte[backWidth * bachHeight * 4];
-        for (int i = 0; i < backBuffer.length; i++){
-            backBuffer[i] = (byte)255;
-        }
-        ib = ByteBuffer.wrap(backBuffer);
-        ib.position(0);
-        ib2 = ByteBuffer.wrap(new byte[backWidth * bachHeight * 4]);
-        ib2.position(0);
-        GLES20.glGenTextures(1, backTexHandle, 0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, backTexHandle[0]);
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D,GLES20.GL_TEXTURE_MIN_FILTER,GLES20.GL_NEAREST);
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D,GLES20.GL_TEXTURE_MAG_FILTER,GLES20.GL_NEAREST);
-        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, backWidth, bachHeight, 0,
-                GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, ib);
-        GLES20.glGenFramebuffers(1, backBufferHandle, 0);
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, backBufferHandle[0]);
-        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, backTexHandle[0], 0);
-    }
-
-    private void createHelpers() {
-        primitiveTex = new Primitive(mPositionHandle, mTexCordHandle, mTextureUniformHandle, mTramsformMatrixHandle);
-        Map<Integer, Primitive> primitiveMap = Collections.singletonMap(mDefaultProgramHandle, primitiveTex);
-        backMap = new Sprite(this, backTexHandle[0], primitiveMap, 1.0f, new float [] {-1.0f, 0.5f});
-    }
-
     private void initializeOglState() {
         GLES20.glClearColor(0, 0, 0, 0);
         GLES20.glDisable(GLES20.GL_DEPTH_TEST);
@@ -218,16 +191,38 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         return new float[] {xx1, y1};
     }
 
-    private void drawBackBufferToScene() {
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, backTexHandle[0]);
-        backMap.draw(mGuiViewMatrix, mProjectionMatrix, mDefaultProgramHandle);
-    }
-
     public void setPaused(boolean paused) {
         this.paused = paused;
     }
 
     public GameSurfaceView getSurfaceView() {
         return view;
+    }
+
+    public int [] createViewportTarget(int size) {
+        byte [] backBuffer = new byte[size * size * 4];
+        for (int i = 0; i < backBuffer.length; i++){
+            backBuffer[i] = (byte)255;
+        }
+        ByteBuffer ib = ByteBuffer.wrap(backBuffer);
+        ib.position(0);
+        int [] backTexHandle = new int[1];
+        GLES20.glGenTextures(1, backTexHandle, 0);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, backTexHandle[0]);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D,GLES20.GL_TEXTURE_MIN_FILTER,GLES20.GL_NEAREST);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D,GLES20.GL_TEXTURE_MAG_FILTER,GLES20.GL_NEAREST);
+        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, size, size, 0,
+                GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, ib);
+        int [] backBufferHandle = new int[1];
+        GLES20.glGenFramebuffers(1, backBufferHandle, 0);
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, backBufferHandle[0]);
+        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, backTexHandle[0], 0);
+        backBufferHandles.put(backTexHandle[0], backBufferHandle);
+        backBufferData.put(backTexHandle[0], ib);
+        return backTexHandle;
+    }
+
+    public float [] getDefaultProjectionMatrix() {
+        return mProjectionMatrix;
     }
 }

@@ -12,7 +12,7 @@ import java.util.Map;
  *
  */
 public class Scene {
-    Map<String, List<String>> layerSets = new HashMap<>();
+    Map<String, Layerset> layerSets = new HashMap<>();
     Map<String, Layer> layers = new HashMap<>();
     List<Movable> movables = new ArrayList<>();
     GameRenderer renderer;
@@ -22,7 +22,7 @@ public class Scene {
         this.renderer = renderer;
     }
 
-    public void addLayerSet(String setName, List<String> layerSet) {
+    public void addLayerSet(String setName, Layerset layerSet) {
         layerSets.put(setName, layerSet);
     }
 
@@ -37,7 +37,7 @@ public class Scene {
 
     public void draw(float [] viewMatrix, float [] projectionMatrix, float [] guiViewMatrix) {
         if (currentSet != null) {
-            for (String layerName : layerSets.get(currentSet)) {
+            for (String layerName : layerSets.get(currentSet).layerNames) {
                 if (layers.containsKey(layerName)) {
                     Layer layer = layers.get(layerName);
                     if (layer.isGui) {
@@ -86,5 +86,9 @@ public class Scene {
 
     public Map<String, Layer> getLayers() {
         return layers;
+    }
+
+    public Map<String, Layerset> getLayerSets() {
+        return layerSets;
     }
 }

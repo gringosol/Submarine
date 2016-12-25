@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,10 @@ public class GameManager {
     static Camera camera;
     static int levelId = 0;
     private static final String DEFAULT_SAVE = "quicksave";
+
+    private static boolean drawBackMap = true;
+
+    static int [] backTexHandle;
 
     public static void initGame(final GameRenderer renderer) {
         scene = new Scene(renderer);
@@ -63,11 +68,12 @@ public class GameManager {
         });
         addGui();
 
-        Sprite testAnimSprite = new Sprite(renderer, R.drawable.smile, movablePrimitiveMap, 0.5f, 0.5f);
-        Animation testAnimation = new Animation(200, true, R.drawable.smile, R.drawable.smile1);
-        testAnimSprite.setAnimation(testAnimation);
-        scene.getLayer("hud").addSprite(testAnimSprite);
-        testAnimSprite.playAnimation();
+        if (drawBackMap) {
+            Map<Integer, Primitive> primitiveMap =
+                    Collections.singletonMap(renderer.getProgramHandle("DefaultProgramHandle"), texPrimitive);
+            Sprite backMap = new Sprite(renderer, backTexHandle[0], primitiveMap, 1.0f, new float[]{-1.0f, 0.5f});
+            scene.getLayer("hud").addSprite(backMap);
+        }
     }
 
     public static void setCamera() {
@@ -99,9 +105,11 @@ public class GameManager {
     }
 
     private static void addLayers() {
-        scene.addLayerSet("BackBuffer", Arrays.asList("landscape_back", "mobs_back"));
-        scene.addLayerSet("Front", Arrays.asList("landscape", "submarines", "ships_and_tanks",
-                "aircrafts", "hud"));
+        backTexHandle = renderer.createViewportTarget(256);
+        scene.addLayerSet("BackBuffer", new Layerset(Arrays.asList("landscape_back", "mobs_back"),
+                backTexHandle, renderer.getDefaultProjectionMatrix(), new int[] {256, 256}, true));
+        scene.addLayerSet("Front", new Layerset(Arrays.asList("landscape", "submarines", "ships_and_tanks",
+                "aircrafts", "hud"), null, renderer.getDefaultProjectionMatrix(), null, false));
         Layer landscape_back = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
         scene.addLayer("landscape_back", landscape_back);
         Layer mobs_back = new Layer(renderer.getProgramHandle("SimpleProgramHandle"));
