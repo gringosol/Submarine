@@ -91,6 +91,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         if (paused)
             return;
         for (Map.Entry<String, Layerset> entry : mScene.getLayerSets().entrySet())  {
+            if (!entry.getValue().getEnabled())
+               continue;
             int [] target = entry.getValue().target;
             if (target != null) {
                 GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, backBufferHandles.get(target[0])[0]);

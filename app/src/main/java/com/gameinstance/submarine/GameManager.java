@@ -70,6 +70,9 @@ public class GameManager {
                 return false;
             }
         });
+        Sprite mainMenuBackSprite = new Sprite(renderer, R.drawable.submarinebackground, movablePrimitiveMap,
+                2.0f, 2.0f);
+        scene.getLayer("menu_pause").addSprite(mainMenuBackSprite);
         addGui();
 
 
@@ -151,6 +154,9 @@ public class GameManager {
         Matrix.scaleM(radarProjMatrix, 0, radarScale, radarScale, 1.0f);
         scene.addLayerSet("Radar", new Layerset(Arrays.asList("radarmap", "radarhud", "submarines", "ships_and_tanks",
                 "aircrafts"), radarTexHandle, radarProjMatrix, new int[] {radarViewportSize, radarViewportSize}, false));
+        scene.addLayerSet("Menu", new Layerset(Arrays.asList("menu_main", "menu_pause", "menu_options",
+                "menu_confirm_dialog"), null, renderer.getDefaultProjectionMatrix(), null, false));
+        scene.getLayerSets().get("Menu").setEnabled(false);
         scene.addLayerSet("Front", new Layerset(Arrays.asList("landscape", "submarines", "ships_and_tanks",
                 "aircrafts", "hud"), null, renderer.getDefaultProjectionMatrix(), null, false));
         Layer landscape_back = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
@@ -174,6 +180,18 @@ public class GameManager {
         Layer radarhud = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
         radarhud.isGui = true;
         scene.addLayer("radarhud", radarhud);
+        Layer menu_main = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
+        scene.addLayer("menu_main", menu_main);
+        menu_main.isGui = true;
+        Layer menu_pause = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
+        scene.addLayer("menu_pause", menu_pause);
+        menu_pause.isGui = true;
+        Layer menu_options = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
+        scene.addLayer("menu_options", menu_options);
+        menu_options.isGui = true;
+        Layer menu_confirm_dialog = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
+        scene.addLayer("menu_confirm_dialog", menu_confirm_dialog);
+        menu_confirm_dialog.isGui = true;
     }
 
     private static void addGui() {
@@ -221,6 +239,13 @@ public class GameManager {
                 loadGame(DEFAULT_SAVE);
             }
         }, new float[] {1.5f, -0.13f});
+        Button menuButton = new Button(renderer, new int [] {R.drawable.menubutton, R.drawable.menubutton1},
+                movablePrimitiveMap, 0.25f, 0.25f, new Button.ClickListener() {
+            @Override
+            public void onClick() {
+              showMenuPause(true);
+            }
+        }, new float[] {0.7f, -0.13f});
         Layer hud = scene.getLayer("hud");
         hud.addSprite(stopButton);
         hud.addSprite(emergeButton);
@@ -228,6 +253,16 @@ public class GameManager {
         hud.addSprite(nextLevelButton);
         hud.addSprite(saveButton);
         hud.addSprite(loadButton);
+        hud.addSprite(menuButton);
+        Button resumeButton = new Button(renderer, new int [] {R.drawable.tbbackground, R.drawable.tbbackground},
+                movablePrimitiveMap, 1.0f, 0.5f, new Button.ClickListener() {
+            @Override
+            public void onClick() {
+                showMenuPause(false);
+            }
+        }, new float[] {0.0f, 0.5f});
+        Layer menu_pause = scene.getLayer("menu_pause");
+        menu_pause.addSprite(resumeButton);
     }
 
     public static Scene getScene() {
@@ -335,5 +370,12 @@ public class GameManager {
 
     public static Submarine getSubmarineMovable() {
         return submarineMovable;
+    }
+
+    public static void showMenuPause(boolean show) {
+        scene.getLayerSets().get("Menu").setEnabled(show);
+        scene.getLayerSets().get("BackBuffer").setEnabled(!show);
+        scene.getLayerSets().get("Radar").setEnabled(!show);
+        scene.getLayerSets().get("Front").setEnabled(!show);
     }
 }

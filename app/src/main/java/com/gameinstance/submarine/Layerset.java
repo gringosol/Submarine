@@ -16,6 +16,7 @@ public class Layerset {
     public float [] viewMatrix = new float[16];
     public int [] viewport;
     boolean collide = false;
+    boolean enabled = true;
 
     public Layerset(List<String> layerNames, int[] target, float [] projectionMatrix,
                     int [] viewport, boolean collide) {
@@ -25,5 +26,13 @@ public class Layerset {
         this.viewport = viewport;
         this.collide = collide;
         Matrix.setIdentityM(viewMatrix, 0);
+    }
+
+    public void setEnabled(boolean e) {
+        enabled = e;
+    }
+
+    public boolean getEnabled() {
+        return enabled;
     }
 }
