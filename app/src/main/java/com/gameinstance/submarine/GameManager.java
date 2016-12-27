@@ -254,15 +254,55 @@ public class GameManager {
         hud.addSprite(saveButton);
         hud.addSprite(loadButton);
         hud.addSprite(menuButton);
-        Button resumeButton = new Button(renderer, new int [] {R.drawable.tbbackground, R.drawable.tbbackground},
-                movablePrimitiveMap, 1.0f, 0.5f, new Button.ClickListener() {
-            @Override
-            public void onClick() {
-                showMenuPause(false);
-            }
-        }, new float[] {0.0f, 0.5f});
         Layer menu_pause = scene.getLayer("menu_pause");
-        menu_pause.addSprite(resumeButton);
+        TextButton resumeButton = new TextButton(0.0f, 0.8f, 1.5f, 0.3f, new int[] {
+                R.drawable.tbbackground, R.drawable.tbbackground1}, "Продолжить", 0.2f, movablePrimitiveMap,
+                new Button.ClickListener() {
+                    @Override
+                    public void onClick() {
+                        showMenuPause(false);
+                    }
+                });
+        resumeButton.addToLayer(menu_pause);
+        TextButton svButton = new TextButton(0.0f, 0.4f, 1.5f, 0.3f, new int[] {
+                R.drawable.tbbackground, R.drawable.tbbackground1}, "Сохранить", 0.2f, movablePrimitiveMap,
+                new Button.ClickListener() {
+                    @Override
+                    public void onClick() {
+                        saveGame(DEFAULT_SAVE);
+                        showMenuPause(false);
+                    }
+                });
+        svButton.addToLayer(menu_pause);
+        TextButton ldButton = new TextButton(0.0f, 0.0f, 1.5f, 0.3f, new int[] {
+                R.drawable.tbbackground, R.drawable.tbbackground1}, "Загрузить", 0.2f, movablePrimitiveMap,
+                new Button.ClickListener() {
+                    @Override
+                    public void onClick() {
+                        loadGame(DEFAULT_SAVE);
+                        showMenuPause(false);
+                    }
+                });
+        ldButton.addToLayer(menu_pause);
+        TextButton optionsButton = new TextButton(0.0f, -0.4f, 1.5f, 0.3f, new int[] {
+                R.drawable.tbbackground, R.drawable.tbbackground1}, "Настройки", 0.2f, movablePrimitiveMap,
+                new Button.ClickListener() {
+                    @Override
+                    public void onClick() {
+
+                    }
+                });
+        optionsButton.addToLayer(menu_pause);
+        TextButton exitButton = new TextButton(0.0f, -0.8f, 1.5f, 0.3f, new int[] {
+                R.drawable.tbbackground, R.drawable.tbbackground1}, "Выход", 0.2f, movablePrimitiveMap,
+                new Button.ClickListener() {
+                    @Override
+                    public void onClick() {
+                        android.os.Process.killProcess(android.os.Process.myPid());
+                        System.exit(1);
+                    }
+                });
+        exitButton.addToLayer(menu_pause);
     }
 
     public static Scene getScene() {

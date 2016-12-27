@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class TextLine {
     Letter [] letters;
-    float charAspect = 0.7f;
+    static float charAspect = 0.7f;
     static Primitive primitive = null;
 
     public TextLine(String text, float [] pos, float lineHeight, GameRenderer renderer) {
@@ -36,5 +36,9 @@ public class TextLine {
         for (Letter letter : letters) {
             letter.draw(viewMatrix, projectionMatrix, programHandle);
         }
+    }
+
+    public static float getCharAspect() {
+        return charAspect;
     }
 }
