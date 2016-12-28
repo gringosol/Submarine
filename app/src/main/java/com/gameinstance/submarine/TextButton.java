@@ -13,7 +13,8 @@ public class TextButton {
     TextLine textLine;
 
     public TextButton(float x, float y, float w, float h, int [] texIds, String caption, float textSize,
-                      Map<Integer, Primitive> primitives, Button.ClickListener clickListener) {
+                      Map<Integer, Primitive> primitives, Button.ClickListener clickListener,
+                      int zOrder) {
         button = new Button(GameManager.getRenderer(), texIds, primitives, w, h, clickListener,
                 new float[] {x, y});
         float [] textPos = new float[2];
@@ -21,6 +22,7 @@ public class TextButton {
             TextLine.getCharAspect();
         textPos[1] = y;
         textLine = new TextLine(caption, textPos, textSize, GameManager.getRenderer());
+        button.setZOrder(zOrder);
     }
 
     public void addToLayer(Layer layer) {

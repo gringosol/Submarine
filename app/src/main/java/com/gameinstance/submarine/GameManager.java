@@ -262,7 +262,7 @@ public class GameManager {
                     public void onClick() {
                         showMenuPause(false);
                     }
-                });
+                }, -1);
         resumeButton.addToLayer(menu_pause);
         TextButton svButton = new TextButton(0.0f, 0.4f, 1.5f, 0.3f, new int[] {
                 R.drawable.tbbackground, R.drawable.tbbackground1}, "Сохранить", 0.2f, movablePrimitiveMap,
@@ -272,7 +272,7 @@ public class GameManager {
                         saveGame(DEFAULT_SAVE);
                         showMenuPause(false);
                     }
-                });
+                }, -1);
         svButton.addToLayer(menu_pause);
         TextButton ldButton = new TextButton(0.0f, 0.0f, 1.5f, 0.3f, new int[] {
                 R.drawable.tbbackground, R.drawable.tbbackground1}, "Загрузить", 0.2f, movablePrimitiveMap,
@@ -282,7 +282,7 @@ public class GameManager {
                         loadGame(DEFAULT_SAVE);
                         showMenuPause(false);
                     }
-                });
+                }, -1);
         ldButton.addToLayer(menu_pause);
         TextButton optionsButton = new TextButton(0.0f, -0.4f, 1.5f, 0.3f, new int[] {
                 R.drawable.tbbackground, R.drawable.tbbackground1}, "Настройки", 0.2f, movablePrimitiveMap,
@@ -291,7 +291,7 @@ public class GameManager {
                     public void onClick() {
 
                     }
-                });
+                }, -1);
         optionsButton.addToLayer(menu_pause);
         TextButton exitButton = new TextButton(0.0f, -0.8f, 1.5f, 0.3f, new int[] {
                 R.drawable.tbbackground, R.drawable.tbbackground1}, "Выход", 0.2f, movablePrimitiveMap,
@@ -301,7 +301,7 @@ public class GameManager {
                         android.os.Process.killProcess(android.os.Process.myPid());
                         System.exit(1);
                     }
-                });
+                }, -1);
         exitButton.addToLayer(menu_pause);
     }
 
@@ -417,5 +417,12 @@ public class GameManager {
         scene.getLayerSets().get("BackBuffer").setEnabled(!show);
         scene.getLayerSets().get("Radar").setEnabled(!show);
         scene.getLayerSets().get("Front").setEnabled(!show);
+        if (show) {
+            InputController.setMaxOrder(-1);
+            InputController.setMinOrder(-100);
+        } else {
+            InputController.setMaxOrder(100);
+            InputController.setMinOrder(0);
+        }
     }
 }

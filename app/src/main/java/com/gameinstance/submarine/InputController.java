@@ -9,11 +9,14 @@ import java.util.List;
  *
  */
 public class InputController {
+    static int minOrder = -100;
+    static int maxOrder = 100;
     static List<TouchHandler> touchHandlers = new ArrayList<>();
+
     public static void onScreenTouch(int x, int y) {
         boolean stop = false;
         for (TouchHandler handler : touchHandlers) {
-            if (!stop) {
+            if (!stop && handler.getOrder() >= minOrder && handler.getOrder() <= maxOrder) {
                stop = handler.touch(x, y);
             }
         }
@@ -22,7 +25,7 @@ public class InputController {
     public static void onScreenDown(int x, int y) {
         boolean stop = false;
         for (TouchHandler handler : touchHandlers) {
-            if (!stop) {
+            if (!stop && handler.getOrder() >= minOrder && handler.getOrder() <= maxOrder) {
                 stop = handler.onDown(x, y);
             }
         }
@@ -31,7 +34,7 @@ public class InputController {
     public static void onScreenUp(int x, int y) {
         boolean stop = false;
         for (TouchHandler handler : touchHandlers) {
-            if (!stop) {
+            if (!stop && handler.getOrder() >= minOrder && handler.getOrder() <= maxOrder) {
                 stop = handler.onUp(x, y);
             }
         }
@@ -42,5 +45,11 @@ public class InputController {
         Collections.sort(touchHandlers);
     }
 
+    public static void setMinOrder(int i) {
+        minOrder = i;
+    }
 
+    public static void setMaxOrder(int i) {
+        maxOrder = i;
+    }
 }

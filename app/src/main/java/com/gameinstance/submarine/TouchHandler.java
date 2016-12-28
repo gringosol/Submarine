@@ -21,4 +21,12 @@ public abstract class TouchHandler implements Comparable<TouchHandler> {
     public int compareTo(TouchHandler another) {
         return order - another.order;
     }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int i) {
+        order = i;
+    }
 }

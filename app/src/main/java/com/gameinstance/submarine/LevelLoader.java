@@ -51,6 +51,8 @@ public class LevelLoader {
             throw new RuntimeException("Ошибка чтения json уровня");
         }
         GameManager.setCamera();
+        InputController.setMaxOrder(100);
+        InputController.setMinOrder(0);
     }
 
 

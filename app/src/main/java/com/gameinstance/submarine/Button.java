@@ -76,4 +76,8 @@ public class Button extends Sprite {
     public interface ClickListener {
         void onClick();
     }
+
+    public void setZOrder(int i) {
+        touchHandler.setOrder(i);
+    }
 }
