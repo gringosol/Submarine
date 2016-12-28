@@ -17,6 +17,7 @@ public class Layer {
     List<TextLine> textLines = new ArrayList<>();
     float [] color = null;
     public boolean isGui = false;
+    public boolean visible = true;
 
     public Layer(int programHandle) {
         this.programHandle = programHandle;

@@ -1,6 +1,9 @@
-package com.gameinstance.submarine;
+package com.gameinstance.submarine.ui;
 
-import com.gameinstance.submarine.ui.TextLine;
+import com.gameinstance.submarine.GameManager;
+import com.gameinstance.submarine.Layer;
+import com.gameinstance.submarine.Primitive;
+import com.gameinstance.submarine.Button;
 
 import java.util.Map;
 

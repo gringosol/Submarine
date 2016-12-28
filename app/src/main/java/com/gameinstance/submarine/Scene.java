@@ -40,10 +40,12 @@ public class Scene {
             for (String layerName : layerSets.get(currentSet).layerNames) {
                 if (layers.containsKey(layerName)) {
                     Layer layer = layers.get(layerName);
-                    if (layer.isGui) {
-                        layer.drawLayer(guiViewMatrix, projectionMatrix);
-                    } else {
-                        layer.drawLayer(viewMatrix, projectionMatrix);
+                    if (layer.visible) {
+                        if (layer.isGui) {
+                            layer.drawLayer(guiViewMatrix, projectionMatrix);
+                        } else {
+                            layer.drawLayer(viewMatrix, projectionMatrix);
+                        }
                     }
                 }
             }

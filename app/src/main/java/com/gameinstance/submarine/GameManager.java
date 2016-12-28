@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.opengl.Matrix;
 
+import com.gameinstance.submarine.ui.ComboBox;
+import com.gameinstance.submarine.ui.TextButton;
 import com.gameinstance.submarine.utils.TextureHelper;
 
 import org.json.JSONException;
@@ -33,6 +35,7 @@ public class GameManager {
     static Camera camera;
     static int levelId = 0;
     private static final String DEFAULT_SAVE = "quicksave";
+    private static final String OPT_LANGUAGE = "option_language";
     private static final float radarScale = 0.25f;
     private static final int radarViewportSize = 512;
 
@@ -41,7 +44,10 @@ public class GameManager {
     static int [] backTexHandle;
     static int [] radarTexHandle;
 
+    static String locale = "en_US";
+
     public static void initGame(final GameRenderer renderer) {
+        detectLocale();
         scene = new Scene(renderer);
         GameManager.renderer = renderer;
         addLayers();
@@ -70,9 +76,7 @@ public class GameManager {
                 return false;
             }
         });
-        Sprite mainMenuBackSprite = new Sprite(renderer, R.drawable.submarinebackground, movablePrimitiveMap,
-                2.0f, 2.0f);
-        scene.getLayer("menu_pause").addSprite(mainMenuBackSprite);
+
         addGui();
 
 
@@ -183,18 +187,28 @@ public class GameManager {
         Layer menu_main = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
         scene.addLayer("menu_main", menu_main);
         menu_main.isGui = true;
+        menu_main.visible = false;
         Layer menu_pause = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
         scene.addLayer("menu_pause", menu_pause);
         menu_pause.isGui = true;
+        menu_pause.visible = false;
         Layer menu_options = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
         scene.addLayer("menu_options", menu_options);
         menu_options.isGui = true;
+        menu_options.visible = false;
         Layer menu_confirm_dialog = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
         scene.addLayer("menu_confirm_dialog", menu_confirm_dialog);
         menu_confirm_dialog.isGui = true;
+        menu_confirm_dialog.visible = false;
     }
 
     private static void addGui() {
+        Sprite mainMenuBackSprite = new Sprite(renderer, R.drawable.submarinebackground, movablePrimitiveMap,
+                2.0f, 2.0f);
+        scene.getLayer("menu_pause").addSprite(mainMenuBackSprite);
+        Sprite optionsMenuBackSprite = new Sprite(renderer, R.drawable.optionsbackground, movablePrimitiveMap,
+                2.0f, 2.0f);
+        scene.getLayer("menu_options").addSprite(optionsMenuBackSprite);
         Button stopButton = new Button(renderer, new int [] {R.drawable.stop, R.drawable.stop1},
                 movablePrimitiveMap, 0.25f, 0.25f, new Button.ClickListener() {
             @Override
@@ -289,7 +303,7 @@ public class GameManager {
                 new Button.ClickListener() {
                     @Override
                     public void onClick() {
-
+                        showMenuOptions(true);
                     }
                 }, -1);
         optionsButton.addToLayer(menu_pause);
@@ -303,6 +317,41 @@ public class GameManager {
                     }
                 }, -1);
         exitButton.addToLayer(menu_pause);
+
+        Layer menu_options = scene.getLayer("menu_options");
+        TextButton resumeFromOptionsButton = new TextButton(0.0f, 0.8f, 1.5f, 0.3f, new int[] {
+                R.drawable.tbbackground, R.drawable.tbbackground1}, "Назад", 0.2f, movablePrimitiveMap,
+                new Button.ClickListener() {
+                    @Override
+                    public void onClick() {
+                        showMenuOptions(false);
+                    }
+                }, -2);
+        resumeFromOptionsButton.addToLayer(menu_options);
+
+        ComboBox languageComboBox = new ComboBox(0, 0.4f, 1.5f, 0.3f, new String[] {"Русский", "English", "Polski"}, 0.2f, -2) {
+            @Override
+            public void onValueChange(String newValue) {
+                setOption(OPT_LANGUAGE, newValue);
+            }
+        };
+        languageComboBox.addToLayer(menu_options);
+        String langOption = getOption(OPT_LANGUAGE);
+        if (!"".equals(langOption)) {
+            languageComboBox.setValue(langOption);
+        } else {
+            switch (locale) {
+                case "ru_RU":
+                    languageComboBox.setValue("Русский");
+                    break;
+                case "en_US":
+                    languageComboBox.setValue("English");
+                    break;
+                case "pl_PL":
+                    languageComboBox.setValue("Polski");
+                    break;
+            }
+        }
     }
 
     public static Scene getScene() {
@@ -419,10 +468,41 @@ public class GameManager {
         scene.getLayerSets().get("Front").setEnabled(!show);
         if (show) {
             InputController.setMaxOrder(-1);
-            InputController.setMinOrder(-100);
+            InputController.setMinOrder(-1);
+            scene.getLayer("menu_pause").visible = true;
         } else {
             InputController.setMaxOrder(100);
             InputController.setMinOrder(0);
+            scene.getLayer("menu_pause").visible = false;
         }
+    }
+
+    public static void showMenuOptions(boolean show) {
+        if (show) {
+            InputController.setMaxOrder(-2);
+            InputController.setMinOrder(-2);
+            scene.getLayer("menu_options").visible = true;
+        } else {
+            InputController.setMaxOrder(-1);
+            InputController.setMinOrder(-1);
+            scene.getLayer("menu_options").visible = false;
+        }
+    }
+
+    public static void setOption(String optionName, String optionValue) {
+        SharedPreferences sharedPreferences = GameActivity.getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(optionName, optionValue);
+        editor.apply();
+    }
+
+    public static String getOption(String optionName) {
+        String s;
+        SharedPreferences sharedPreferences = GameActivity.getActivity().getPreferences(Context.MODE_PRIVATE);
+        return sharedPreferences.getString(optionName, "");
+    }
+
+    public static void detectLocale() {
+                locale = GameActivity.getActivity().getResources().getConfiguration().locale.toString();
     }
 }
