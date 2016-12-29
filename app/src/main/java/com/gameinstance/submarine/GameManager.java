@@ -6,6 +6,7 @@ import android.opengl.Matrix;
 
 import com.gameinstance.submarine.ui.ComboBox;
 import com.gameinstance.submarine.ui.TextButton;
+import com.gameinstance.submarine.ui.TextLine;
 import com.gameinstance.submarine.utils.TextureHelper;
 
 import org.json.JSONException;
@@ -36,6 +37,7 @@ public class GameManager {
     static int levelId = 0;
     private static final String DEFAULT_SAVE = "quicksave";
     private static final String OPT_LANGUAGE = "option_language";
+    private static final String OPT_VOLUME = "option_volume";
     private static final float radarScale = 0.25f;
     private static final int radarViewportSize = 512;
 
@@ -207,7 +209,7 @@ public class GameManager {
                 2.0f, 2.0f);
         scene.getLayer("menu_pause").addSprite(mainMenuBackSprite);
         Sprite optionsMenuBackSprite = new Sprite(renderer, R.drawable.optionsbackground, movablePrimitiveMap,
-                2.0f, 2.0f);
+                4.0f, 2.0f);
         scene.getLayer("menu_options").addSprite(optionsMenuBackSprite);
         Button stopButton = new Button(renderer, new int [] {R.drawable.stop, R.drawable.stop1},
                 movablePrimitiveMap, 0.25f, 0.25f, new Button.ClickListener() {
@@ -352,6 +354,24 @@ public class GameManager {
                     break;
             }
         }
+        Slider volumeSlider = new Slider(0, 0, 1.5f, 0.3f, -2) {
+            @Override
+            public void onValueChange(Float value) {
+                setOption(OPT_VOLUME, value.toString());
+            }
+        };
+        volumeSlider.addToLayer(menu_options);
+        String volumeOption = getOption(OPT_VOLUME);
+        if (!"".equals(volumeOption)) {
+            volumeSlider.setValue(Float.parseFloat(volumeOption));
+        }
+
+        TextLine langTextLine = new TextLine("Язык", new float[] {-1.8f, 0.4f}, 0.2f,
+                GameManager.getRenderer());
+        menu_options.addTextline(langTextLine);
+        TextLine volumeTextLine = new TextLine("Громкость", new float[] {-1.8f, 0.0f}, 0.2f,
+                GameManager.getRenderer());
+        menu_options.addTextline(volumeTextLine);
     }
 
     public static Scene getScene() {
