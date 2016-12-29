@@ -40,8 +40,10 @@ public class GameManager {
     private static final String OPT_VOLUME = "option_volume";
     private static final float radarScale = 0.25f;
     private static final int radarViewportSize = 512;
+    private static boolean isMainMenu;
 
     private static boolean drawBackMap = false;
+    private static boolean startFromMenu = true;
 
     static int [] backTexHandle;
     static int [] radarTexHandle;
@@ -49,6 +51,7 @@ public class GameManager {
     static String locale = "en_US";
 
     public static void initGame(final GameRenderer renderer) {
+        isMainMenu = startFromMenu;
         detectLocale();
         scene = new Scene(renderer);
         GameManager.renderer = renderer;
@@ -59,7 +62,13 @@ public class GameManager {
         movablePrimitiveMap.put(renderer.getProgramHandle("SimpleProgramHandle"), colPrimitive);
         movablePrimitiveMap.put(renderer.getProgramHandle("DefaultProgramHandle"), texPrimitive);
         camera = new Camera();
-        LevelLoader.loadLevel(GameActivity.getActivity(), R.raw.testlevel);
+
+        if (!startFromMenu) { //todo - test entity, exclude if branch in future
+            LevelLoader.loadLevel(GameActivity.getActivity(), R.raw.testlevel);
+        } else {
+            InputController.setMinOrder(-10);
+            InputController.setMaxOrder(-10);
+        }
 
         InputController.addTouchHandler(new TouchHandler(1) {
             @Override
@@ -162,9 +171,12 @@ public class GameManager {
                 "aircrafts"), radarTexHandle, radarProjMatrix, new int[] {radarViewportSize, radarViewportSize}, false));
         scene.addLayerSet("Menu", new Layerset(Arrays.asList("menu_main", "menu_pause", "menu_options",
                 "menu_confirm_dialog"), null, renderer.getDefaultProjectionMatrix(), null, false));
-        scene.getLayerSets().get("Menu").setEnabled(false);
         scene.addLayerSet("Front", new Layerset(Arrays.asList("landscape", "submarines", "ships_and_tanks",
                 "aircrafts", "hud"), null, renderer.getDefaultProjectionMatrix(), null, false));
+        scene.getLayerSets().get("Menu").setEnabled(startFromMenu);
+        scene.getLayerSets().get("BackBuffer").setEnabled(!startFromMenu);
+        scene.getLayerSets().get("Radar").setEnabled(!startFromMenu);
+        scene.getLayerSets().get("Front").setEnabled(!startFromMenu);
         Layer landscape_back = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
         scene.addLayer("landscape_back", landscape_back);
         Layer mobs_back = new Layer(renderer.getProgramHandle("SimpleProgramHandle"));
@@ -189,7 +201,7 @@ public class GameManager {
         Layer menu_main = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
         scene.addLayer("menu_main", menu_main);
         menu_main.isGui = true;
-        menu_main.visible = false;
+        menu_main.visible = startFromMenu;
         Layer menu_pause = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
         scene.addLayer("menu_pause", menu_pause);
         menu_pause.isGui = true;
@@ -295,8 +307,8 @@ public class GameManager {
                 new Button.ClickListener() {
                     @Override
                     public void onClick() {
-                        loadGame(DEFAULT_SAVE);
                         showMenuPause(false);
+                        loadGame(DEFAULT_SAVE);
                     }
                 }, -1);
         ldButton.addToLayer(menu_pause);
@@ -314,8 +326,7 @@ public class GameManager {
                 new Button.ClickListener() {
                     @Override
                     public void onClick() {
-                        android.os.Process.killProcess(android.os.Process.myPid());
-                        System.exit(1);
+                        showConfirmDialog(true);
                     }
                 }, -1);
         exitButton.addToLayer(menu_pause);
@@ -372,6 +383,78 @@ public class GameManager {
         TextLine volumeTextLine = new TextLine("Громкость", new float[] {-1.8f, 0.0f}, 0.2f,
                 GameManager.getRenderer());
         menu_options.addTextline(volumeTextLine);
+
+
+
+        Layer menu_main = scene.getLayer("menu_main");
+        TextButton newGameButton = new TextButton(0.0f, 0.8f, 1.5f, 0.3f, new int[] {
+                R.drawable.tbbackground, R.drawable.tbbackground1}, "Новая игра", 0.2f, movablePrimitiveMap,
+                new Button.ClickListener() {
+                    @Override
+                    public void onClick() {
+                        startNewGame();
+                    }
+                }, -10);
+        newGameButton.addToLayer(menu_main);
+        TextButton ldButton1 = new TextButton(0.0f, 0.4f, 1.5f, 0.3f, new int[] {
+                R.drawable.tbbackground, R.drawable.tbbackground1}, "Загрузить", 0.2f, movablePrimitiveMap,
+                new Button.ClickListener() {
+                    @Override
+                    public void onClick() {
+                        loadGame(DEFAULT_SAVE);
+                        showMainMenu(false);//todo replace
+                    }
+                }, -10);
+        ldButton1.addToLayer(menu_main);
+        TextButton optionsButton1 = new TextButton(0.0f, 0.0f, 1.5f, 0.3f, new int[] {
+                R.drawable.tbbackground, R.drawable.tbbackground1}, "Настройки", 0.2f, movablePrimitiveMap,
+                new Button.ClickListener() {
+                    @Override
+                    public void onClick() {
+                        showMenuOptions(true);
+                    }
+                }, -10);
+        optionsButton1.addToLayer(menu_main);
+        TextButton exitButton1 = new TextButton(0.0f, -0.4f, 1.5f, 0.3f, new int[] {
+                R.drawable.tbbackground, R.drawable.tbbackground1}, "Выход", 0.2f, movablePrimitiveMap,
+                new Button.ClickListener() {
+                    @Override
+                    public void onClick() {
+                        android.os.Process.killProcess(android.os.Process.myPid());
+                        System.exit(1);
+                    }
+                }, -10);
+        exitButton1.addToLayer(menu_main);
+
+
+        Layer menu_confirm_dialog = scene.getLayer("menu_confirm_dialog");
+        menu_confirm_dialog.addSprite(mainMenuBackSprite);
+        TextButton yesButton = new TextButton(-1.0f, 0.0f, 1.5f, 0.3f, new int[] {
+                R.drawable.tbbackground, R.drawable.tbbackground1}, "Да", 0.2f, movablePrimitiveMap,
+                new Button.ClickListener() {
+                    @Override
+                    public void onClick() {
+                        renderer.getSurfaceView().queueEvent(new Runnable() {
+                            @Override
+                            public void run() {
+                                showConfirmDialog(false);
+                                clearLevel();
+                                showMainMenu(true);
+                            }
+                        });
+                    }
+                }, -11);
+        yesButton.addToLayer(menu_confirm_dialog);
+        TextButton noButton = new TextButton(1.0f, 0.0f, 1.5f, 0.3f, new int[] {
+                R.drawable.tbbackground, R.drawable.tbbackground1}, "Нет", 0.2f, movablePrimitiveMap,
+                new Button.ClickListener() {
+                    @Override
+                    public void onClick() {
+                        showConfirmDialog(false);
+                    }
+                }, -11);
+        noButton.addToLayer(menu_confirm_dialog);
+
     }
 
     public static Scene getScene() {
@@ -445,6 +528,7 @@ public class GameManager {
     }
 
     public static void loadGame(String filename) {
+        isMainMenu = false;
         String s;
         SharedPreferences sharedPreferences = GameActivity.getActivity().getPreferences(Context.MODE_PRIVATE);
         s = sharedPreferences.getString(filename, "");
@@ -497,14 +581,69 @@ public class GameManager {
         }
     }
 
+    public static void showConfirmDialog(boolean show) {
+        if (show) {
+            InputController.setMaxOrder(-11);
+            InputController.setMinOrder(-11);
+            scene.getLayer("menu_confirm_dialog").visible = true;
+        } else {
+            InputController.setMaxOrder(-10);
+            InputController.setMinOrder(-10);
+            scene.getLayer("menu_confirm_dialog").visible = false;
+        }
+    }
+
+    public static void showMainMenu(boolean show) {
+        scene.getLayerSets().get("Menu").setEnabled(show);
+        scene.getLayerSets().get("BackBuffer").setEnabled(!show);
+        scene.getLayerSets().get("Radar").setEnabled(!show);
+        scene.getLayerSets().get("Front").setEnabled(!show);
+        if (show) {
+            isMainMenu = true;
+            InputController.setMaxOrder(-10);
+            InputController.setMinOrder(-10);
+            scene.getLayer("menu_main").visible = true;
+            scene.getLayer("menu_pause").visible = false;
+        } else {
+            isMainMenu = false;
+            InputController.setMaxOrder(100);
+            InputController.setMinOrder(0);
+            scene.getLayer("menu_main").visible = false;
+        }
+    }
+
+    public static void startNewGame() {
+        isMainMenu = false;
+        renderer.getSurfaceView().queueEvent( new Runnable() {
+                @Override
+                public void run() {
+                    renderer.setPaused(true);
+                    scene.getLayerSets().get("Menu").setEnabled(false);
+                    scene.getLayerSets().get("BackBuffer").setEnabled(true);
+                    scene.getLayerSets().get("Radar").setEnabled(true);
+                    scene.getLayerSets().get("Front").setEnabled(true);
+                    InputController.setMaxOrder(100);
+                    InputController.setMinOrder(0);
+                    scene.getLayer("menu_main").visible = false;
+                    LevelLoader.loadLevel(GameActivity.getActivity(), levelList.get(0));
+                    renderer.setPaused(false);
+                }
+        } );
+    }
+
     public static void showMenuOptions(boolean show) {
         if (show) {
             InputController.setMaxOrder(-2);
             InputController.setMinOrder(-2);
             scene.getLayer("menu_options").visible = true;
         } else {
-            InputController.setMaxOrder(-1);
-            InputController.setMinOrder(-1);
+            if (isMainMenu) {
+                InputController.setMaxOrder(-10);
+                InputController.setMinOrder(-10);
+            } else {
+                InputController.setMaxOrder(-1);
+                InputController.setMinOrder(-1);
+            }
             scene.getLayer("menu_options").visible = false;
         }
     }
@@ -517,7 +656,6 @@ public class GameManager {
     }
 
     public static String getOption(String optionName) {
-        String s;
         SharedPreferences sharedPreferences = GameActivity.getActivity().getPreferences(Context.MODE_PRIVATE);
         return sharedPreferences.getString(optionName, "");
     }

@@ -96,13 +96,15 @@ public class GameRenderer implements GLSurfaceView.Renderer {
             int [] target = entry.getValue().target;
             if (target != null) {
                 GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, backBufferHandles.get(target[0])[0]);
+            } else {
+                GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
             }
             int [] viewport = entry.getValue().viewport;
             if (viewport != null)
                 GLES20.glViewport(0, 0, viewport[0], viewport[1]);
             else
                 GLES20.glViewport(0, 0, width, height);
-            GLES20.glClearColor(0, 0, 0, 0);
+            GLES20.glClearColor(0, 0, 1, 0);
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
             mScene.setLayerSet(entry.getKey());
             float [] projectionMatrix = entry.getValue().projectionMatrix == null ? mProjectionMatrix :
