@@ -14,13 +14,16 @@ public class Movable {
     float [] previousPosition = new float[] {0, 0};
     boolean motionEnabled;
     boolean collide = true;
+    MobTask currentTask = null;
 
     public Movable(Sprite sprite) {
         this.sprite = sprite;
     }
 
     public void update() {
-
+        if (currentTask != null) {
+            currentTask.run();
+        }
     }
 
     public void move() {
@@ -64,6 +67,10 @@ public class Movable {
         target[0] = newTarget[0];
         target[1] = newTarget[1];
         motionEnabled = true;
+    }
+
+    public float [] getTarget() {
+        return target;
     }
 
     public boolean collideWithLandscape(byte [] backBuffer, int scrH, float aspect, float [] vM) {
@@ -130,5 +137,9 @@ public class Movable {
 
     public void setCollide(boolean b) {
         collide = b;
+    }
+
+    public void setCurrentTask(MobTask task) {
+        currentTask = task;
     }
 }
