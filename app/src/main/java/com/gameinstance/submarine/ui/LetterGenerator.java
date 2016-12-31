@@ -48,4 +48,8 @@ public class LetterGenerator {
         charMap.put(ch, th);
         return th;
     }
+
+    public static void init() {
+        charMap.clear();
+    }
 }

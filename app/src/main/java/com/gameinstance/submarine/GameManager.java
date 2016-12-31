@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.opengl.Matrix;
 
 import com.gameinstance.submarine.ui.ComboBox;
+import com.gameinstance.submarine.ui.LetterGenerator;
 import com.gameinstance.submarine.ui.TextButton;
 import com.gameinstance.submarine.ui.TextLine;
 import com.gameinstance.submarine.utils.TextureHelper;
@@ -56,6 +57,8 @@ public class GameManager {
         scene = new Scene(renderer);
         GameManager.renderer = renderer;
         addLayers();
+        TextureManager.init();
+        LetterGenerator.init();
         texPrimitive = renderer.createPrimitiveTextured();
         Primitive colPrimitive = renderer.createPrimitiveColored();
         movablePrimitiveMap = new HashMap<>();

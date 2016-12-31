@@ -24,4 +24,8 @@ public class TextureManager {
             return texHandle;
         }
     }
+
+    public static void init() {
+        textureHandles.clear();
+    }
 }
