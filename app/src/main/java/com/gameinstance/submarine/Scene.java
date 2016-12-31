@@ -53,7 +53,12 @@ public class Scene {
     }
 
     public void addMovable(Movable movable) {
-        movables.add(movable);
+        if (!movables.contains(movable))
+            movables.add(movable);
+    }
+
+    public void removeMovable(Movable movable){
+        movables.remove(movable);
     }
 
     public void move() {

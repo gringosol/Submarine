@@ -24,7 +24,12 @@ public class Layer {
     }
 
     public void addSprite(Sprite sprite) {
-        sprites.add(sprite);
+        if (!sprites.contains(sprite))
+            sprites.add(sprite);
+    }
+
+    public void removeSprite(Sprite sprite) {
+        sprites.remove(sprite);
     }
 
     public void addSprites(List<Sprite> sprites) {

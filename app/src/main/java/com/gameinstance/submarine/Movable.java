@@ -15,12 +15,16 @@ public class Movable {
     boolean motionEnabled;
     boolean collide = true;
     MobTask currentTask = null;
+    Sprite viewCircle = null;
 
     public Movable(Sprite sprite) {
         this.sprite = sprite;
     }
 
     public void update() {
+        if (viewCircle != null) {
+            viewCircle.setPosition(sprite.getPosition()[0], sprite.getPosition()[1]);
+        }
         if (currentTask != null) {
             currentTask.run();
         }
@@ -141,5 +145,23 @@ public class Movable {
 
     public void setCurrentTask(MobTask task) {
         currentTask = task;
+    }
+
+    public void setViewCircleVisible(boolean b, Layer layer) {
+        if (viewCircle != null) {
+            if (b) {
+               layer.addSprite(viewCircle);
+            } else {
+                layer.removeSprite(viewCircle);
+            }
+        }
+    }
+
+    public void setViewCircle(Sprite sprite) {
+        this.viewCircle = sprite;
+    }
+
+    public void setViewRadius(float r){
+        viewCircle.setScale(r, r);
     }
 }

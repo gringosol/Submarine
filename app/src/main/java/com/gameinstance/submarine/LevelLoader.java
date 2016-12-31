@@ -95,9 +95,9 @@ public class LevelLoader {
         GameManager.setCamera();
         InputController.setMaxOrder(100);
         InputController.setMinOrder(0);
-        final MediaPlayer mp = MediaPlayer.create(GameManager.getRenderer().getActivityContext(),
-                R.raw.music1);
-        mp.start();
+        //final MediaPlayer mp = MediaPlayer.create(GameManager.getRenderer().getActivityContext(),
+                //R.raw.music1);
+        //mp.start();
     }
 
 
@@ -158,6 +158,8 @@ public class LevelLoader {
         scene.addMovable(shipMovable);
         shipMovable.getSprite().setPosition(x, y);
         shipMovable.setAngle(angle);
+        addViewCircle(shipMovable);
+
         final float [] p1 = new float[] {-1.37f, -0.54f};
         final float [] p2 = new float[] {-2.57f, -0.94f};
         shipMovable.setTarget(p1);
@@ -198,6 +200,7 @@ public class LevelLoader {
         scene.addMovable(tankMovable);
         tankMovable.getSprite().setPosition(x, y);
         tankMovable.setAngle(angle);
+        addViewCircle(tankMovable);
 
         final float [] p1 = new float[] {0.47f, 1.67f};
         final float [] p2 = new float[] {0.57f, 2.9f};
@@ -241,6 +244,7 @@ public class LevelLoader {
         heliMovable.setAngle(angle);
         Animation heliAnimation = new Animation(200, true, getHeliTexId(heliType));
         heliBack.setAnimation(heliAnimation);
+        addViewCircle(heliMovable);
 
         final float [] p1 = new float[] {0.67f, 0.0f};
         final float [] p2 = new float[] {-1.67f, -0.5f};
@@ -283,5 +287,13 @@ public class LevelLoader {
             heliType = "default";
         Integer [] i = heliSprites.get(heliType);
         return i != null ? i : heliSprites.get("default");
+    }
+
+    private static void addViewCircle(Movable movable) {
+        Layer submarines = scene.getLayer("submarines");
+        Sprite viewCircle = new Sprite(GameManager.getRenderer(), R.drawable.viewcircle,
+                GameManager.getMovablePrimitiveMap(), 0.5f, 0.5f);
+        movable.setViewCircle(viewCircle);
+        movable.setViewCircleVisible(true, submarines);
     }
 }
