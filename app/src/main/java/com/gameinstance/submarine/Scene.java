@@ -98,4 +98,8 @@ public class Scene {
     public Map<String, Layerset> getLayerSets() {
         return layerSets;
     }
+
+    public List<Movable> getMovables() {
+        return movables;
+    }
 }

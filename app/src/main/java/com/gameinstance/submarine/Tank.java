@@ -7,6 +7,7 @@ package com.gameinstance.submarine;
 public class Tank extends Movable {
     public Tank(Sprite sprite, String type) {
         super(sprite);
+        isEnemy = true;
     }
 
     @Override

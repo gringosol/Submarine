@@ -1,4 +1,5 @@
 {
+  "levelname" : "testlevel",
   "background" : "background",
   "foreground" : "background",
   "submarine" : {

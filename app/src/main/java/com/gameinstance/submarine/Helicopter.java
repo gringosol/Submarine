@@ -7,6 +7,7 @@ package com.gameinstance.submarine;
 public class Helicopter extends Movable {
     public Helicopter(Sprite sprite, String heliType) {
         super(sprite);
+        isEnemy = true;
     }
 
     @Override

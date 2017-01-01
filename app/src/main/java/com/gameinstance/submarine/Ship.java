@@ -8,5 +8,6 @@ public class Ship extends Movable {
 
     public Ship( Sprite sprite,String shipType) {
         super(sprite);
+        isEnemy = true;
     }
 }

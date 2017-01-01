@@ -12,10 +12,13 @@ public class Movable {
     float angle = 0;
     float previousAngle = 0;
     float [] previousPosition = new float[] {0, 0};
-    boolean motionEnabled;
+    boolean motionEnabled = false;
     boolean collide = true;
     MobTask currentTask = null;
     Sprite viewCircle = null;
+    float viewRadius = 0;
+    float maxRadius = 0.5f;
+    boolean isEnemy = false;
 
     public Movable(Sprite sprite) {
         this.sprite = sprite;
@@ -64,6 +67,8 @@ public class Movable {
             sprite.setPosition(dir1[0] * speed + curPos[0], dir1[1] * speed + curPos[1]);
         } else if (l > speed * 2 && Math.abs(deltaDeg) > 120) {
             sprite.setPosition(dir[0] * speed + curPos[0], dir[1] * speed + curPos[1]);
+        } else if (l <= speed * 2) {
+            motionEnabled = false;
         }
     }
 
@@ -126,6 +131,10 @@ public class Movable {
         motionEnabled = enabled;
     }
 
+    public boolean getMotionEnabled() {
+        return motionEnabled;
+    }
+
     public Sprite getSprite() {
         return sprite;
     }
@@ -162,6 +171,24 @@ public class Movable {
     }
 
     public void setViewRadius(float r){
-        viewCircle.setScale(r, r);
+        viewRadius = r;
+        if (viewCircle != null)
+            viewCircle.setScale(r * 2.0f, r * 2.0f);
+    }
+
+    public float getViewRadius(){
+        return viewRadius;
+    }
+
+    public void setMaxRadius(float r) {
+        maxRadius = r;
+    }
+
+    public float getMaxRadius() {
+        return maxRadius;
+    }
+
+    public boolean getIsEnemy() {
+        return isEnemy;
     }
 }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.media.MediaPlayer;
 
+import com.gameinstance.submarine.gameplay.LevelLogic;
 import com.gameinstance.submarine.utils.MathUtils;
 
 import org.json.JSONArray;
@@ -87,6 +88,14 @@ public class LevelLoader {
                 JSONArray heliArray = jsonObject.getJSONArray("helis");
                 for (int i = 0; i < heliArray.length(); i++) {
                     loadHelicopter(heliArray.getJSONObject(i));
+                }
+            }
+            if (jsonObject.has("levelname")) {
+                String levelname = jsonObject.getString("levelname");
+                if (GameManager.getGameplay().getLevels().containsKey(levelname)) {
+                    LevelLogic levelLogic = GameManager.getGameplay().getLevels().get(levelname);
+                    GameManager.getGameplay().setCurrentLevel(levelLogic);
+                    levelLogic.init();
                 }
             }
         } catch (JSONException e) {

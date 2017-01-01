@@ -90,6 +90,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 gl) {
         if (paused)
             return;
+        GameManager.getGameplay().update();
         for (Map.Entry<String, Layerset> entry : mScene.getLayerSets().entrySet())  {
             if (!entry.getValue().getEnabled())
                continue;
@@ -128,6 +129,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
             }
         }
+        GameManager.getGameplay().updatePost();
     }
 
     public Integer getProgramHandle(String name) {

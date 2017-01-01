@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.opengl.Matrix;
 
+import com.gameinstance.submarine.gameplay.Gameplay;
 import com.gameinstance.submarine.ui.ComboBox;
 import com.gameinstance.submarine.ui.LetterGenerator;
 import com.gameinstance.submarine.ui.TextButton;
@@ -13,11 +14,15 @@ import com.gameinstance.submarine.utils.TextureHelper;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Created by gringo on 11.12.2016 20:16.
  *
@@ -42,6 +47,7 @@ public class GameManager {
     private static final float radarScale = 0.25f;
     private static final int radarViewportSize = 512;
     private static boolean isMainMenu;
+    private static Gameplay gameplay;
 
     private static boolean drawBackMap = false;
     private static boolean startFromMenu = true;
@@ -124,6 +130,8 @@ public class GameManager {
         };
         scene.addMovable(radarArrowMovable);
         radarArrowMovable.setCollide(false);
+        gameplay = new Gameplay();
+        gameplay.init();
     }
 
     public static void setCamera() {
@@ -480,16 +488,25 @@ public class GameManager {
         submarineMovable = submarine;
     }
 
-    private static void clearLevel() {
+    public static void clearLevel() {
         scene.getLayer("landscape_back").clear();
         scene.getLayer("mobs_back").clear();
         scene.getLayer("landscape").clear();
         scene.getLayer("submarines").clear();
         scene.getLayer("ships_and_tanks").clear();
         scene.getLayer("aircrafts").clear();
+        List<Movable> movablesToClear = new ArrayList<>();
+        for (Movable movable : scene.getMovables()) {
+            if (movable instanceof Ship || movable instanceof Tank || movable instanceof Helicopter)
+                movablesToClear.add(movable);
+        }
+
+        for (Movable movable : movablesToClear) {
+            scene.getMovables().remove(movable);
+        }
     }
 
-    private static void nextLevel() {
+    public static void nextLevel() {
         renderer.setPaused(true);
         renderer.getSurfaceView().queueEvent(new Runnable() {
             @Override
@@ -617,6 +634,8 @@ public class GameManager {
 
     public static void startNewGame() {
         isMainMenu = false;
+        gameplay = new Gameplay();
+        gameplay.init();
         renderer.getSurfaceView().queueEvent( new Runnable() {
                 @Override
                 public void run() {
@@ -665,5 +684,26 @@ public class GameManager {
 
     public static void detectLocale() {
                 locale = GameActivity.getActivity().getResources().getConfiguration().locale.toString();
+    }
+
+    public static Gameplay getGameplay() {
+        return gameplay;
+    }
+
+    public static Sprite addSprite(int texId, float x, float y, float w, float h) {
+        int texHandle = TextureManager.getTextureHandle(getRenderer().getActivityContext(), texId);
+        return new Sprite(texHandle, getMovablePrimitiveMap(), new float[] {w, h}, new float[] {x, y});
+    }
+
+    public static void showMessage(String message, float x, float y, long duration) {
+        final TextLine textLine = new TextLine(message, new float[] {x, y}, 0.2f, getRenderer());
+        scene.getLayer("hud").addTextline(textLine);
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                scene.getLayer("hud").removeTextLine(textLine);
+            }
+        }, duration);
     }
 }
