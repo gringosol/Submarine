@@ -19,6 +19,7 @@ public class Level1 implements LevelLogic {
         marker = GameManager.addSprite(R.drawable.marker, target[0], target[1], 0.1f, 0.1f);
         GameManager.getScene().getLayer("ships_and_tanks").addSprite(marker);
         GameManager.showMessage("Плывите к маркеру", -1.0f, 0.5f, 2000);
+        completed = false;
     }
 
     @Override
