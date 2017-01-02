@@ -19,6 +19,7 @@ public class Movable {
     float viewRadius = 0;
     float maxRadius = 0.5f;
     boolean isEnemy = false;
+    String type = null;
 
     public Movable(Sprite sprite) {
         this.sprite = sprite;
@@ -190,5 +191,17 @@ public class Movable {
 
     public boolean getIsEnemy() {
         return isEnemy;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public Sprite getViewCircle() {
+        return viewCircle;
     }
 }

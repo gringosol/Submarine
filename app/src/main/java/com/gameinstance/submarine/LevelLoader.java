@@ -51,7 +51,7 @@ public class LevelLoader {
         heliSprites.put("default", new Integer[] {R.drawable.heli1, R.drawable.heli11});
     }
 
-    public static void loadLevel(Activity a, int levelId) {
+    public static void loadLevel(Activity a, int levelId, boolean withMobs) {
         GameManager.setLevelId(levelId);
         activity = a;
         res = activity.getResources();
@@ -72,22 +72,24 @@ public class LevelLoader {
             jsonObject = new JSONObject(jsonString);
             loadLandscape(jsonObject);
             loadSubmarine(jsonObject);
-            if (jsonObject.has("ships")) {
-                JSONArray shipArray = jsonObject.getJSONArray("ships");
+            if (withMobs) {
+                if (jsonObject.has("ships")) {
+                    JSONArray shipArray = jsonObject.getJSONArray("ships");
                     for (int i = 0; i < shipArray.length(); i++) {
                         loadShip(shipArray.getJSONObject(i));
                     }
-            }
-            if (jsonObject.has("tanks")) {
-                JSONArray tankArray = jsonObject.getJSONArray("tanks");
-                for (int i = 0; i < tankArray.length(); i++) {
-                    loadTank(tankArray.getJSONObject(i));
                 }
-            }
-            if (jsonObject.has("helis")) {
-                JSONArray heliArray = jsonObject.getJSONArray("helis");
-                for (int i = 0; i < heliArray.length(); i++) {
-                    loadHelicopter(heliArray.getJSONObject(i));
+                if (jsonObject.has("tanks")) {
+                    JSONArray tankArray = jsonObject.getJSONArray("tanks");
+                    for (int i = 0; i < tankArray.length(); i++) {
+                        loadTank(tankArray.getJSONObject(i));
+                    }
+                }
+                if (jsonObject.has("helis")) {
+                    JSONArray heliArray = jsonObject.getJSONArray("helis");
+                    for (int i = 0; i < heliArray.length(); i++) {
+                        loadHelicopter(heliArray.getJSONObject(i));
+                    }
                 }
             }
             if (jsonObject.has("levelname")) {
@@ -149,7 +151,7 @@ public class LevelLoader {
         submarineMovable.setAngle(angle);
     }
 
-    private static void loadShip(JSONObject jsShip) throws JSONException {
+    public static void loadShip(JSONObject jsShip) throws JSONException {
         Layer mobs_back = scene.getLayer("mobs_back");
         Layer ships_and_tanks = scene.getLayer("ships_and_tanks");
         Map<Integer, Primitive> primitiveMap = GameManager.getMovablePrimitiveMap();
@@ -191,7 +193,7 @@ public class LevelLoader {
         });
     }
 
-    private static void loadTank(JSONObject jsTank) throws JSONException {
+    public static void loadTank(JSONObject jsTank) throws JSONException {
         Layer mobs_back = scene.getLayer("mobs_back");
         Layer ships_and_tanks = scene.getLayer("ships_and_tanks");
         Map<Integer, Primitive> primitiveMap = GameManager.getMovablePrimitiveMap();
@@ -233,7 +235,7 @@ public class LevelLoader {
         });
     }
 
-    private static void loadHelicopter(JSONObject jsHeli) throws JSONException {
+    public static void loadHelicopter(JSONObject jsHeli) throws JSONException {
         Layer mobs_back = scene.getLayer("mobs_back");
         Layer aircrafts = scene.getLayer("aircrafts");
         Map<Integer, Primitive> primitiveMap = GameManager.getMovablePrimitiveMap();

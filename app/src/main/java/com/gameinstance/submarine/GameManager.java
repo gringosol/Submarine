@@ -11,6 +11,7 @@ import com.gameinstance.submarine.ui.TextButton;
 import com.gameinstance.submarine.ui.TextLine;
 import com.gameinstance.submarine.utils.TextureHelper;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -73,7 +74,7 @@ public class GameManager {
         camera = new Camera();
 
         if (!startFromMenu) { //todo - test entity, exclude if branch in future
-            LevelLoader.loadLevel(GameActivity.getActivity(), R.raw.testlevel);
+            LevelLoader.loadLevel(GameActivity.getActivity(), R.raw.testlevel, true);
         } else {
             InputController.setMinOrder(-10);
             InputController.setMaxOrder(-10);
@@ -494,12 +495,24 @@ public class GameManager {
         scene.getLayer("submarines").clear();
         scene.getLayer("ships_and_tanks").clear();
         scene.getLayer("aircrafts").clear();
+        clearMovables();
+    }
+
+    public static void clearMovables() {
         List<Movable> movablesToClear = new ArrayList<>();
         for (Movable movable : scene.getMovables()) {
             if (movable instanceof Ship || movable instanceof Tank || movable instanceof Helicopter)
                 movablesToClear.add(movable);
+            if (movable instanceof Ship || movable instanceof Tank) {
+                scene.getLayer("ships_and_tanks").removeSprite(movable.getSprite());
+            }
+            if (movable instanceof Helicopter) {
+                scene.getLayer("aircrafts").removeSprite(movable.getSprite());
+            }
+            if (movable.getViewCircle() != null) {
+                scene.getLayer("submarines").removeSprite(movable.getViewCircle());
+            }
         }
-
         for (Movable movable : movablesToClear) {
             scene.getMovables().remove(movable);
         }
@@ -515,7 +528,7 @@ public class GameManager {
                 currentLevel++;
                 if (currentLevel >= levelList.size())
                     currentLevel = 0;
-                LevelLoader.loadLevel(GameActivity.getActivity(), levelList.get(currentLevel));
+                LevelLoader.loadLevel(GameActivity.getActivity(), levelList.get(currentLevel), true);
 
             }
         });
@@ -536,6 +549,38 @@ public class GameManager {
             submarine.put("y", submarineMovable.getSprite().getPosition()[1]);
             submarine.put("angle", submarineMovable.getAngle());
             savedData.put("submarine", submarine);
+            List<JSONObject> ships = new ArrayList<>();
+            List<JSONObject> tanks = new ArrayList<>();
+            List<JSONObject> helis = new ArrayList<>();
+            for (Movable movable : scene.getMovables()) {
+                JSONObject jsMovable = new JSONObject();
+                jsMovable.put("x", movable.getSprite().getPosition()[0]);
+                jsMovable.put("y", movable.getSprite().getPosition()[1]);
+                jsMovable.put("angle", movable.getAngle());
+                if (movable.getType() != null)
+                    jsMovable.put("type", movable.getType());
+                if (movable instanceof Ship) {
+                    ships.add(jsMovable);
+                }
+                if (movable instanceof Tank) {
+                    tanks.add(jsMovable);
+                }
+                if (movable instanceof Helicopter) {
+                    helis.add(jsMovable);
+                }
+            }
+            if (ships.size() > 0) {
+                JSONArray shipArray = new JSONArray(ships);
+                savedData.put("ships", shipArray);
+            }
+            if (ships.size() > 0) {
+                JSONArray tankArray = new JSONArray(tanks);
+                savedData.put("tanks", tankArray);
+            }
+            if (ships.size() > 0) {
+                JSONArray helisArray = new JSONArray(helis);
+                savedData.put("helis", helisArray);
+            }
         } catch (JSONException e) {
             throw new RuntimeException("Ошибка сохраненя json");
         }
@@ -552,24 +597,60 @@ public class GameManager {
         s = sharedPreferences.getString(filename, "");
         if (!s.equals("")) {
             try {
-                JSONObject loadedData = new JSONObject(s);
+                final JSONObject loadedData = new JSONObject(s);
                 final int levId = loadedData.getInt("levelId");
                 JSONObject submarine = loadedData.getJSONObject("submarine");
                 final float x = (float)submarine.getDouble("x");
                 final float y = (float)submarine.getDouble("y");
                 final float angle = (float)submarine.getDouble("angle");
 
+
+
                 renderer.getSurfaceView().queueEvent(new Runnable() {
                     @Override
                     public void run() {
                         if (levId != levelId) {
                             clearLevel();
-                            currentLevel++;
-                            LevelLoader.loadLevel(GameActivity.getActivity(), levId);
+                            LevelLoader.loadLevel(GameActivity.getActivity(), levId, false);
+                        } else {
+                            clearMovables();
+                        }
+                        int j = 0;
+                        for (Integer lev : levelList) {
+                            if (lev.equals(levId)) {
+                                currentLevel = j;
+                                break;
+                            }
+                            j++;
                         }
                         submarineMovable.getSprite().setPosition(x, y);
                         submarineMovable.setAngle(angle);
                         submarineMovable.setTarget(new float[]{x, y});
+                        try {
+                            if (loadedData.has("ships")) {
+                                JSONArray jsShips = loadedData.getJSONArray("ships");
+                                for (int i = 0; i < jsShips.length(); i++) {
+                                    JSONObject jsShip = jsShips.getJSONObject(i);
+                                    LevelLoader.loadShip(jsShip);
+                                }
+                            }
+                            if (loadedData.has("tanks")) {
+                                JSONArray jsTAnks = loadedData.getJSONArray("tanks");
+                                for (int i = 0; i < jsTAnks.length(); i++) {
+                                    JSONObject jsTank = jsTAnks.getJSONObject(i);
+                                    LevelLoader.loadTank(jsTank);
+                                }
+                            }
+                            if (loadedData.has("helis")) {
+                                JSONArray jsHelis = loadedData.getJSONArray("helis");
+                                for (int i = 0; i < jsHelis.length(); i++) {
+                                    JSONObject jsHeli = jsHelis.getJSONObject(i);
+                                    LevelLoader.loadHelicopter(jsHeli);
+                                }
+                            }
+                        } catch (JSONException e) {
+                            throw new RuntimeException("Ошибка чтения json");
+                        }
                         if (isMainMenu) {
                             isMainMenu = false;
                             showMainMenu(false);
@@ -649,7 +730,7 @@ public class GameManager {
                     InputController.setMaxOrder(100);
                     InputController.setMinOrder(0);
                     scene.getLayer("menu_main").visible = false;
-                    LevelLoader.loadLevel(GameActivity.getActivity(), levelList.get(0));
+                    LevelLoader.loadLevel(GameActivity.getActivity(), levelList.get(0), true);
                     renderer.setPaused(false);
                 }
         } );
