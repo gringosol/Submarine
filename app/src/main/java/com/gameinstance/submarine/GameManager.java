@@ -413,7 +413,6 @@ public class GameManager {
                     @Override
                     public void onClick() {
                         loadGame(DEFAULT_SAVE);
-                        showMainMenu(false);//todo replace
                     }
                 }, -10);
         ldButton1.addToLayer(menu_main);
@@ -548,7 +547,6 @@ public class GameManager {
     }
 
     public static void loadGame(String filename) {
-        isMainMenu = false;
         String s;
         SharedPreferences sharedPreferences = GameActivity.getActivity().getPreferences(Context.MODE_PRIVATE);
         s = sharedPreferences.getString(filename, "");
@@ -571,7 +569,11 @@ public class GameManager {
                         }
                         submarineMovable.getSprite().setPosition(x, y);
                         submarineMovable.setAngle(angle);
-                        submarineMovable.setTarget(new float[] {x, y});
+                        submarineMovable.setTarget(new float[]{x, y});
+                        if (isMainMenu) {
+                            isMainMenu = false;
+                            showMainMenu(false);
+                        }
                     }
                 });
 
