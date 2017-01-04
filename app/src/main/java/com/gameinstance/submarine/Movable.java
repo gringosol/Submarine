@@ -1,5 +1,7 @@
 package com.gameinstance.submarine;
 
+import com.gameinstance.submarine.gameplay.tasks.MobTask;
+
 /**
  * Created by gringo on 03.12.2016 9:19.
  *
@@ -155,6 +157,10 @@ public class Movable {
 
     public void setCurrentTask(MobTask task) {
         currentTask = task;
+    }
+
+    public MobTask getCurrentTask() {
+        return currentTask;
     }
 
     public void setViewCircleVisible(boolean b, Layer layer) {

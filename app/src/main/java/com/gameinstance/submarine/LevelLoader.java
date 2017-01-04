@@ -2,20 +2,21 @@ package com.gameinstance.submarine;
 
 import android.app.Activity;
 import android.content.res.Resources;
-import android.media.MediaPlayer;
 
 import com.gameinstance.submarine.gameplay.LevelLogic;
-import com.gameinstance.submarine.utils.MathUtils;
+import com.gameinstance.submarine.gameplay.tasks.MobTask;
+import com.gameinstance.submarine.gameplay.tasks.PatrolTwoPoints;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -174,23 +175,11 @@ public class LevelLoader {
         final float [] p1 = new float[] {-1.37f, -0.54f};
         final float [] p2 = new float[] {-2.57f, -0.94f};
         shipMovable.setTarget(p1);
-        shipMovable.setCurrentTask(new MobTask(shipMovable) {
-            @Override
-            public void run() {
-                if (MathUtils.coordEquals(shipMovable.getTarget(), p1)) {
-                    float dist = MathUtils.distance(p1, shipMovable.getSprite().getPosition());
-                    if (dist < 0.1f) {
-                        shipMovable.setTarget(p2);
-                    }
-                }
-                if (MathUtils.coordEquals(shipMovable.getTarget(), p2)) {
-                    float dist = MathUtils.distance(p2, shipMovable.getSprite().getPosition());
-                    if (dist < 0.1f) {
-                        shipMovable.setTarget(p1);
-                    }
-                }
-            }
-        });
+        shipMovable.setCurrentTask(new PatrolTwoPoints(shipMovable, p1, p2));
+        MobTask task = loadMobTask(shipMovable, jsShip);
+        if (task != null) {
+            shipMovable.setCurrentTask(task);
+        }
     }
 
     public static void loadTank(JSONObject jsTank) throws JSONException {
@@ -216,23 +205,11 @@ public class LevelLoader {
         final float [] p1 = new float[] {0.47f, 1.67f};
         final float [] p2 = new float[] {0.57f, 2.9f};
         tankMovable.setTarget(p1);
-        tankMovable.setCurrentTask(new MobTask(tankMovable) {
-            @Override
-            public void run() {
-                if (MathUtils.coordEquals(tankMovable.getTarget(), p1)) {
-                    float dist = MathUtils.distance(p1, tankMovable.getSprite().getPosition());
-                    if (dist < 0.1f) {
-                        tankMovable.setTarget(p2);
-                    }
-                }
-                if (MathUtils.coordEquals(tankMovable.getTarget(), p2)) {
-                    float dist = MathUtils.distance(p2, tankMovable.getSprite().getPosition());
-                    if (dist < 0.1f) {
-                        tankMovable.setTarget(p1);
-                    }
-                }
-            }
-        });
+        tankMovable.setCurrentTask(new PatrolTwoPoints(tankMovable, p1, p2));
+        MobTask task = loadMobTask(tankMovable, jsTank);
+        if (task != null) {
+            tankMovable.setCurrentTask(task);
+        }
     }
 
     public static void loadHelicopter(JSONObject jsHeli) throws JSONException {
@@ -260,23 +237,11 @@ public class LevelLoader {
         final float [] p1 = new float[] {0.67f, 0.0f};
         final float [] p2 = new float[] {-1.67f, -0.5f};
         heliMovable.setTarget(p1);
-        heliMovable.setCurrentTask(new MobTask(heliMovable) {
-            @Override
-            public void run() {
-                if (MathUtils.coordEquals(heliMovable.getTarget(), p1)) {
-                    float dist = MathUtils.distance(p1, heliMovable.getSprite().getPosition());
-                    if (dist < 0.1f) {
-                        heliMovable.setTarget(p2);
-                    }
-                }
-                if (MathUtils.coordEquals(heliMovable.getTarget(), p2)) {
-                    float dist = MathUtils.distance(p2, heliMovable.getSprite().getPosition());
-                    if (dist < 0.1f) {
-                        heliMovable.setTarget(p1);
-                    }
-                }
-            }
-        });
+        heliMovable.setCurrentTask(new PatrolTwoPoints(heliMovable, p1, p2));
+        MobTask task = loadMobTask(heliMovable, jsHeli);
+        if (task != null) {
+            heliMovable.setCurrentTask(task);
+        }
     }
 
     private static Integer getShipTexId(String shipType) {
@@ -306,5 +271,39 @@ public class LevelLoader {
                 GameManager.getMovablePrimitiveMap(), 0.5f, 0.5f);
         movable.setViewCircle(viewCircle);
         movable.setViewCircleVisible(true, submarines);
+    }
+
+    private static MobTask loadMobTask(Movable mob, JSONObject jsMovable) {
+        MobTask task = null;
+        try {
+            if (jsMovable.has("taskclass") && jsMovable.has("taskstate")) {
+                try {
+                    Class cl = Class.forName(jsMovable.getString("taskclass"));
+                    Class<? extends MobTask> cl1 = cl;
+                    JSONArray byteArray = jsMovable.getJSONArray("taskstate");
+                    byte [] bytes = new byte[byteArray.length()];
+                    for (int i = 0; i < byteArray.length(); i++) {
+                        bytes[i] = (byte)byteArray.getInt(i);
+                    }
+                    ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+                    try {
+                        ObjectInputStream objectInputStream =
+                                new ObjectInputStream(inputStream);
+                        task = cl1.cast(objectInputStream.readObject());
+                        task.setMob(mob);
+                        task.onRestore();
+                        objectInputStream.close();
+                        inputStream.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e.getMessage());
+                    }
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e.getMessage());
+                }
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        return task;
     }
 }

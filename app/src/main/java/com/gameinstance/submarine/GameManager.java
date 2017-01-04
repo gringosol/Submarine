@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.opengl.Matrix;
 
 import com.gameinstance.submarine.gameplay.Gameplay;
+import com.gameinstance.submarine.gameplay.tasks.MobTask;
 import com.gameinstance.submarine.ui.ComboBox;
 import com.gameinstance.submarine.ui.LetterGenerator;
 import com.gameinstance.submarine.ui.TextButton;
@@ -15,6 +16,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -567,6 +571,24 @@ public class GameManager {
                 }
                 if (movable instanceof Helicopter) {
                     helis.add(jsMovable);
+                }
+                if (movable.getCurrentTask() != null) {
+                    MobTask task  = movable.getCurrentTask();
+                    jsMovable.put("taskclass", task.getClass().getName());
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    try {
+                        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+                        objectOutputStream.writeObject(task);
+                        JSONArray byteArray = new JSONArray();
+                        for (byte b : outputStream.toByteArray()) {
+                            byteArray.put(b);
+                        }
+                        jsMovable.put("taskstate", byteArray);
+                        objectOutputStream.close();
+                        outputStream.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e.getMessage());
+                    }
                 }
             }
             if (ships.size() > 0) {
