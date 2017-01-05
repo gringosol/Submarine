@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.opengl.Matrix;
 
 import com.gameinstance.submarine.gameplay.Gameplay;
+import com.gameinstance.submarine.gameplay.LevelLogic;
 import com.gameinstance.submarine.gameplay.tasks.MobTask;
 import com.gameinstance.submarine.ui.ComboBox;
 import com.gameinstance.submarine.ui.LetterGenerator;
@@ -556,6 +557,24 @@ public class GameManager {
             List<JSONObject> ships = new ArrayList<>();
             List<JSONObject> tanks = new ArrayList<>();
             List<JSONObject> helis = new ArrayList<>();
+            if (gameplay.getCurrentLevel() != null) {
+                LevelLogic level = gameplay.getCurrentLevel();
+                savedData.put("levelclass", level.getClass().getName());
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                try {
+                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+                    objectOutputStream.writeObject(level);
+                    JSONArray byteArray = new JSONArray();
+                    for (byte b : outputStream.toByteArray()) {
+                        byteArray.put(b);
+                    }
+                    savedData.put("levelstate", byteArray);
+                    objectOutputStream.close();
+                    outputStream.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e.getMessage());
+                }
+            }
             for (Movable movable : scene.getMovables()) {
                 JSONObject jsMovable = new JSONObject();
                 jsMovable.put("x", movable.getSprite().getPosition()[0]);
@@ -677,6 +696,8 @@ public class GameManager {
                             isMainMenu = false;
                             showMainMenu(false);
                         }
+                        gameplay.setCurrentLevel(LevelLoader.loadLevelState(loadedData));
+                        gameplay.reinitGame();
                     }
                 });
 

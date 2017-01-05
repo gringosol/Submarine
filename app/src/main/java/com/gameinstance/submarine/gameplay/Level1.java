@@ -12,7 +12,7 @@ import com.gameinstance.submarine.utils.MathUtils;
 public class Level1 implements LevelLogic {
     private boolean completed = false;
     float [] target = new float[] {  -2.0f, 1.0f  };
-    Sprite marker;
+    transient Sprite marker;
 
     @Override
     public void init() {
@@ -34,5 +34,12 @@ public class Level1 implements LevelLogic {
     @Override
     public boolean isCompleted() {
         return completed;
+    }
+
+    @Override
+    public void restore() {
+        marker = GameManager.addSprite(R.drawable.marker, target[0], target[1], 0.1f, 0.1f);
+        GameManager.getScene().getLayer("ships_and_tanks").addSprite(marker);
+        completed = false;
     }
 }

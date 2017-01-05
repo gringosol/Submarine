@@ -92,13 +92,13 @@ public class LevelLoader {
                         loadHelicopter(heliArray.getJSONObject(i));
                     }
                 }
-            }
-            if (jsonObject.has("levelname")) {
-                String levelname = jsonObject.getString("levelname");
-                if (GameManager.getGameplay().getLevels().containsKey(levelname)) {
-                    LevelLogic levelLogic = GameManager.getGameplay().getLevels().get(levelname);
-                    GameManager.getGameplay().setCurrentLevel(levelLogic);
-                    levelLogic.init();
+                if (jsonObject.has("levelname")) {
+                    String levelname = jsonObject.getString("levelname");
+                    if (GameManager.getGameplay().getLevels().containsKey(levelname)) {
+                        LevelLogic levelLogic = GameManager.getGameplay().getLevels().get(levelname);
+                        GameManager.getGameplay().setCurrentLevel(levelLogic);
+                        levelLogic.init();
+                    }
                 }
             }
         } catch (JSONException e) {
@@ -305,5 +305,38 @@ public class LevelLoader {
             throw new RuntimeException(e.getMessage());
         }
         return task;
+    }
+
+    public static LevelLogic loadLevelState(JSONObject jsLevel) {
+        LevelLogic level = null;
+        try {
+            if (jsLevel.has("levelclass") && jsLevel.has("levelstate")) {
+                try {
+                    Class cl = Class.forName(jsLevel.getString("levelclass"));
+                    Class<? extends LevelLogic> cl1 = cl;
+                    JSONArray byteArray = jsLevel.getJSONArray("levelstate");
+                    byte [] bytes = new byte[byteArray.length()];
+                    for (int i = 0; i < byteArray.length(); i++) {
+                        bytes[i] = (byte)byteArray.getInt(i);
+                    }
+                    ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+                    try {
+                        ObjectInputStream objectInputStream =
+                                new ObjectInputStream(inputStream);
+                        level = cl1.cast(objectInputStream.readObject());
+                        level.restore();
+                        objectInputStream.close();
+                        inputStream.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e.getMessage());
+                    }
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e.getMessage());
+                }
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        return level;
     }
 }

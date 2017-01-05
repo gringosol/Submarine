@@ -139,4 +139,12 @@ public class Gameplay {
     public Map<String, LevelLogic> getLevels() {
         return levels;
     }
+
+    public void reinitGame() {
+        resetSubmarineDepth();
+    }
+
+    public void resetSubmarineDepth() {
+        submarineDepth = -1;
+    }
 }
