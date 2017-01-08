@@ -3,6 +3,8 @@ package com.gameinstance.submarine;
 import android.support.annotation.NonNull;
 
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by gringo on 15.12.2016 20:59.
@@ -13,11 +15,15 @@ public class Button extends Sprite {
     ClickListener clickListener;
     GameRenderer renderer;
     int [] texHandles;
+    Timer disabler;
+    boolean enabled = true;
+    int timerInterval = 300;
 
     public Button(final GameRenderer renderer, @NonNull int [] texResourseIds,
                   Map<Integer, Primitive> primitives, final float width,
                   final float height, final ClickListener clickListener, float [] pos) {
         super(renderer, texResourseIds[0], primitives, width, height);
+        disabler = new Timer();
         texHandles = new int[texResourseIds.length];
         int i = 0;
         for (int texresId : texResourseIds) {
@@ -38,7 +44,7 @@ public class Button extends Sprite {
 
             @Override
             public boolean onDown(int x, int y) {
-                if (inBounds(x, y)) {
+                if (inBounds(x, y) && enabled) {
                     if (texHandles.length > 1)
                         setTexHandle(texHandles[1]);
                     return true;
@@ -48,8 +54,15 @@ public class Button extends Sprite {
 
             @Override
             public boolean onUp(int x, int y) {
-                if (inBounds(x, y)) {
+                if (inBounds(x, y) && enabled) {
                     setTexHandle(texHandles[0]);
+                    enabled = false;
+                    disabler.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            enabled = true;
+                        }
+                    }, timerInterval);
                     clickListener.onClick();
                     return true;
                 }
@@ -79,5 +92,9 @@ public class Button extends Sprite {
 
     public void setZOrder(int i) {
         touchHandler.setOrder(i);
+    }
+
+    public void setTimerInterval(int v) {
+        timerInterval = v;
     }
 }

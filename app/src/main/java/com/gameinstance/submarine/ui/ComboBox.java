@@ -49,21 +49,33 @@ public class ComboBox {
     }
 
     private void shiftLeft() {
-        layer.removeTextLine(textLines.get(currentIndex));
-        currentIndex--;
-        if (currentIndex < 0)
-            currentIndex = textLines.size() - 1;
-        layer.addTextline(textLines.get(currentIndex));
-        onValueChange(getValue());
+        GameManager.getRenderer().getSurfaceView().queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                layer.removeTextLine(textLines.get(currentIndex));
+                currentIndex--;
+                if (currentIndex < 0)
+                    currentIndex = textLines.size() - 1;
+                layer.addTextline(textLines.get(currentIndex));
+                onValueChange(getValue());
+            }
+        });
+
     }
 
     private void shiftRight() {
-        layer.removeTextLine(textLines.get(currentIndex));
-        currentIndex++;
-        if (currentIndex >= textLines.size())
-            currentIndex = 0;
-        layer.addTextline(textLines.get(currentIndex));
-        onValueChange(getValue());
+        GameManager.getRenderer().getSurfaceView().queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                layer.removeTextLine(textLines.get(currentIndex));
+                currentIndex++;
+                if (currentIndex >= textLines.size())
+                    currentIndex = 0;
+                layer.addTextline(textLines.get(currentIndex));
+                onValueChange(getValue());
+            }
+        });
+
     }
 
     public void setValue(String value){
@@ -93,5 +105,10 @@ public class ComboBox {
 
     public void onValueChange(String newValue) {
 
+    }
+
+    public void setTimerInterval(int v) {
+        leftButton.setTimerInterval(v);
+        rightButton.setTimerInterval(v);
     }
 }

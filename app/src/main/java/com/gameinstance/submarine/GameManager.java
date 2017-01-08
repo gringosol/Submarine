@@ -63,6 +63,8 @@ public class GameManager {
 
     static String locale = "en_US";
 
+    static ComboBox languageComboBox;
+
     public static void initGame(final GameRenderer renderer) {
         isMainMenu = startFromMenu;
         detectLocale();
@@ -354,15 +356,19 @@ public class GameManager {
                 new Button.ClickListener() {
                     @Override
                     public void onClick() {
+                        if (!languageComboBox.getValue().equals(gameplay.getLanguageOption())) {
+                            setOption(OPT_LANGUAGE, languageComboBox.getValue());
+                            gameplay.setLanguageOption(languageComboBox.getValue());
+                        }
                         showMenuOptions(false);
                     }
                 }, -2);
         resumeFromOptionsButton.addToLayer(menu_options);
 
-        ComboBox languageComboBox = new ComboBox(0, 0.4f, 1.5f, 0.3f, new String[] {"Русский", "English", "Polski"}, 0.2f, -2) {
+        languageComboBox = new ComboBox(0, 0.4f, 1.5f, 0.3f, new String[] {"Русский", "English", "Polski"}, 0.2f, -2) {
             @Override
             public void onValueChange(String newValue) {
-                setOption(OPT_LANGUAGE, newValue);
+
             }
         };
         languageComboBox.addToLayer(menu_options);

@@ -25,6 +25,7 @@ public class Gameplay {
     Sprite missionPassedSprite;
     LevelLogic currentLevel = null;
     Map<String, LevelLogic> levels = new HashMap<>();
+    String languageOption = "";
 
     public void init() {
         scene = GameManager.getScene();
@@ -146,5 +147,13 @@ public class Gameplay {
 
     public void resetSubmarineDepth() {
         submarineDepth = -1;
+    }
+
+    public String getLanguageOption() {
+        return languageOption;
+    }
+
+    public void setLanguageOption(String v) {
+        languageOption = v;
     }
 }
