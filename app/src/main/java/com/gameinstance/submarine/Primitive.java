@@ -104,4 +104,11 @@ public class Primitive {
         }
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
     }
+
+    public void onDestroy() {
+        mPositions.limit(0);
+        mPositions = null;
+        mTexCoordinates.limit(0);
+        mTexCoordinates = null;
+    }
 }

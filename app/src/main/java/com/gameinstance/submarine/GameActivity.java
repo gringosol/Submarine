@@ -42,4 +42,10 @@ public class GameActivity extends Activity {
         }
         return super.onTouchEvent(event);
     }
+
+    @Override
+    protected void onStop() {
+        GameManager.clearMemory();
+        super.onStop();
+    }
 }

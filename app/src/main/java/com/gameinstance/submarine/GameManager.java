@@ -41,6 +41,7 @@ public class GameManager {
     private static float minY = -1.0f;
     private static float maxY = 1.0f;
     static Primitive texPrimitive;
+    static List<Primitive> primitives = new ArrayList<>();
     static Map<Integer, Primitive> movablePrimitiveMap;
     static Submarine submarineMovable;
     static List<Integer> levelList = Arrays.asList(R.raw.testlevel, R.raw.testlevel2);
@@ -74,7 +75,9 @@ public class GameManager {
         TextureManager.init();
         LetterGenerator.init();
         texPrimitive = renderer.createPrimitiveTextured();
+        addPrimitive(texPrimitive);
         Primitive colPrimitive = renderer.createPrimitiveColored();
+        addPrimitive(colPrimitive);
         movablePrimitiveMap = new HashMap<>();
         movablePrimitiveMap.put(renderer.getProgramHandle("SimpleProgramHandle"), colPrimitive);
         movablePrimitiveMap.put(renderer.getProgramHandle("DefaultProgramHandle"), texPrimitive);
@@ -116,6 +119,7 @@ public class GameManager {
                 1.0f, 0.0f,
                 1.0f, 1.0f};
         Primitive viewPortPrimitive = renderer.createPrimitiveTextured(texCoordinateData);
+        addPrimitive(viewPortPrimitive);
         Map<Integer, Primitive> primitiveMap =
                 Collections.singletonMap(renderer.getProgramHandle("DefaultProgramHandle"), viewPortPrimitive);
         if (drawBackMap) {
@@ -442,6 +446,8 @@ public class GameManager {
                 new Button.ClickListener() {
                     @Override
                     public void onClick() {
+                        renderer.paused = true;
+                        clearMemory();
                         android.os.Process.killProcess(android.os.Process.myPid());
                         System.exit(1);
                     }
@@ -837,5 +843,17 @@ public class GameManager {
                 scene.getLayer("hud").removeTextLine(textLine);
             }
         }, duration);
+    }
+
+    public static void clearMemory() {
+        for (Primitive primitive : primitives) {
+            if (primitive != null)
+                primitive.onDestroy();
+        }
+        primitives.clear();
+    }
+
+    public static void addPrimitive(Primitive primitive) {
+        primitives.add(primitive);
     }
 }
