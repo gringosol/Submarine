@@ -37,4 +37,8 @@ public class Camera {
         }
         return mViewMatrix;
     }
+
+    public float [] getPosition(){
+        return target!= null ? target.getPosition() : new float[] {0, 0};
+    }
 }

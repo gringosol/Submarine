@@ -159,6 +159,10 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         }
     }
 
+    public Camera getCamera() {
+        return camera;
+    }
+
     private void createShaders() {
         final String vertexShader = RawResourceReader.readTextFileFromRawResource(mActivityContext,
                 R.raw.default_vertex_shader);

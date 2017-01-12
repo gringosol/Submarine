@@ -1,5 +1,6 @@
 package com.gameinstance.submarine;
 
+import com.gameinstance.submarine.audio.SoundSource;
 import com.gameinstance.submarine.gameplay.tasks.MobTask;
 
 /**
@@ -22,9 +23,12 @@ public class Movable {
     float maxRadius = 0.5f;
     boolean isEnemy = false;
     String type = null;
+    SoundSource soundSource = null;
+    Camera camera;
 
     public Movable(Sprite sprite) {
         this.sprite = sprite;
+        camera = GameManager.getRenderer().getCamera();
     }
 
     public void update() {
@@ -33,6 +37,13 @@ public class Movable {
         }
         if (currentTask != null) {
             currentTask.run();
+        }
+        if (soundSource != null) {
+            if (camera == null) {
+                camera = GameManager.getRenderer().getCamera();
+            } else {
+                soundSource.update(camera.getPosition(), sprite.getPosition());
+            }
         }
     }
 
@@ -209,5 +220,19 @@ public class Movable {
 
     public Sprite getViewCircle() {
         return viewCircle;
+    }
+
+    public void setSoundSource(SoundSource soundSource) {
+        this.soundSource = soundSource;
+    }
+
+    public SoundSource getSoundSource() {
+        return soundSource;
+    }
+
+    public void setCurrentSound(int resId, boolean repeat) {
+        if (soundSource != null) {
+            soundSource.play(resId, repeat);
+        }
     }
 }

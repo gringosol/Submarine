@@ -13,6 +13,7 @@ public class Level1 implements LevelLogic {
     private boolean completed = false;
     float [] target = new float[] {  -2.0f, 1.0f  };
     transient Sprite marker;
+    int ambientMusicId = 0;
 
     @Override
     public void init() {
@@ -20,6 +21,7 @@ public class Level1 implements LevelLogic {
         GameManager.getScene().getLayer("ships_and_tanks").addSprite(marker);
         GameManager.showMessage("Плывите к маркеру", -1.0f, 0.5f, 2000);
         completed = false;
+        ambientMusicId = GameManager.getSoundManager().playSound(R.raw.music1, true);
     }
 
     @Override
@@ -41,5 +43,10 @@ public class Level1 implements LevelLogic {
         marker = GameManager.addSprite(R.drawable.marker, target[0], target[1], 0.1f, 0.1f);
         GameManager.getScene().getLayer("ships_and_tanks").addSprite(marker);
         completed = false;
+    }
+
+    @Override
+    public void onClose() {
+        GameManager.getSoundManager().stopSound(ambientMusicId);
     }
 }

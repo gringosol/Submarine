@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.opengl.Matrix;
 
+import com.gameinstance.submarine.audio.SoundManager;
 import com.gameinstance.submarine.gameplay.Gameplay;
 import com.gameinstance.submarine.gameplay.LevelLogic;
 import com.gameinstance.submarine.gameplay.tasks.MobTask;
@@ -66,11 +67,14 @@ public class GameManager {
 
     static ComboBox languageComboBox;
 
+    static SoundManager soundManager;
+
     public static void initGame(final GameRenderer renderer) {
         isMainMenu = startFromMenu;
         detectLocale();
         scene = new Scene(renderer);
         GameManager.renderer = renderer;
+        soundManager = new SoundManager();
         addLayers();
         TextureManager.init();
         LetterGenerator.init();
@@ -513,6 +517,7 @@ public class GameManager {
         scene.getLayer("ships_and_tanks").clear();
         scene.getLayer("aircrafts").clear();
         clearMovables();
+        gameplay.getCurrentLevel().onClose();
     }
 
     public static void clearMovables() {
@@ -528,6 +533,9 @@ public class GameManager {
             }
             if (movable.getViewCircle() != null) {
                 scene.getLayer("submarines").removeSprite(movable.getViewCircle());
+            }
+            if (movable.getSoundSource() != null) {
+                movable.getSoundSource().stop();
             }
         }
         for (Movable movable : movablesToClear) {
@@ -851,9 +859,14 @@ public class GameManager {
                 primitive.onDestroy();
         }
         primitives.clear();
+        soundManager.destroy();
     }
 
     public static void addPrimitive(Primitive primitive) {
         primitives.add(primitive);
+    }
+
+    public static SoundManager getSoundManager() {
+        return soundManager;
     }
 }
