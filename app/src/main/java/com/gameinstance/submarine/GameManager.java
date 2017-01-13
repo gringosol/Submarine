@@ -428,19 +428,22 @@ public class GameManager {
         languageComboBox.addToLayer(menu_options);
         String langOption = getOption(OPT_LANGUAGE);
         if (!"".equals(langOption)) {
-            languageComboBox.setValue(GameActivity.getActivity().getResources().getIdentifier(langOption, "drawable", GameActivity.getActivity().getPackageName()));
             switch (langOption) {
                 case "Русский":
                     setLocale("ru");
+                    languageComboBox.setValue(R.string.russian);
                     break;
                 case "English":
                     setLocale("en");
+                    languageComboBox.setValue(R.string.english);
                     break;
                 case "Polski":
                     setLocale("pl");
+                    languageComboBox.setValue(R.string.polish);
                     break;
                 default:
                     setLocale("en");
+                    languageComboBox.setValue(R.string.english);
             }
         } else {
             switch (locale) {
