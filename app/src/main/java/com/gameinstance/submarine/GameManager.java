@@ -3,7 +3,6 @@ package com.gameinstance.submarine;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.opengl.Matrix;
 
 import com.gameinstance.submarine.audio.SoundManager;
@@ -335,8 +334,8 @@ public class GameManager {
         hud.addSprite(loadButton);
         hud.addSprite(menuButton);
         Layer menu_pause = scene.getLayer("menu_pause");
-        TextButton resumeButton = new TextButton(0.0f, 0.8f, 1.5f, 0.3f, new int[] {
-                R.drawable.tbbackground, R.drawable.tbbackground1}, getString(R.string.resume), 0.2f, movablePrimitiveMap,
+        final TextButton resumeButton = new TextButton(0.0f, 0.8f, 1.5f, 0.3f, new int[] {
+                R.drawable.tbbackground, R.drawable.tbbackground1}, R.string.resume, 0.2f, movablePrimitiveMap,
                 new Button.ClickListener() {
                     @Override
                     public void onClick() {
@@ -345,7 +344,7 @@ public class GameManager {
                 }, -1);
         resumeButton.addToLayer(menu_pause);
         TextButton svButton = new TextButton(0.0f, 0.4f, 1.5f, 0.3f, new int[] {
-                R.drawable.tbbackground, R.drawable.tbbackground1}, getString(R.string.save), 0.2f, movablePrimitiveMap,
+                R.drawable.tbbackground, R.drawable.tbbackground1}, R.string.save, 0.2f, movablePrimitiveMap,
                 new Button.ClickListener() {
                     @Override
                     public void onClick() {
@@ -355,7 +354,7 @@ public class GameManager {
                 }, -1);
         svButton.addToLayer(menu_pause);
         TextButton ldButton = new TextButton(0.0f, 0.0f, 1.5f, 0.3f, new int[] {
-                R.drawable.tbbackground, R.drawable.tbbackground1}, getString(R.string.load), 0.2f, movablePrimitiveMap,
+                R.drawable.tbbackground, R.drawable.tbbackground1}, R.string.load, 0.2f, movablePrimitiveMap,
                 new Button.ClickListener() {
                     @Override
                     public void onClick() {
@@ -365,7 +364,7 @@ public class GameManager {
                 }, -1);
         ldButton.addToLayer(menu_pause);
         TextButton optionsButton = new TextButton(0.0f, -0.4f, 1.5f, 0.3f, new int[] {
-                R.drawable.tbbackground, R.drawable.tbbackground1}, getString(R.string.options), 0.2f, movablePrimitiveMap,
+                R.drawable.tbbackground, R.drawable.tbbackground1}, R.string.options, 0.2f, movablePrimitiveMap,
                 new Button.ClickListener() {
                     @Override
                     public void onClick() {
@@ -374,7 +373,7 @@ public class GameManager {
                 }, -1);
         optionsButton.addToLayer(menu_pause);
         TextButton exitButton = new TextButton(0.0f, -0.8f, 1.5f, 0.3f, new int[] {
-                R.drawable.tbbackground, R.drawable.tbbackground1}, getString(R.string.exit), 0.2f, movablePrimitiveMap,
+                R.drawable.tbbackground, R.drawable.tbbackground1}, R.string.exit, 0.2f, movablePrimitiveMap,
                 new Button.ClickListener() {
                     @Override
                     public void onClick() {
@@ -385,29 +384,51 @@ public class GameManager {
 
         Layer menu_options = scene.getLayer("menu_options");
         TextButton resumeFromOptionsButton = new TextButton(0.0f, 0.8f, 1.5f, 0.3f, new int[] {
-                R.drawable.tbbackground, R.drawable.tbbackground1}, getString(R.string.back), 0.2f, movablePrimitiveMap,
+                R.drawable.tbbackground, R.drawable.tbbackground1}, R.string.back, 0.2f, movablePrimitiveMap,
                 new Button.ClickListener() {
                     @Override
                     public void onClick() {
-                        if (!languageComboBox.getValue().equals(gameplay.getLanguageOption())) {
-                            setOption(OPT_LANGUAGE, languageComboBox.getValue());
-                            gameplay.setLanguageOption(languageComboBox.getValue());
+                        if (!getString(languageComboBox.getValue()).equals(gameplay.getLanguageOption())) {
+                            setOption(OPT_LANGUAGE, getString(languageComboBox.getValue()));
+                            gameplay.setLanguageOption(getString(languageComboBox.getValue()));
+                            renderer.getSurfaceView().queueEvent(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                        switch (languageComboBox.getValue()) {
+                                            case R.string.russian:
+                                                setLocale("ru");
+                                                break;
+                                            case R.string.english:
+                                                setLocale("en");
+                                                break;
+                                            case R.string.polish:
+                                                setLocale("pl");
+                                                break;
+                                            default:
+                                                setLocale("en");
+                                        }
+
+                                    scene.reinitText();
+                                }
+                            });
+
                         }
                         showMenuOptions(false);
                     }
                 }, -2);
         resumeFromOptionsButton.addToLayer(menu_options);
 
-        languageComboBox = new ComboBox(0, 0.4f, 1.5f, 0.3f, new String[] {"Русский", "English", "Polski"}, 0.2f, -2) {
+        languageComboBox = new ComboBox(0, 0.4f, 1.5f, 0.3f, new Integer[] {R.string.russian, R.string.english, R.string.polish}, 0.2f, -2) {
             @Override
-            public void onValueChange(String newValue) {
+            public void onValueChange(int newValue) {
 
             }
         };
         languageComboBox.addToLayer(menu_options);
         String langOption = getOption(OPT_LANGUAGE);
         if (!"".equals(langOption)) {
-            languageComboBox.setValue(langOption);
+            languageComboBox.setValue(GameActivity.getActivity().getResources().getIdentifier(langOption, "drawable", GameActivity.getActivity().getPackageName()));
             switch (langOption) {
                 case "Русский":
                     setLocale("ru");
@@ -424,13 +445,13 @@ public class GameManager {
         } else {
             switch (locale) {
                 case "ru_RU":
-                    languageComboBox.setValue("Русский");
+                    languageComboBox.setValue(R.string.russian);
                     break;
                 case "en_US":
-                    languageComboBox.setValue("English");
+                    languageComboBox.setValue(R.string.english);
                     break;
                 case "pl_PL":
-                    languageComboBox.setValue("Polski");
+                    languageComboBox.setValue(R.string.polish);
                     break;
             }
         }
@@ -446,11 +467,11 @@ public class GameManager {
             volumeSlider.setValue(Float.parseFloat(volumeOption));
         }
 
-        TextLine langTextLine = new TextLine(getString(R.string.language),
+        TextLine langTextLine = new TextLine(R.string.language,
                 new float[] {-1.8f, 0.4f}, 0.2f,
                 GameManager.getRenderer());
         menu_options.addTextline(langTextLine);
-        TextLine volumeTextLine = new TextLine(getString(R.string.volume), new float[] {-1.8f, 0.0f}, 0.2f,
+        TextLine volumeTextLine = new TextLine(R.string.volume, new float[] {-1.8f, 0.0f}, 0.2f,
                 GameManager.getRenderer());
         menu_options.addTextline(volumeTextLine);
 
@@ -458,7 +479,7 @@ public class GameManager {
 
         Layer menu_main = scene.getLayer("menu_main");
         TextButton newGameButton = new TextButton(0.0f, 0.8f, 1.5f, 0.3f, new int[] {
-                R.drawable.tbbackground, R.drawable.tbbackground1}, getString(R.string.new_game), 0.2f, movablePrimitiveMap,
+                R.drawable.tbbackground, R.drawable.tbbackground1}, R.string.new_game, 0.2f, movablePrimitiveMap,
                 new Button.ClickListener() {
                     @Override
                     public void onClick() {
@@ -467,7 +488,7 @@ public class GameManager {
                 }, -10);
         newGameButton.addToLayer(menu_main);
         TextButton ldButton1 = new TextButton(0.0f, 0.4f, 1.5f, 0.3f, new int[] {
-                R.drawable.tbbackground, R.drawable.tbbackground1}, getString(R.string.load), 0.2f, movablePrimitiveMap,
+                R.drawable.tbbackground, R.drawable.tbbackground1}, R.string.load, 0.2f, movablePrimitiveMap,
                 new Button.ClickListener() {
                     @Override
                     public void onClick() {
@@ -476,7 +497,7 @@ public class GameManager {
                 }, -10);
         ldButton1.addToLayer(menu_main);
         TextButton optionsButton1 = new TextButton(0.0f, 0.0f, 1.5f, 0.3f, new int[] {
-                R.drawable.tbbackground, R.drawable.tbbackground1}, getString(R.string.options), 0.2f, movablePrimitiveMap,
+                R.drawable.tbbackground, R.drawable.tbbackground1}, R.string.options, 0.2f, movablePrimitiveMap,
                 new Button.ClickListener() {
                     @Override
                     public void onClick() {
@@ -485,7 +506,7 @@ public class GameManager {
                 }, -10);
         optionsButton1.addToLayer(menu_main);
         TextButton exitButton1 = new TextButton(0.0f, -0.4f, 1.5f, 0.3f, new int[] {
-                R.drawable.tbbackground, R.drawable.tbbackground1}, getString(R.string.exit), 0.2f, movablePrimitiveMap,
+                R.drawable.tbbackground, R.drawable.tbbackground1}, R.string.exit, 0.2f, movablePrimitiveMap,
                 new Button.ClickListener() {
                     @Override
                     public void onClick() {
@@ -501,7 +522,7 @@ public class GameManager {
         Layer menu_confirm_dialog = scene.getLayer("menu_confirm_dialog");
         menu_confirm_dialog.addSprite(mainMenuBackSprite);
         TextButton yesButton = new TextButton(-1.0f, 0.0f, 1.5f, 0.3f, new int[] {
-                R.drawable.tbbackground, R.drawable.tbbackground1}, getString(R.string.yes), 0.2f, movablePrimitiveMap,
+                R.drawable.tbbackground, R.drawable.tbbackground1}, R.string.yes, 0.2f, movablePrimitiveMap,
                 new Button.ClickListener() {
                     @Override
                     public void onClick() {
@@ -517,7 +538,7 @@ public class GameManager {
                 }, -11);
         yesButton.addToLayer(menu_confirm_dialog);
         TextButton noButton = new TextButton(1.0f, 0.0f, 1.5f, 0.3f, new int[] {
-                R.drawable.tbbackground, R.drawable.tbbackground1}, getString(R.string.no), 0.2f, movablePrimitiveMap,
+                R.drawable.tbbackground, R.drawable.tbbackground1}, R.string.no, 0.2f, movablePrimitiveMap,
                 new Button.ClickListener() {
                     @Override
                     public void onClick() {
@@ -880,8 +901,8 @@ public class GameManager {
         return new Sprite(texHandle, getMovablePrimitiveMap(), new float[] {w, h}, new float[] {x, y});
     }
 
-    public static void showMessage(String message, float x, float y, long duration) {
-        final TextLine textLine = new TextLine(message, new float[] {x, y}, 0.2f, getRenderer());
+    public static void showMessage(int messageId, float x, float y, long duration) {
+        final TextLine textLine = new TextLine(messageId, new float[] {x, y}, 0.2f, getRenderer());
         scene.getLayer("hud").addTextline(textLine);
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {

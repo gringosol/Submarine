@@ -21,9 +21,9 @@ public class ComboBox {
     List<TextLine> textLines = new ArrayList<>();
     int currentIndex = 0;
     Layer layer = null;
-    List<String> values = new ArrayList<>();
+    List<Integer> values = new ArrayList<>();
 
-    public ComboBox(float x, float y, float w, float h, @NonNull String [] values, float textSize, int order) {
+    public ComboBox(float x, float y, float w, float h, @NonNull Integer [] values, float textSize, int order) {
         this.values = Arrays.asList(values);
         leftButton = new Button(GameManager.getRenderer(), new int[] {R.drawable.comboleft,
                 R.drawable.comboleft1}, GameManager.getMovablePrimitiveMap(), h, h, new Button.ClickListener() {
@@ -41,8 +41,9 @@ public class ComboBox {
             }
         }, new float[] {x + w / 2.0f - h / 2.0f, y});
         rightButton.setZOrder(order);
-        for (String value : values) {
-            TextLine textLine = new TextLine(value, new float[] {x - (value.length() / 2) * textSize * TextLine.getCharAspect() *
+        for (Integer value : values) {
+            String s = GameManager.getString(value);
+            TextLine textLine = new TextLine(value, new float[] {x - (s.length() / 2) * textSize * TextLine.getCharAspect() *
                     TextLine.getCharAspect(), y}, textSize, GameManager.getRenderer());
             textLines.add(textLine);
         }
@@ -78,10 +79,10 @@ public class ComboBox {
 
     }
 
-    public void setValue(String value){
+    public void setValue(int value){
         int i = 0;
-        for (String s : values){
-            if (s.equals(value)) {
+        for (Integer s : values){
+            if (s == value) {
                 layer.removeTextLine(textLines.get(currentIndex));
                 currentIndex = i;
                 layer.addTextline(textLines.get(currentIndex));
@@ -99,11 +100,11 @@ public class ComboBox {
         layer.addTextline(textLines.get(0));
     }
 
-    public String getValue() {
+    public int getValue() {
         return values.get(currentIndex);
     }
 
-    public void onValueChange(String newValue) {
+    public void onValueChange(int newValue) {
 
     }
 

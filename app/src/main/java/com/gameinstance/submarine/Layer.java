@@ -71,4 +71,10 @@ public class Layer {
         sprites.clear();
 
     }
+
+    public void reinitText() {
+        for (TextLine textLine : textLines) {
+            textLine.reinit();
+        }
+    }
 }

@@ -102,4 +102,10 @@ public class Scene {
     public List<Movable> getMovables() {
         return movables;
     }
+
+    public void reinitText() {
+        for(Map.Entry<String, Layer> entry : layers.entrySet()) {
+            entry.getValue().reinitText();
+        }
+    }
 }

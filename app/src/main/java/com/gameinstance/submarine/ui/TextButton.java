@@ -15,16 +15,17 @@ public class TextButton {
     Button button;
     TextLine textLine;
 
-    public TextButton(float x, float y, float w, float h, int [] texIds, String caption, float textSize,
+    public TextButton(float x, float y, float w, float h, int [] texIds, Integer captionId, float textSize,
                       Map<Integer, Primitive> primitives, Button.ClickListener clickListener,
                       int zOrder) {
         button = new Button(GameManager.getRenderer(), texIds, primitives, w, h, clickListener,
                 new float[] {x, y});
         float [] textPos = new float[2];
-        textPos[0] = x - (caption.length() / 2) * textSize * TextLine.getCharAspect() *
+        String s = GameManager.getString(captionId);
+        textPos[0] = x - (s.length() / 2) * textSize * TextLine.getCharAspect() *
             TextLine.getCharAspect();
         textPos[1] = y;
-        textLine = new TextLine(caption, textPos, textSize, GameManager.getRenderer());
+        textLine = new TextLine(captionId, textPos, textSize, GameManager.getRenderer());
         button.setZOrder(zOrder);
     }
 
