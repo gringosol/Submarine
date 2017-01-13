@@ -29,7 +29,7 @@ public class Submarine extends Movable {
         sprite.setTexHandle(texHandles[0]);
         this.renderer = renderer;
         if (shallowWarning == null) {
-            shallowWarning = new TextLine("Слишком мелко", new float[] {-0.3f, 0.5f}, 0.2f, renderer);
+            shallowWarning = new TextLine(GameManager.getString(R.string.too_shallow), new float[] {-0.3f, 0.5f}, 0.2f, renderer);
         }
     }
 

@@ -3,4 +3,21 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+
+    <string name="language">Язык</string>
+    <string name="volume">Громкость</string>
+
+    <string name="resume">Продолжить</string>
+    <string name="save">Сохранить</string>
+    <string name="load">Загрузить</string>
+    <string name="options">Настройки</string>
+    <string name="exit">Выход</string>
+    <string name="back">Назад</string>
+
+    <string name="new_game">Новая игра</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+
+    <string name="too_shallow">Слишком мелко</string>
+    <string name="go_to_marker">Плывите к маркеру</string>
 </resources>

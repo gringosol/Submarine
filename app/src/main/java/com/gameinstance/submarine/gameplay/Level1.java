@@ -19,7 +19,7 @@ public class Level1 implements LevelLogic {
     public void init() {
         marker = GameManager.addSprite(R.drawable.marker, target[0], target[1], 0.1f, 0.1f);
         GameManager.getScene().getLayer("ships_and_tanks").addSprite(marker);
-        GameManager.showMessage("Плывите к маркеру", -1.0f, 0.5f, 2000);
+        GameManager.showMessage(GameManager.getString(R.string.go_to_marker), -1.0f, 0.5f, 2000);
         completed = false;
         ambientMusicId = GameManager.getSoundManager().playSound(R.raw.music1, true);
     }

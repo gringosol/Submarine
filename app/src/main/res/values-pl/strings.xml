@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language">Język</string>
+    <string name="volume">Głośność</string>
+
+    <string name="resume">Kontynuuj</string>
+    <string name="save">Zapisz</string>
+    <string name="load">Wczytaj</string>
+    <string name="options">Opcje</string>
+    <string name="exit">Wyjście</string>
+    <string name="back">Wstecz</string>
+
+    <string name="new_game">Nowa gra</string>
+    <string name="yes">Tak</string>
+    <string name="no">Nie</string>
+
+    <string name="too_shallow">Zbyt płytko</string>
+    <string name="go_to_marker">Płyń do markiera</string>
+</resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language">Language</string>
+    <string name="volume">Volume</string>
+
+    <string name="resume">Resume</string>
+    <string name="save">Save</string>
+    <string name="load">Load</string>
+    <string name="options">Options</string>
+    <string name="exit">Exit</string>
+    <string name="back">Back</string>
+
+    <string name="new_game">New game</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <string name="too_shallow">Too shallow</string>
+    <string name="go_to_marker">Go to the marker</string>
+</resources>
