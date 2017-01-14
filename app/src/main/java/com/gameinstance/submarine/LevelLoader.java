@@ -33,6 +33,8 @@ public class LevelLoader {
     static Scene scene;
     static GameRenderer renderer;
     private static final int radarMapPixelSize = 512;
+    private static final int PIXELS_PER_UNIT_VISIBLE = 256;
+    private static final int PIXELS_PER_UNIT_BACK = 64;
 
     private static final Map<String, Integer> shipSrites;
     static {
@@ -121,9 +123,9 @@ public class LevelLoader {
         int backgroundR = res.getIdentifier(background, "drawable", activity.getPackageName());
         String foreground = jsonObject.getString("foreground");
         int foregroundR = res.getIdentifier(foreground, "drawable", activity.getPackageName());
-        Sprite [] landscpB = GameManager.createLandScape(backgroundR, 64, 1, texPrimitive);
+        Sprite [] landscpB = GameManager.createLandScape(backgroundR, PIXELS_PER_UNIT_BACK, 1, texPrimitive);
         List<Sprite> landslistB = new ArrayList<>(Arrays.asList(landscpB));
-        Sprite [] landscp = GameManager.createLandScape(foregroundR, 64, 1, texPrimitive);
+        Sprite [] landscp = GameManager.createLandScape(foregroundR, PIXELS_PER_UNIT_VISIBLE, 1, texPrimitive);
         List<Sprite> landslist = new ArrayList<>(Arrays.asList(landscp));
         landscape_back.addSprites(landslistB);
         landscape.addSprites(landslist);
