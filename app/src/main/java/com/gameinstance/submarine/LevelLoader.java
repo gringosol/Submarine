@@ -203,8 +203,8 @@ public class LevelLoader {
         tankMovable.setAngle(angle);
         addViewCircle(tankMovable);
 
-        final float [] p1 = new float[] {0.47f, 1.67f};
-        final float [] p2 = new float[] {0.57f, 2.9f};
+        final float [] p1 = new float[] {0.73f, 2.61f};
+        final float [] p2 = new float[] {0.41f, 2.83f};
         tankMovable.setTarget(p1);
         tankMovable.setCurrentTask(new PatrolTwoPoints(tankMovable, p1, p2));
         MobTask task = loadMobTask(tankMovable, jsTank);

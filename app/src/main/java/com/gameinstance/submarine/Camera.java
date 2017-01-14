@@ -27,11 +27,15 @@ public class Camera {
     public float [] update(float [] mViewMatrix, float aspect, float scale) {
         if (target != null) {
             float x = -target.getPosition()[0];
-            if (x < minX + scale / aspect || x > maxX - scale / aspect)
-                x = mViewMatrix[12];
+            if (x < minX + scale / aspect)
+                x = minX + scale / aspect;
+            if (x > maxX - scale / aspect)
+                x = maxX - scale / aspect;
             float y = -target.getPosition()[1];
-            if (y < minY + scale || y > maxY - scale)
-                y = mViewMatrix[13];
+            if (y < minY + scale)
+                y = minY + scale;
+            if (y > maxY - scale)
+                y = maxY - scale;
             Matrix.setIdentityM(mViewMatrix, 0);
             Matrix.translateM(mViewMatrix, 0, x, y, 0);
         }
