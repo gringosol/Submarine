@@ -580,7 +580,10 @@ public class GameManager {
         scene.getLayer("ships_and_tanks").clear();
         scene.getLayer("aircrafts").clear();
         clearMovables();
-        gameplay.getCurrentLevel().onClose();
+        if (gameplay.getCurrentLevel() != null) {
+            gameplay.getCurrentLevel().onClose();
+        }
+        levelId = 0;
     }
 
     public static void clearMovables() {

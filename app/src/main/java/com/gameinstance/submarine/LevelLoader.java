@@ -107,9 +107,8 @@ public class LevelLoader {
         GameManager.setCamera();
         InputController.setMaxOrder(100);
         InputController.setMinOrder(0);
-        //final MediaPlayer mp = MediaPlayer.create(GameManager.getRenderer().getActivityContext(),
-                //R.raw.music1);
-        //mp.start();
+        if (GameManager.getGameplay() != null)
+            GameManager.getGameplay().reinitGame();
     }
 
 
