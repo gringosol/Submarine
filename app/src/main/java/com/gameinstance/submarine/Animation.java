@@ -26,6 +26,14 @@ public class Animation {
         }
     }
 
+    public Animation(int interval, Integer [] texHandles , boolean repeat) {
+        this.repeat = repeat;
+        this.interval = interval;
+        for (Integer texHandle : texHandles) {
+            frames.add(texHandle);
+        }
+    }
+
     public void setFrame(Sprite sprite, int num) {
         currentFrame = num;
         sprite.setTexHandle(frames.get(num));

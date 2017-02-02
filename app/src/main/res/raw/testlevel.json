@@ -1,7 +1,7 @@
 {
   "levelname" : "testlevel",
   "background" : "level1_bgr",
-  "foreground" : "level1_frg",
+  "foreground" : "lv1_frg",
   "submarine" : {
     "type" : "default",
     "x" : "0.98",

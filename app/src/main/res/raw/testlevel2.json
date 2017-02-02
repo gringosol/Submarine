@@ -1,6 +1,6 @@
 {
-  "background" : "backgroundtl2",
-  "foreground" : "foregroundtl2",
+  "background" : "level1_bgr",
+  "foreground" : "lv1_frg",
   "submarine" : {
     "type" : "default",
     "x" : "0.0",
