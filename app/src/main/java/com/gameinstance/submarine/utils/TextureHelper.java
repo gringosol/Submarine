@@ -6,10 +6,6 @@ import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 /**
  * Created by gringo on 01.01.2016 15:06.
  *
@@ -93,19 +89,42 @@ public class TextureHelper {
         return textureHandle;
     }
 
-    public static int loadRadarTexture(final Context context, final int resourceId, int pixelSize) {
+    public static int loadRadarTexture(final Context context, final int resourceId, int pixelSize, int tilesetX, int tilesetY, int [][][] tiles, int bigTileSize) {
         final int [] textureHandle = new int[1];
         GLES20.glGenTextures(1, textureHandle, 0);
         if (textureHandle[0] != 0) {
             final BitmapFactory.Options options = new BitmapFactory.Options();
             options.inScaled = false;
-            Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId, options);
-            bitmap = Bitmap.createScaledBitmap(bitmap, pixelSize, pixelSize, false);
+            Bitmap tileSetBitmap = BitmapFactory.decodeResource(context.getResources(), resourceId, options);
+            int tileWidth = pixelSize / tilesetX;
+            int tileHeight = pixelSize / tilesetY;
+            Bitmap radarBitmap = Bitmap.createScaledBitmap(tileSetBitmap, pixelSize, pixelSize, false);
+            Bitmap tmpBitmapBig = Bitmap.createScaledBitmap(tileSetBitmap, bigTileSize, bigTileSize, false);
+            Bitmap tmpBitmapMin = null;
+            int [] pixelsBig = new int[bigTileSize * bigTileSize];
+            int [] pixelsMin = new int[tileWidth * tileHeight];
+            for (int y = 0; y < tilesetY; y++) {
+                for (int x = 0; x < tilesetX; x++) {
+                    int bigX = (tiles[y][x][0] * bigTileSize) % tileSetBitmap.getWidth();
+                    int bigY = (tiles[y][x][0] * bigTileSize) / tileSetBitmap.getWidth() * bigTileSize;
+                    int minX = x * tileWidth;
+                    int minY = y * tileHeight;
+                    tileSetBitmap.getPixels(pixelsBig, 0, bigTileSize, bigX, bigY, bigTileSize, bigTileSize);
+                    tmpBitmapBig.setPixels(pixelsBig, 0, bigTileSize, 0, 0, bigTileSize, bigTileSize);
+                    tmpBitmapMin = Bitmap.createScaledBitmap(tmpBitmapBig, tileWidth, tileHeight, false);
+                    tmpBitmapMin.getPixels(pixelsMin, 0, tileWidth, 0, 0, tileWidth, tileHeight);
+                    radarBitmap.setPixels(pixelsMin, 0, tileWidth, minX, minY, tileWidth, tileHeight);
+                }
+            }
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
-            bitmap.recycle();
+            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, radarBitmap, 0);
+            tileSetBitmap.recycle();
+            radarBitmap.recycle();
+            tmpBitmapBig.recycle();
+            if (tmpBitmapMin != null)
+                tmpBitmapMin.recycle();
         }
         if (textureHandle[0] == 0) {
             throw new RuntimeException("Error loading texture");

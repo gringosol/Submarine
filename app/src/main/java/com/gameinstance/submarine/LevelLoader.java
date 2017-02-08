@@ -126,11 +126,12 @@ public class LevelLoader {
         int foregroundMapR = res.getIdentifier(foreground, "raw", activity.getPackageName());
         Sprite [] landscpB = GameManager.createLandScape(backgroundR, PIXELS_PER_UNIT_BACK, 1, texPrimitive);
         List<Sprite> landslistB = new ArrayList<>(Arrays.asList(landscpB));
-        Sprite [] landscp = GameManager.createLandScape(foregroundR, foregroundMapR,  PIXELS_PER_UNIT_VISIBLE, 0.25f, texPrimitive);
+        GameManager.readLandscapeJson(foregroundMapR);
+        Sprite [] landscp = GameManager.createLandScapeTiled(foregroundR,  PIXELS_PER_UNIT_VISIBLE, 0.25f, texPrimitive);
         List<Sprite> landslist = new ArrayList<>(Arrays.asList(landscp));
         landscape_back.addSprites(landslistB);
         landscape.addSprites(landslist);
-        Sprite radarmapBackground = GameManager.createRadarMap(foregroundR, radarMapPixelSize, texPrimitive);
+        Sprite radarmapBackground = GameManager.createRadarMap(foregroundR, radarMapPixelSize, texPrimitive, PIXELS_PER_UNIT_VISIBLE);
         radarmap.addSprite(radarmapBackground);
     }
 

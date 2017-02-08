@@ -72,6 +72,12 @@ public class GameManager {
 
     static SoundManager soundManager;
 
+    static int tileCountX = 0;
+    static int tileCountY = 0;
+    static int tileCount = 0;
+    static int tileFrameCount = 0;
+    static int [] [] [] tileMap = null;
+
     public static void initGame(final GameRenderer renderer) {
         isMainMenu = startFromMenu;
         detectLocale();
@@ -203,62 +209,73 @@ public class GameManager {
         return sprites;
     }
 
-    public static Sprite [] createLandScape(int textureId, int jsMapId, int pixelsPerUnit, float unitSize, Primitive primitive) {
+    public static void readLandscapeJson(int jsMapId) {
         String jsMapStr = RawResourceReader.readTextFileFromRawResource(renderer.getActivityContext(), jsMapId);
         try {
             JSONObject jsMap = new JSONObject(jsMapStr);
-            int width = jsMap.getInt("width");
-            int height = jsMap.getInt("height");
-            int tilecount = jsMap.getInt("tilecount");
+            tileCountX = jsMap.getInt("width");
+            tileCountY = jsMap.getInt("height");
+            tileCount = jsMap.getInt("tilecount");
             JSONArray tileset = jsMap.getJSONArray("map");
-            int frameCount = tileset.getJSONArray(0).length();
-            Map<Integer, Primitive> primitiveMap = new HashMap<>();
-            primitiveMap.put(renderer.getProgramHandle("DefaultProgramHandle"), primitive);
-            int [] texHandles = TextureHelper.loadTileset(renderer.getActivityContext(), textureId, pixelsPerUnit, tilecount);
-            Sprite [] sprites = new Sprite[width * height];
-            float left = -(width * unitSize) / 2.0f + 0.5f * unitSize;
-            float top = (height * unitSize) / 2.0f - 0.5f * unitSize;
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    int index = tileset.getJSONArray(y * width + x).getInt(0);
-                    sprites[y * width + x] = new Sprite(texHandles[index], primitiveMap,
-                            unitSize, new float[] {left + x * unitSize, top - y * unitSize});
-                    if (frameCount > 1) {
-                        List<Integer> indices = new ArrayList<>();
-                        indices.add(index);
-                        for (int i = 1; i < frameCount; i++) {
-                            int idx = tileset.getJSONArray(y * width + x).getInt(i);
-                            if (!indices.contains(idx)) {
-                                indices.add(idx);
-                            }
-                        }
-                        if (indices.size() > 1) {
-                            Integer [] thandles = new Integer[indices.size()];
-                            int k = 0;
-                            for (int id : indices) {
-                                thandles[k] = texHandles[id];
-                                k++;
-                            }
-                            Animation animation = new Animation(500, thandles, true);
-                            sprites[y * width + x].setAnimation(animation);
-                        }
+            tileFrameCount = tileset.getJSONArray(0).length();
+            tileMap = new int[tileCountY][tileCountX][tileFrameCount];
+            for (int y = 0; y < tileCountX; y++) {
+                for (int x = 0; x < tileCountY; x++) {
+                    for (int k = 0; k < tileFrameCount; k++) {
+                        tileMap[y][x][k] = tileset.getJSONArray(y * tileCountX + x).getInt(k);
                     }
                 }
             }
-            minX =  -(width * unitSize) / 2.0f;
-            maxX =  (width * unitSize) / 2.0f;
-            minY =  -(height * unitSize) / 2.0f;
-            maxY =  (height * unitSize) / 2.0f;
-            return sprites;
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static Sprite createRadarMap(int textureId, int pixelSize, Primitive primitive) {
+    public static Sprite [] createLandScapeTiled(int textureId, int pixelsPerUnit, float unitSize, Primitive primitive) {
         Map<Integer, Primitive> primitiveMap = new HashMap<>();
         primitiveMap.put(renderer.getProgramHandle("DefaultProgramHandle"), primitive);
-        int texHandle = TextureHelper.loadRadarTexture(renderer.getActivityContext(), textureId, pixelSize);
+        int [] texHandles = TextureHelper.loadTileset(renderer.getActivityContext(), textureId, pixelsPerUnit, tileCount);
+        Sprite [] sprites = new Sprite[tileCountX * tileCountY];
+        float left = -(tileCountX * unitSize) / 2.0f + 0.5f * unitSize;
+        float top = (tileCountY * unitSize) / 2.0f - 0.5f * unitSize;
+        for (int y = 0; y < tileCountY; y++) {
+            for (int x = 0; x < tileCountX; x++) {
+                int index = tileMap[y][x][0];
+                sprites[y * tileCountX + x] = new Sprite(texHandles[index], primitiveMap,
+                        unitSize, new float[] {left + x * unitSize, top - y * unitSize});
+                if (tileFrameCount > 1) {
+                    List<Integer> indices = new ArrayList<>();
+                    indices.add(index);
+                    for (int i = 1; i < tileFrameCount; i++) {
+                        int idx = tileMap[y][x][i];
+                        if (!indices.contains(idx)) {
+                            indices.add(idx);
+                        }
+                    }
+                    if (indices.size() > 1) {
+                        Integer [] thandles = new Integer[indices.size()];
+                        int k = 0;
+                        for (int id : indices) {
+                            thandles[k] = texHandles[id];
+                            k++;
+                        }
+                        Animation animation = new Animation(500, thandles, true);
+                        sprites[y * tileCountX + x].setAnimation(animation);
+                    }
+                }
+            }
+        }
+        minX =  -(tileCountX * unitSize) / 2.0f;
+        maxX =  (tileCountX * unitSize) / 2.0f;
+        minY =  -(tileCountY * unitSize) / 2.0f;
+        maxY =  (tileCountY * unitSize) / 2.0f;
+        return sprites;
+    }
+
+    public static Sprite createRadarMap(int textureId, int pixelSize, Primitive primitive, int bigTileSize) {
+        Map<Integer, Primitive> primitiveMap = new HashMap<>();
+        primitiveMap.put(renderer.getProgramHandle("DefaultProgramHandle"), primitive);
+        int texHandle = TextureHelper.loadRadarTexture(renderer.getActivityContext(), textureId, pixelSize, tileCountX, tileCountY, tileMap, bigTileSize);
         return new Sprite(texHandle, primitiveMap, new float[] {maxX - minX, maxY - minY},
                 new float[] {0, 0});
     }
