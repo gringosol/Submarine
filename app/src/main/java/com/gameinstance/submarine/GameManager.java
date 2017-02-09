@@ -78,6 +78,8 @@ public class GameManager {
     static int tileFrameCount = 0;
     static int [] [] [] tileMap = null;
 
+    static List<Sprite> tilesToAnimate = new ArrayList<>();
+
     public static void initGame(final GameRenderer renderer) {
         isMainMenu = startFromMenu;
         detectLocale();
@@ -232,6 +234,7 @@ public class GameManager {
     }
 
     public static Sprite [] createLandScapeTiled(int textureId, int pixelsPerUnit, float unitSize, Primitive primitive) {
+        tilesToAnimate.clear();
         Map<Integer, Primitive> primitiveMap = new HashMap<>();
         primitiveMap.put(renderer.getProgramHandle("DefaultProgramHandle"), primitive);
         int [] texHandles = TextureHelper.loadTileset(renderer.getActivityContext(), textureId, pixelsPerUnit, tileCount);
@@ -261,6 +264,7 @@ public class GameManager {
                         }
                         Animation animation = new Animation(500, thandles, true);
                         sprites[y * tileCountX + x].setAnimation(animation);
+                        tilesToAnimate.add(sprites[y * tileCountX + x]);
                     }
                 }
             }
@@ -269,6 +273,19 @@ public class GameManager {
         maxX =  (tileCountX * unitSize) / 2.0f;
         minY =  -(tileCountY * unitSize) / 2.0f;
         maxY =  (tileCountY * unitSize) / 2.0f;
+        Timer tileTimer = new Timer();
+        tileTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (getTilesToAnimate() != null) {
+                    for (Sprite sprite : getTilesToAnimate()) {
+                        if (sprite.animation != null) {
+                            sprite.animation.rawPlay(sprite);
+                        }
+                    }
+                }
+            }
+        }, 0, 200);
         return sprites;
     }
 
@@ -298,40 +315,40 @@ public class GameManager {
         scene.getLayerSets().get("BackBuffer").setEnabled(!startFromMenu);
         scene.getLayerSets().get("Radar").setEnabled(!startFromMenu);
         scene.getLayerSets().get("Front").setEnabled(!startFromMenu);
-        Layer landscape_back = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
+        Layer landscape_back = new Layer(renderer.getProgramHandle("DefaultProgramHandle"), false);
         scene.addLayer("landscape_back", landscape_back);
-        Layer mobs_back = new Layer(renderer.getProgramHandle("SimpleProgramHandle"));
+        Layer mobs_back = new Layer(renderer.getProgramHandle("SimpleProgramHandle"), false);
         mobs_back.setColor(new float[] {1.0f, 0.0f, 0.0f, 0.5f });
         scene.addLayer("mobs_back", mobs_back);
-        Layer landscape = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
+        Layer landscape = new Layer(renderer.getProgramHandle("DefaultProgramHandle"), true);
         scene.addLayer("landscape", landscape);
-        Layer submarines = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
+        Layer submarines = new Layer(renderer.getProgramHandle("DefaultProgramHandle"), true);
         scene.addLayer("submarines", submarines);
-        Layer shipsAndTanks = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
+        Layer shipsAndTanks = new Layer(renderer.getProgramHandle("DefaultProgramHandle"), true);
         scene.addLayer("ships_and_tanks", shipsAndTanks);
-        Layer aircrafts = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
+        Layer aircrafts = new Layer(renderer.getProgramHandle("DefaultProgramHandle"), true);
         scene.addLayer("aircrafts", aircrafts);
-        Layer hud = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
+        Layer hud = new Layer(renderer.getProgramHandle("DefaultProgramHandle"), false);
         hud.isGui = true;
         scene.addLayer("hud", hud);
-        Layer radarmap = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
+        Layer radarmap = new Layer(renderer.getProgramHandle("DefaultProgramHandle"), false);
         scene.addLayer("radarmap", radarmap);
-        Layer radarhud = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
+        Layer radarhud = new Layer(renderer.getProgramHandle("DefaultProgramHandle"), false);
         radarhud.isGui = true;
         scene.addLayer("radarhud", radarhud);
-        Layer menu_main = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
+        Layer menu_main = new Layer(renderer.getProgramHandle("DefaultProgramHandle"), false);
         scene.addLayer("menu_main", menu_main);
         menu_main.isGui = true;
         menu_main.visible = startFromMenu;
-        Layer menu_pause = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
+        Layer menu_pause = new Layer(renderer.getProgramHandle("DefaultProgramHandle"), false);
         scene.addLayer("menu_pause", menu_pause);
         menu_pause.isGui = true;
         menu_pause.visible = false;
-        Layer menu_options = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
+        Layer menu_options = new Layer(renderer.getProgramHandle("DefaultProgramHandle"), false);
         scene.addLayer("menu_options", menu_options);
         menu_options.isGui = true;
         menu_options.visible = false;
-        Layer menu_confirm_dialog = new Layer(renderer.getProgramHandle("DefaultProgramHandle"));
+        Layer menu_confirm_dialog = new Layer(renderer.getProgramHandle("DefaultProgramHandle"), false);
         scene.addLayer("menu_confirm_dialog", menu_confirm_dialog);
         menu_confirm_dialog.isGui = true;
         menu_confirm_dialog.visible = false;
@@ -1017,5 +1034,9 @@ public class GameManager {
         config.locale = locale;
         GameActivity.getActivity().getBaseContext().getResources().updateConfiguration(config,
                 GameActivity.getActivity().getBaseContext().getResources().getDisplayMetrics());
+    }
+
+    public static List<Sprite> getTilesToAnimate() {
+        return tilesToAnimate;
     }
 }

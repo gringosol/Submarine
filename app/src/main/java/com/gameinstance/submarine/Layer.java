@@ -3,6 +3,7 @@ package com.gameinstance.submarine;
 import android.opengl.GLES20;
 
 import com.gameinstance.submarine.ui.TextLine;
+import com.gameinstance.submarine.utils.MathUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +19,11 @@ public class Layer {
     float [] color = null;
     public boolean isGui = false;
     public boolean visible = true;
+    private boolean optimize;
 
-    public Layer(int programHandle) {
+    public Layer(int programHandle, boolean optimize) {
         this.programHandle = programHandle;
+        this.optimize = optimize;
     }
 
     public void addSprite(Sprite sprite) {
@@ -50,7 +53,9 @@ public class Layer {
         if (sprites != null) {
             if (color == null) {
                 for (Sprite sprite : sprites) {
-                    sprite.draw(viewMatrix, projectionMatrix, programHandle);
+                    if (!optimize || inScreen(viewMatrix, projectionMatrix, sprite)) {
+                        sprite.draw(viewMatrix, projectionMatrix, programHandle);
+                    }
                 }
             } else {
                 for (Sprite sprite : sprites) {
@@ -69,12 +74,19 @@ public class Layer {
 
     public void clear(){
         sprites.clear();
-
     }
 
     public void reinitText() {
         for (TextLine textLine : textLines) {
             textLine.reinit();
         }
+    }
+
+    private boolean inScreen(float [] viewMatrix, float [] projectionMatrix, Sprite sprite) {
+        float [] screenCenter = new float[] {-viewMatrix[12], -viewMatrix[13]};
+        float scrW = 2.1f / projectionMatrix[0];
+        float scrH = 2.1f / projectionMatrix[5];
+        return MathUtils.testQuads(screenCenter, sprite.getPosition(), scrW, scrH, sprite.getScaleX(),
+                sprite.getScaleY());
     }
 }

@@ -61,4 +61,15 @@ public class Animation {
             }
         }, 0, interval);
     }
+
+    public void rawPlay(final Sprite sprite) {
+        if (currentFrame >= frames.size()) {
+            currentFrame = 0;
+            if (!repeat) {
+                enabled = false;
+            }
+        }
+        setFrame(sprite, currentFrame);
+        currentFrame++;
+    }
 }
