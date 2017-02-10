@@ -4,6 +4,7 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
+import android.os.SystemClock;
 
 import com.gameinstance.submarine.utils.RawResourceReader;
 import com.gameinstance.submarine.utils.ShaderUtils;
@@ -58,6 +59,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     static FloatBuffer currentPosBuffer = null;
     static FloatBuffer currentTexCoordBuffer = null;
 
+    long prevTime = 0;
+
     public Context getActivityContext() {
         return mActivityContext;
     }
@@ -90,7 +93,11 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 gl) {
         if (paused)
             return;
-        GameManager.getGameplay().update();
+        long curTime = SystemClock.uptimeMillis();
+        if (curTime - prevTime > 50) {
+            GameManager.getGameplay().update();
+            prevTime = curTime;
+        }
         for (Map.Entry<String, Layerset> entry : mScene.getLayerSets().entrySet())  {
             if (!entry.getValue().getEnabled())
                continue;
