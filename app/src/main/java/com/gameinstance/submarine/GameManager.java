@@ -285,7 +285,7 @@ public class GameManager {
                     }
                 }
             }
-        }, 0, 200);
+        }, 0, 100);
         return sprites;
     }
 
