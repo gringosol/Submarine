@@ -80,6 +80,8 @@ public class GameManager {
 
     static List<Sprite> tilesToAnimate = new ArrayList<>();
 
+    static Timer tileTimer;
+
     public static void initGame(final GameRenderer renderer) {
         isMainMenu = startFromMenu;
         detectLocale();
@@ -273,7 +275,7 @@ public class GameManager {
         maxX =  (tileCountX * unitSize) / 2.0f;
         minY =  -(tileCountY * unitSize) / 2.0f;
         maxY =  (tileCountY * unitSize) / 2.0f;
-        Timer tileTimer = new Timer();
+        tileTimer = new Timer();
         tileTimer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -671,6 +673,7 @@ public class GameManager {
             gameplay.getCurrentLevel().onClose();
         }
         levelId = 0;
+        tileTimer.cancel();
     }
 
     public static void clearMovables() {
