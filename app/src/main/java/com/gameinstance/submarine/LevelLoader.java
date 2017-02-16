@@ -127,7 +127,11 @@ public class LevelLoader {
         Sprite [] landscpB = GameManager.createLandScape(backgroundR, PIXELS_PER_UNIT_BACK, 1, texPrimitive);
         List<Sprite> landslistB = new ArrayList<>(Arrays.asList(landscpB));
         GameManager.readLandscapeJson(foregroundMapR);
-        Sprite [] landscp = GameManager.createLandScapeTiled(foregroundR,  PIXELS_PER_UNIT_VISIBLE, 0.25f, texPrimitive);
+        float unitsize = 0.25f;
+        if (jsonObject.has("unitsize")) {
+            unitsize = (float)jsonObject.getDouble("unitsize");
+        }
+        Sprite [] landscp = GameManager.createLandScapeTiled(foregroundR,  PIXELS_PER_UNIT_VISIBLE, unitsize, texPrimitive);
         List<Sprite> landslist = new ArrayList<>(Arrays.asList(landscp));
         landscape_back.addSprites(landslistB);
         landscape.addSprites(landslist);
