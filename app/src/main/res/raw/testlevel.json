@@ -1,7 +1,7 @@
 {
   "levelname" : "testlevel",
-  "background" : "level1_bgr",
-  "foreground" : "lv1_frg",
+  "background" : "tl1_bgr",
+  "foreground" : "tl111_frg",
   "unitsize" : "0.5",
   "submarine" : {
     "type" : "default",
