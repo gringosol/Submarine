@@ -23,6 +23,8 @@ public class SoundManager {
     Map<Integer, Integer> loadedSounds = new HashMap<>();
     Map<Integer, Integer> loadedSoundsInv = new HashMap<>();
     Context context;
+    Map<Integer, SoundSource> soundSources = new HashMap<>();
+    float commonVolume = 1.0f;
 
     public SoundManager(int channelCount){
         soundCount = channelCount;
@@ -63,7 +65,7 @@ public class SoundManager {
           streamPointer++;
           if (streamPointer >= soundCount)
               streamPointer = 0;
-
+          sp.setVolume(sid, commonVolume, commonVolume);
           return sid;
       }
     }
@@ -77,10 +79,24 @@ public class SoundManager {
     }
 
     public void setVolume(int streamId, float volume) {
-        sp.setVolume(streamId, volume, volume);
+        sp.setVolume(streamId, volume * commonVolume, volume * commonVolume);
     }
 
     public void destroy() {
         sp.release();
+    }
+
+    public void setCommonVolume(float v) {
+        commonVolume = v;
+        for (int i = 0; i < soundCount; i++) {
+            if (soundIds[i] != 0) {
+                if (soundSources.containsKey(soundIds[i])) {
+                    float vl = soundSources.get(soundIds[i]).getVolume();
+                    sp.setVolume(soundIds[i], commonVolume * vl, commonVolume * vl);
+                } else {
+                    sp.setVolume(soundIds[i], commonVolume, commonVolume);
+                }
+            }
+        }
     }
 }

@@ -10,6 +10,7 @@ public class SoundSource {
     SoundManager sm;
     int soundId = -1;
     float maxVolume = 1.0f;
+    float volume = 1.0f;
 
     public SoundSource(SoundManager sm, float maxVolume) {
         this.sm = sm;
@@ -18,6 +19,7 @@ public class SoundSource {
 
     public void play(int resId, boolean repeat) {
         soundId = sm.playSound(resId, repeat);
+        sm.soundSources.put(soundId, this);
     }
 
     public void stop() {
@@ -27,8 +29,12 @@ public class SoundSource {
     public void update(float [] micro, float [] pos) {
         if (soundId >= 0) {
             float d = MathUtils.distance(micro, pos);
-            float volume = d <= 1.0f ? maxVolume : maxVolume / d;
+            volume = d <= 1.0f ? maxVolume : maxVolume / d;
             sm.setVolume(soundId, volume);
         }
+    }
+
+    public float getVolume(){
+        return volume;
     }
 }

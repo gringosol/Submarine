@@ -30,7 +30,8 @@ public class Slider {
                 float [] p = GameManager.getRenderer().convertCoords(x, y, true);
                 if (inBounds(p[0], p[1])) {
                     circle.setPosition(p[0], circle.getPosition()[1]);
-
+                    value = (p[0] - left) / width;
+                    onValueChange(value);
                 }
                 return false;
             }
@@ -42,11 +43,6 @@ public class Slider {
 
             @Override
             public boolean onUp(int x, int y) {
-                float [] p = GameManager.getRenderer().convertCoords(x, y, true);
-                if (inBounds(p[0], p[1])) {
-                    value = (p[0] - left) / width;
-                    onValueChange(value);
-                }
                 return false;
             }
         };
@@ -62,6 +58,10 @@ public class Slider {
     public void setValue(float value) {
         this.value = value;
         circle.setPosition(left + value * width,  circle.getPosition()[1]);
+    }
+
+    public Float getValue(){
+        return value;
     }
 
     public void onValueChange(Float value) {

@@ -69,6 +69,7 @@ public class GameManager {
     static String locale = "en_US";
 
     static ComboBox languageComboBox;
+    static Slider volumeSlider;
 
     static SoundManager soundManager;
 
@@ -477,6 +478,7 @@ public class GameManager {
                 new Button.ClickListener() {
                     @Override
                     public void onClick() {
+                        setOption(OPT_VOLUME, volumeSlider.getValue().toString());
                         if (!getString(languageComboBox.getValue()).equals(gameplay.getLanguageOption())) {
                             setOption(OPT_LANGUAGE, getString(languageComboBox.getValue()));
                             gameplay.setLanguageOption(getString(languageComboBox.getValue()));
@@ -547,16 +549,20 @@ public class GameManager {
                     break;
             }
         }
-        Slider volumeSlider = new Slider(0, 0, 1.5f, 0.3f, -2) {
+        volumeSlider = new Slider(0, 0, 1.5f, 0.3f, -2) {
             @Override
             public void onValueChange(Float value) {
-                setOption(OPT_VOLUME, value.toString());
+                soundManager.setCommonVolume(value);
             }
         };
         volumeSlider.addToLayer(menu_options);
         String volumeOption = getOption(OPT_VOLUME);
         if (!"".equals(volumeOption)) {
             volumeSlider.setValue(Float.parseFloat(volumeOption));
+            soundManager.setCommonVolume(Float.parseFloat(volumeOption));
+        } else {
+            volumeSlider.setValue(1.0f);
+            soundManager.setCommonVolume(1.0f);
         }
 
         TextLine langTextLine = new TextLine(R.string.language,
