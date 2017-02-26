@@ -29,8 +29,8 @@ public class Gameplay {
 
     public void init() {
         scene = GameManager.getScene();
-        missionFailedSprite = GameManager.addSprite(R.drawable.missionfailed, 0, 0, 4.0f, 2.67f);
-        missionPassedSprite = GameManager.addSprite(R.drawable.missionpassed, 0, 0, 4.0f, 2.67f);
+        missionFailedSprite = GameManager.addSprite(R.drawable.failed, 0, 0, 4.0f, 2.67f);
+        missionPassedSprite = GameManager.addSprite(R.drawable.levelup, 0, 0, 4.0f, 2.67f);
         levels.clear();
         levels.put("testlevel", new Level1());
     }

@@ -147,7 +147,7 @@ public class LevelLoader {
         mobs_back.addSprite(submarineBack);
         submarines.addSprite(submarineBack);
         final Submarine submarineMovable = new Submarine(submarineBack,
-                new int[] {R.drawable.submarine, R.drawable.submarine1, R.drawable.submarine2},
+                new int[] {R.drawable.subm1, R.drawable.subm2, R.drawable.subm3},
                 renderer);
         scene.addMovable(submarineMovable);
         GameManager.setSubmarineMovable(submarineMovable);

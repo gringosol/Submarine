@@ -358,10 +358,11 @@ public class GameManager {
     }
 
     private static void addGui() {
-        Sprite mainMenuBackSprite = new Sprite(renderer, R.drawable.submarinebackground, movablePrimitiveMap,
-                2.0f, 2.0f);
+        Sprite mainMenuBackSprite = new Sprite(renderer, R.drawable.mainbgr, movablePrimitiveMap,
+                4.0f, 2.0f);
         scene.getLayer("menu_pause").addSprite(mainMenuBackSprite);
-        Sprite optionsMenuBackSprite = new Sprite(renderer, R.drawable.optionsbackground, movablePrimitiveMap,
+        scene.getLayer("menu_main").addSprite(mainMenuBackSprite);
+        Sprite optionsMenuBackSprite = new Sprite(renderer, R.drawable.mainbgr, movablePrimitiveMap,
                 4.0f, 2.0f);
         scene.getLayer("menu_options").addSprite(optionsMenuBackSprite);
         Button stopButton = new Button(renderer, new int [] {R.drawable.stop, R.drawable.stop1},
