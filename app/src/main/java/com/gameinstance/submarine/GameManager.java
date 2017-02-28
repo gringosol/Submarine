@@ -881,6 +881,8 @@ public class GameManager {
                         }
                         gameplay.setCurrentLevel(LevelLoader.loadLevelState(loadedData));
                         gameplay.reinitGame();
+                        if (gameplay.getCurrentLevel() != null)
+                            gameplay.getCurrentLevel().onShow();
                     }
                 });
 
@@ -956,8 +958,9 @@ public class GameManager {
                     InputController.setMaxOrder(100);
                     InputController.setMinOrder(0);
                     scene.getLayer("menu_main").visible = false;
+                    gameplay.addBriefSprite();
                     LevelLoader.loadLevel(GameActivity.getActivity(), levelList.get(0), true);
-                    renderer.setPaused(false);
+                    gameplay.beforeNewLevel();
                 }
         } );
     }

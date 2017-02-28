@@ -18,4 +18,8 @@
     <string name="go_to_marker">Płyń do markiera</string>
 
     <string name="level_complete">Misja zakończona</string>
+
+    <string name="briefing_level_1">Cełe:</string>
+    <string name="briefing_level_1_1">- podnieść agenta</string>
+    <string name="briefing_level_1_2">- odebrać i dostarczyć ładunek do bazy</string>
 </resources>

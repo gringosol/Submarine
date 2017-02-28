@@ -19,9 +19,7 @@ public class Level1 implements LevelLogic {
     public void init() {
         marker = GameManager.addSprite(R.drawable.marker, target[0], target[1], 0.1f, 0.1f);
         GameManager.getScene().getLayer("ships_and_tanks").addSprite(marker);
-        GameManager.showMessage(R.string.go_to_marker, -1.0f, 0.5f, 2000);
         completed = false;
-        ambientMusicId = GameManager.getSoundManager().playSound(R.raw.molecular_dance_lite, true);
     }
 
     @Override
@@ -48,5 +46,17 @@ public class Level1 implements LevelLogic {
     @Override
     public void onClose() {
         GameManager.getSoundManager().stopSound(ambientMusicId);
+    }
+
+    @Override
+    public void briefing() {
+        GameManager.showMessage(R.string.briefing_level_1, -1.0f, 0.5f, 2000);
+        GameManager.showMessage(R.string.briefing_level_1_1, -1.0f, 0.2f, 2000);
+        GameManager.showMessage(R.string.briefing_level_1_2, -1.0f, -0.1f, 2000);
+    }
+
+    public void onShow() {
+        GameManager.showMessage(R.string.go_to_marker, -1.0f, 0.5f, 3000);
+        ambientMusicId = GameManager.getSoundManager().playSound(R.raw.molecular_dance_lite, true);
     }
 }

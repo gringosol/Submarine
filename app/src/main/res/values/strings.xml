@@ -26,4 +26,8 @@
     <string name="polish">Polski</string>
 
     <string name="level_complete">Задание выполнено</string>
+
+   <string name="briefing_level_1">Задачи:</string>
+   <string name="briefing_level_1_1">- забрать агента</string>
+   <string name="briefing_level_1_2">- забрать груз и доставить на базу</string>
 </resources>

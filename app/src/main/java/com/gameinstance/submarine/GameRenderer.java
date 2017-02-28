@@ -226,6 +226,10 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         this.paused = paused;
     }
 
+    public boolean getPaused() {
+        return paused;
+    }
+
     public GameSurfaceView getSurfaceView() {
         return view;
     }

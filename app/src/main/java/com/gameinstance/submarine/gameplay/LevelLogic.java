@@ -12,4 +12,6 @@ public interface LevelLogic extends Serializable {
     boolean isCompleted();
     void restore();
     void onClose();
+    void briefing();
+    void onShow();
 }

@@ -24,6 +24,7 @@ public class Gameplay {
     Sprite missionFailedSprite;
     Sprite missionPassedSprite;
     Sprite strapSprite;
+    Sprite briefingSprite;
     LevelLogic currentLevel = null;
     Map<String, LevelLogic> levels = new HashMap<>();
     String languageOption = "";
@@ -33,6 +34,7 @@ public class Gameplay {
         missionFailedSprite = GameManager.addSprite(R.drawable.failed, 0, 0, 4.0f, 2.67f);
         missionPassedSprite = GameManager.addSprite(R.drawable.levelup, 0, 0, 4.0f, 2.67f);
         strapSprite = GameManager.addSprite(R.drawable.strap_1, 0, 0, 1.0f, 1.0f);
+        briefingSprite = GameManager.addSprite(R.drawable.briefing, 0, 0, 4.0f, 2.0f);
         levels.clear();
         levels.put("testlevel", new Level1());
     }
@@ -80,11 +82,12 @@ public class Gameplay {
                             public void run() {
                                 scene.getLayer("hud").removeSprite(missionPassedSprite);
                                 scene.getLayer("hud").removeSprite(strapSprite);
+                                scene.getLayer("hud").addSprite(briefingSprite);
                                 GameManager.getRenderer().getSurfaceView().queueEvent(new Runnable() {
                                     @Override
                                     public void run() {
                                         GameManager.nextLevel();
-                                        paused = false;
+                                        beforeNewLevel();
                                     }
                                 });
                             }
@@ -94,6 +97,31 @@ public class Gameplay {
             }
         }, 2000);
 
+    }
+
+    public void beforeNewLevel() {
+        Timer briefTimer = new Timer();
+        if (currentLevel != null) {
+            currentLevel.briefing();
+        }
+        GameManager.getRenderer().setPaused(false);
+        briefTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (briefingSprite != null)
+                    scene.getLayer("hud").removeSprite(briefingSprite);
+                paused = false;
+                if (GameManager.getRenderer().getPaused())
+                    GameManager.getRenderer().setPaused(false);
+                if (currentLevel != null)
+                    currentLevel.onShow();
+            }
+        }, 3000);
+
+    }
+
+    public void addBriefSprite() {
+        scene.getLayer("hud").addSprite(briefingSprite);
     }
 
     public void missionFailed(){
