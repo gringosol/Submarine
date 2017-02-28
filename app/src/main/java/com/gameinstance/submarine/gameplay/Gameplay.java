@@ -23,6 +23,7 @@ public class Gameplay {
     boolean paused = false;
     Sprite missionFailedSprite;
     Sprite missionPassedSprite;
+    Sprite strapSprite;
     LevelLogic currentLevel = null;
     Map<String, LevelLogic> levels = new HashMap<>();
     String languageOption = "";
@@ -31,6 +32,7 @@ public class Gameplay {
         scene = GameManager.getScene();
         missionFailedSprite = GameManager.addSprite(R.drawable.failed, 0, 0, 4.0f, 2.67f);
         missionPassedSprite = GameManager.addSprite(R.drawable.levelup, 0, 0, 4.0f, 2.67f);
+        strapSprite = GameManager.addSprite(R.drawable.strap_1, 0, 0, 1.0f, 1.0f);
         levels.clear();
         levels.put("testlevel", new Level1());
     }
@@ -54,22 +56,44 @@ public class Gameplay {
 
     public void missionPassed(){
         paused = true;
-        currentLevel = null;
-        scene.getLayer("hud").addSprite(missionPassedSprite);
-        Timer endGameTimer = new Timer();
-        endGameTimer.schedule(new TimerTask() {
+
+        //todo выводим звуковое опопвещение и надпись
+        GameManager.showMessage(R.string.level_complete, -1.0f, 0.5f, 2000);
+        GameManager.getSoundManager().playSound(R.raw.two_rings_from_ship_bell, false);
+
+        Timer notifyTimer = new Timer();
+        notifyTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                scene.getLayer("hud").removeSprite(missionPassedSprite);
-                GameManager.getRenderer().getSurfaceView().queueEvent(new Runnable() {
+                scene.getLayer("hud").addSprite(missionPassedSprite);
+                Timer levelupTimer = new Timer();
+                levelupTimer.schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        GameManager.nextLevel();
-                        paused = false;
+                        //todo выводим погон и звук
+                        scene.getLayer("hud").addSprite(strapSprite);
+                        GameManager.getSoundManager().playSound(R.raw.up_and_high_beep, false);
+                        currentLevel = null;
+                        Timer endGameTimer = new Timer();
+                        endGameTimer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                scene.getLayer("hud").removeSprite(missionPassedSprite);
+                                scene.getLayer("hud").removeSprite(strapSprite);
+                                GameManager.getRenderer().getSurfaceView().queueEvent(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        GameManager.nextLevel();
+                                        paused = false;
+                                    }
+                                });
+                            }
+                        }, 3000);
                     }
-                });
+                }, 1000);
             }
-        }, 3000);
+        }, 2000);
+
     }
 
     public void missionFailed(){

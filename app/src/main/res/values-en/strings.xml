@@ -16,4 +16,6 @@
 
     <string name="too_shallow">Too shallow</string>
     <string name="go_to_marker">Go to the marker</string>
+
+    <string name="level_complete">Mission complete</string>
 </resources>

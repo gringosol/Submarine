@@ -55,12 +55,14 @@ public class LevelLoader {
     }
 
     public static void loadLevel(Activity a, int levelId, boolean withMobs) {
+        Sprite loadingSprite = GameManager.addSprite(R.drawable.loading, 0, 0, 4.0f, 2.0f);
         GameManager.setLevelId(levelId);
         activity = a;
         res = activity.getResources();
         scene = GameManager.getScene();
         renderer = GameManager.getRenderer();
         texPrimitive = GameManager.getTexPrimitive();
+        scene.getLayer("hud").addSprite(loadingSprite);
         InputStream inputStream = res.openRawResource(levelId);
         byte[] b;
         try {
@@ -111,6 +113,7 @@ public class LevelLoader {
         InputController.setMinOrder(0);
         if (GameManager.getGameplay() != null)
             GameManager.getGameplay().reinitGame();
+        scene.getLayer("hud").removeSprite(loadingSprite);
     }
 
 

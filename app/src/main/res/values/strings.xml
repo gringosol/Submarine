@@ -24,4 +24,6 @@
     <string name="russian">Русский</string>
     <string name="english">English</string>
     <string name="polish">Polski</string>
+
+    <string name="level_complete">Задание выполнено</string>
 </resources>

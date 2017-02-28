@@ -16,4 +16,6 @@
 
     <string name="too_shallow">Zbyt płytko</string>
     <string name="go_to_marker">Płyń do markiera</string>
+
+    <string name="level_complete">Misja zakończona</string>
 </resources>

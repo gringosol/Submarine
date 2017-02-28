@@ -21,7 +21,7 @@ public class Level1 implements LevelLogic {
         GameManager.getScene().getLayer("ships_and_tanks").addSprite(marker);
         GameManager.showMessage(R.string.go_to_marker, -1.0f, 0.5f, 2000);
         completed = false;
-        ambientMusicId = GameManager.getSoundManager().playSound(R.raw.music1, true);
+        ambientMusicId = GameManager.getSoundManager().playSound(R.raw.molecular_dance_lite, true);
     }
 
     @Override
