@@ -108,4 +108,31 @@ public class Scene {
             entry.getValue().reinitText();
         }
     }
+
+    public List<Ship> getShips() {
+        List<Ship> ships = new ArrayList<>();
+        for (Movable movable : getMovables()) {
+            if (movable instanceof Ship)
+                ships.add((Ship)movable);
+        }
+        return ships;
+    }
+
+    public List<Tank> getTanks() {
+        List<Tank> tanks = new ArrayList<>();
+        for (Movable movable : getMovables()) {
+            if (movable instanceof Tank)
+                tanks.add((Tank)movable);
+        }
+        return tanks;
+    }
+
+    public List<Helicopter> getHelis() {
+        List<Helicopter> helicopters = new ArrayList<>();
+        for (Movable movable : getMovables()) {
+            if (movable instanceof Helicopter)
+                helicopters.add((Helicopter)movable);
+        }
+        return helicopters;
+    }
 }

@@ -182,10 +182,6 @@ public class LevelLoader {
         shipMovable.setAngle(angle);
         addViewCircle(shipMovable);
 
-        final float [] p1 = new float[] {-1.37f, -0.54f};
-        final float [] p2 = new float[] {-2.57f, -0.94f};
-        shipMovable.setTarget(p1);
-        shipMovable.setCurrentTask(new PatrolTwoPoints(shipMovable, p1, p2));
         MobTask task = loadMobTask(shipMovable, jsShip);
         if (task != null) {
             shipMovable.setCurrentTask(task);
@@ -212,10 +208,6 @@ public class LevelLoader {
         tankMovable.setAngle(angle);
         addViewCircle(tankMovable);
 
-        final float [] p1 = new float[] {0.73f, 2.61f};
-        final float [] p2 = new float[] {0.41f, 2.83f};
-        tankMovable.setTarget(p1);
-        tankMovable.setCurrentTask(new PatrolTwoPoints(tankMovable, p1, p2));
         MobTask task = loadMobTask(tankMovable, jsTank);
         if (task != null) {
             tankMovable.setCurrentTask(task);
@@ -244,10 +236,6 @@ public class LevelLoader {
         heliBack.setAnimation(heliAnimation);
         addViewCircle(heliMovable);
 
-        final float [] p1 = new float[] {0.67f, 0.0f};
-        final float [] p2 = new float[] {-1.67f, -0.5f};
-        heliMovable.setTarget(p1);
-        heliMovable.setCurrentTask(new PatrolTwoPoints(heliMovable, p1, p2));
         MobTask task = loadMobTask(heliMovable, jsHeli);
         if (task != null) {
             heliMovable.setCurrentTask(task);
