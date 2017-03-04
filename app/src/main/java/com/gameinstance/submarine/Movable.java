@@ -206,6 +206,10 @@ public class Movable {
         return maxRadius;
     }
 
+    public void setEnemy(boolean b) {
+        isEnemy = b;
+    }
+
     public boolean getIsEnemy() {
         return isEnemy;
     }

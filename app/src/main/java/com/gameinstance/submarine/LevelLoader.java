@@ -36,16 +36,18 @@ public class LevelLoader {
     private static final int PIXELS_PER_UNIT_VISIBLE = 64;
     private static final int PIXELS_PER_UNIT_BACK = 64;
 
-    private static final Map<String, Integer> shipSrites;
+    private static final Map<String, Integer []> shipSrites;
     static {
         shipSrites = new HashMap<>();
-        shipSrites.put("default", R.drawable.ship1);
+        shipSrites.put("default", new Integer[] {R.drawable.ship1});
+        shipSrites.put("carrier", new Integer [] {R.drawable.carrier});
     }
 
-    private static final Map<String, Integer> tankSprites;
+    private static final Map<String, Integer []> tankSprites;
     static {
         tankSprites = new HashMap<>();
-        tankSprites.put("default", R.drawable.tank1);
+        tankSprites.put("default", new Integer [] {R.drawable.tank1});
+        tankSprites.put("agent", new Integer[] {R.drawable.kuzmich1, R.drawable.kuzmich2});
     }
 
     private static final Map<String, Integer []> heliSprites;
@@ -146,7 +148,19 @@ public class LevelLoader {
         Layer mobs_back = scene.getLayer("mobs_back");
         Layer submarines = scene.getLayer("submarines");
         Map<Integer, Primitive> primitiveMap = GameManager.getMovablePrimitiveMap();
-        Sprite submarineBack = new Sprite(renderer, R.drawable.submarine, primitiveMap, 0.2f, 0.2f);
+        JSONObject jsSubmarine = jsonObject.getJSONObject("submarine");
+        float x = (float)jsSubmarine.getDouble("x");
+        float y = (float)jsSubmarine.getDouble("y");
+        float angle = (float)jsSubmarine.getDouble("angle");
+        float w = 0.2f;
+        float h = 0.2f;
+        if (jsSubmarine.has("w")) {
+            w = (float)jsSubmarine.getDouble("w");
+        }
+        if (jsSubmarine.has("h")) {
+            h = (float)jsSubmarine.getDouble("h");
+        }
+        Sprite submarineBack = new Sprite(renderer, R.drawable.submarine, primitiveMap, w, h);
         mobs_back.addSprite(submarineBack);
         submarines.addSprite(submarineBack);
         final Submarine submarineMovable = new Submarine(submarineBack,
@@ -154,10 +168,6 @@ public class LevelLoader {
                 renderer);
         scene.addMovable(submarineMovable);
         GameManager.setSubmarineMovable(submarineMovable);
-        JSONObject jsSubmarine = jsonObject.getJSONObject("submarine");
-        float x = (float)jsSubmarine.getDouble("x");
-        float y = (float)jsSubmarine.getDouble("y");
-        float angle = (float)jsSubmarine.getDouble("angle");
         submarineMovable.getSprite().setPosition(x, y);
         submarineMovable.setAngle(angle);
     }
@@ -173,14 +183,31 @@ public class LevelLoader {
         if (jsShip.has("type")) {
             shipType = jsShip.getString("type");
         }
-        final Sprite shipBack = new Sprite(renderer, getShipTexId(shipType), primitiveMap, 0.4f, 0.4f);
+        float w = 0.4f;
+        float h = 0.4f;
+        if (jsShip.has("w")) {
+            w = (float)jsShip.getDouble("w");
+        }
+        if (jsShip.has("h")) {
+            h = (float)jsShip.getDouble("h");
+        }
+        Integer [] spriteIds = getShipTexId(shipType);
+        final Sprite shipBack = new Sprite(renderer, spriteIds[0], primitiveMap, w, h);
         mobs_back.addSprite(shipBack);
         ships_and_tanks.addSprite(shipBack);
         final Ship shipMovable = new Ship(shipBack, shipType);
         scene.addMovable(shipMovable);
         shipMovable.getSprite().setPosition(x, y);
         shipMovable.setAngle(angle);
-        addViewCircle(shipMovable);
+        if (spriteIds.length > 1) {
+            Animation shipAnimation = new Animation(200, true, getShipTexId(shipType));
+            shipBack.setAnimation(shipAnimation);
+        }
+        if (jsShip.has("enemy")) {
+            shipMovable.setEnemy(jsShip.getInt("enemy") != 0);
+        }
+        if (shipMovable.getIsEnemy())
+          addViewCircle(shipMovable);
 
         MobTask task = loadMobTask(shipMovable, jsShip);
         if (task != null) {
@@ -199,14 +226,31 @@ public class LevelLoader {
         if (jsTank.has("type")) {
             tankType = jsTank.getString("type");
         }
-        Sprite tankBack = new Sprite(renderer, getTankTexId(tankType), primitiveMap, 0.3f, 0.3f);
+        float w = 0.3f;
+        float h = 0.3f;
+        if (jsTank.has("w")) {
+            w = (float)jsTank.getDouble("w");
+        }
+        if (jsTank.has("h")) {
+            h = (float)jsTank.getDouble("h");
+        }
+        Integer [] spriteIds = getTankTexId(tankType);
+        Sprite tankBack = new Sprite(renderer, spriteIds[0], primitiveMap, w, h);
         mobs_back.addSprite(tankBack);
         ships_and_tanks.addSprite(tankBack);
         final Tank tankMovable = new Tank(tankBack, tankType);
         scene.addMovable(tankMovable);
         tankMovable.getSprite().setPosition(x, y);
         tankMovable.setAngle(angle);
-        addViewCircle(tankMovable);
+        if (spriteIds.length > 1) {
+            Animation tankAnimation = new Animation(200, true, getTankTexId(tankType));
+            tankBack.setAnimation(tankAnimation);
+        }
+        if (jsTank.has("enemy")) {
+            tankMovable.setEnemy(jsTank.getInt("enemy") != 0);
+        }
+        if (tankMovable.getIsEnemy())
+            addViewCircle(tankMovable);
 
         MobTask task = loadMobTask(tankMovable, jsTank);
         if (task != null) {
@@ -225,7 +269,15 @@ public class LevelLoader {
         if (jsHeli.has("type")) {
             heliType = jsHeli.getString("type");
         }
-        Sprite heliBack = new Sprite(renderer, getHeliTexId(heliType)[0], primitiveMap, 0.3f, 0.3f);
+        float w = 0.3f;
+        float h = 0.3f;
+        if (jsHeli.has("w")) {
+            w = (float)jsHeli.getDouble("w");
+        }
+        if (jsHeli.has("h")) {
+            h = (float)jsHeli.getDouble("h");
+        }
+        Sprite heliBack = new Sprite(renderer, getHeliTexId(heliType)[0], primitiveMap, w, w);
         mobs_back.addSprite(heliBack);
         aircrafts.addSprite(heliBack);
         final Helicopter heliMovable = new Helicopter(heliBack, heliType);
@@ -234,7 +286,11 @@ public class LevelLoader {
         heliMovable.setAngle(angle);
         Animation heliAnimation = new Animation(200, true, getHeliTexId(heliType));
         heliBack.setAnimation(heliAnimation);
-        addViewCircle(heliMovable);
+        if (jsHeli.has("enemy")) {
+            heliMovable.setEnemy(jsHeli.getInt("enemy") != 0);
+        }
+        if (heliMovable.getIsEnemy())
+            addViewCircle(heliMovable);
 
         MobTask task = loadMobTask(heliMovable, jsHeli);
         if (task != null) {
@@ -242,17 +298,17 @@ public class LevelLoader {
         }
     }
 
-    private static Integer getShipTexId(String shipType) {
+    private static Integer [] getShipTexId(String shipType) {
         if (shipType == null)
             shipType = "default";
-        Integer i = shipSrites.get(shipType);
+        Integer [] i = shipSrites.get(shipType);
         return i != null ? i : shipSrites.get("default");
     }
 
-    private static Integer getTankTexId(String tankType) {
+    private static Integer [] getTankTexId(String tankType) {
         if (tankType == null)
             tankType = "default";
-        Integer i = tankSprites.get(tankType);
+        Integer [] i = tankSprites.get(tankType);
         return i != null ? i : tankSprites.get("default");
     }
 
