@@ -1,8 +1,11 @@
 package com.gameinstance.submarine.gameplay;
 
+import android.os.SystemClock;
+
 import com.gameinstance.submarine.GameManager;
 import com.gameinstance.submarine.Helicopter;
 import com.gameinstance.submarine.R;
+import com.gameinstance.submarine.Scene;
 import com.gameinstance.submarine.Ship;
 import com.gameinstance.submarine.Sprite;
 import com.gameinstance.submarine.Tank;
@@ -20,16 +23,23 @@ import java.util.List;
  */
 public class Level1 implements LevelLogic {
     private boolean completed = false;
-    float [] target = new float[] {  -4.28f, -0.04f  };
+    float [] targetIsland = new float[] {  -4.1f, 0.2f  };
+    float [] targetIsland1 = new float[] {  -4.0f, 0.2f  };
+    float [] targetHarbor = new float[] {  1.94f, 4.41f  };
+    float [] targetHarbor1 = new float[] {  1.7f, 4.7f  };
+    float [] targetHarbor2 = new float[] {  1.9f, 4.57f  };
+    float [] targetCarrier = new float[] {  5.71f, -1.07f  };
     transient Sprite marker;
     int ambientMusicId = 0;
-    List<Ship> ships;
-    List<Tank> tanks;
-    List<Helicopter> helicopters;
+    int currentTarget = 0;
+    long startTime;
+    transient List<Ship> ships;
+    transient List<Tank> tanks;
+    transient List<Helicopter> helicopters;
 
     @Override
     public void init() {
-        marker = GameManager.addSprite(R.drawable.marker, target[0], target[1], 0.1f, 0.1f);
+        marker = GameManager.addSprite(R.drawable.marker, targetIsland[0], targetIsland[1], 0.1f, 0.1f);
         GameManager.getScene().getLayer("ships_and_tanks").addSprite(marker);
         completed = false;
         ships = GameManager.getScene().getShips();
@@ -40,10 +50,91 @@ public class Level1 implements LevelLogic {
 
     @Override
     public void run() {
-        float dist = MathUtils.distance(target, GameManager.getSubmarineMovable().getSprite().getPosition());
-        if (dist < 0.3f) {
-            GameManager.getScene().getLayer("ships_and_tanks").removeSprite(marker);
-            completed = true;
+        float dist;
+        switch (currentTarget) {
+            case 0: //проверяем, доплыли ли до острова; если да, тормозим лодку, пускаем кузьмича
+                dist = MathUtils.distance(targetIsland, GameManager.getSubmarineMovable()
+                        .getSprite().getPosition());
+                if (dist < 0.2f) {
+                    GameManager.getSubmarineMovable().setMotionEnabled(false);
+                    tanks.get(1).setTarget(targetIsland1);
+                    marker.setPosition(targetHarbor[0], targetHarbor[1]);
+                    currentTarget++;
+
+                    tanks.get(1).setSpeed(0.003f);
+                }
+                break;
+            case 1: //ждем Кузьмича, растормаживаем лодку, скрываем кузьмича
+                dist = MathUtils.distance(targetIsland1, tanks.get(1).getSprite().getPosition());
+                if (dist < 0.1f) {
+                    GameManager.getScene().getLayer("ships_and_tanks").removeSprite(tanks.get(1).getSprite());
+                    GameManager.getSubmarineMovable().setMotionEnabled(true);
+                    currentTarget++;
+                }
+                break;
+            case 2: //проверяем расстояние до берега; тормозим лодку, высаживаем Кузьмича, направляем кузьмича в сарай
+                dist = MathUtils.distance(targetHarbor, GameManager.getSubmarineMovable()
+                        .getSprite().getPosition());
+                if (dist < 0.2f) {
+                    marker.setPosition(targetCarrier[0], targetCarrier[1]);
+                    GameManager.getSubmarineMovable().setMotionEnabled(false);
+                    tanks.get(1).getSprite().setPosition(targetHarbor2[0], targetHarbor2[1]);
+                    GameManager.getScene().getLayer("ships_and_tanks").addSprite(tanks.get(1).getSprite());
+
+                    startTime = System.currentTimeMillis();
+                    currentTarget++;
+                }
+                break;
+            case 3://тормозим Кузьмича на 2 сек
+                if (System.currentTimeMillis() - startTime > 1000) {
+                    tanks.get(1).setTarget(targetHarbor1);
+                    currentTarget++;
+                }
+                break;
+            case 4: // если кузьмич в сарае, скрываем кузьмича, засекаем 2 сек
+                dist = MathUtils.distance(targetHarbor1, tanks.get(1).getSprite().getPosition());
+                if (dist < 0.1f) {
+                    GameManager.getScene().getLayer("ships_and_tanks").removeSprite(tanks.get(1).getSprite());
+                    startTime = System.currentTimeMillis();
+                    currentTarget++;
+                }
+                break;
+            case 5://если 2 сек прошло, направляем кузьмича к лодке
+                if (System.currentTimeMillis() - startTime > 2000) {
+                    GameManager.getScene().getLayer("ships_and_tanks").addSprite(tanks.get(1).getSprite());
+                    tanks.get(1).setTarget(targetHarbor2);
+                    currentTarget++;
+                }
+                break;
+            case 6://ждем Кузьмича, растормаживаем лодку, скрываем кузьмича
+                dist = MathUtils.distance(targetHarbor2, tanks.get(1).getSprite().getPosition());
+                if (dist < 0.1f) {
+                    GameManager.getScene().getLayer("ships_and_tanks").removeSprite(tanks.get(1).getSprite());
+                    GameManager.getSubmarineMovable().setMotionEnabled(true);
+                    startTime = System.currentTimeMillis();
+                    currentTarget++;
+                }
+                break;
+            case 7://доплываем до авианосца, тормозим лодку, показываем кузьмича, засекаем 2 сек
+                dist = MathUtils.distance(targetCarrier, GameManager.getSubmarineMovable()
+                        .getSprite().getPosition());
+                if (dist < 0.3f) {
+                    GameManager.getScene().getLayer("ships_and_tanks").removeSprite(marker);
+                    GameManager.getSubmarineMovable().setMotionEnabled(false);
+                    tanks.get(1).setCollide(false);
+                    tanks.get(1).getSprite().setPosition(ships.get(2).getSprite().getPosition()[0],
+                            ships.get(2).getSprite().getPosition()[1]);
+                    GameManager.getScene().getLayer("aircrafts").addSprite(tanks.get(1).getSprite());
+                    startTime = System.currentTimeMillis();
+                    currentTarget++;
+                }
+                break;
+            case 8://миссия пройдена
+                if (System.currentTimeMillis() - startTime > 2000) {
+                    completed = true;
+                    currentTarget++;
+                }
+                break;
         }
     }
 
@@ -54,7 +145,7 @@ public class Level1 implements LevelLogic {
 
     @Override
     public void restore() {
-        marker = GameManager.addSprite(R.drawable.marker, target[0], target[1], 0.1f, 0.1f);
+        marker = GameManager.addSprite(R.drawable.marker, targetIsland[0], targetIsland[1], 0.1f, 0.1f);
         GameManager.getScene().getLayer("ships_and_tanks").addSprite(marker);
         completed = false;
     }
@@ -73,7 +164,7 @@ public class Level1 implements LevelLogic {
 
     public void onShow() {
         GameManager.showMessage(R.string.go_to_marker, -1.0f, 0.5f, 3000);
-        ambientMusicId = GameManager.getSoundManager().playSound(R.raw.molecular_dance_lite, true);
+        ambientMusicId = GameManager.getSoundManager().playSound(R.raw.the_environment_lite, true);
     }
 
     private void setupActors() {

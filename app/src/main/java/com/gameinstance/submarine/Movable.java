@@ -239,4 +239,12 @@ public class Movable {
             soundSource.play(resId, repeat);
         }
     }
+
+    public void setSpeed(float v) {
+        speed = v;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
 }
