@@ -60,7 +60,7 @@ public class GameManager {
     private static boolean isMainMenu;
     private static Gameplay gameplay;
 
-    private static boolean drawBackMap = false;
+    private static boolean drawDebugInfo = false;
     private static boolean startFromMenu = true;
 
     static int [] backTexHandle;
@@ -84,6 +84,7 @@ public class GameManager {
     static Timer tileTimer;
 
     static float hudWidth = 1.0f;
+    static float hudLeft = 1.4f;
 
     public static void initGame(final GameRenderer renderer) {
         isMainMenu = startFromMenu;
@@ -164,11 +165,11 @@ public class GameManager {
         addPrimitive(viewPortPrimitive);
         Map<Integer, Primitive> primitiveMap =
                 Collections.singletonMap(renderer.getProgramHandle("DefaultProgramHandle"), viewPortPrimitive);
-        if (drawBackMap) {
+        if (drawDebugInfo) {
             Sprite backMap = new Sprite(backTexHandle[0], primitiveMap, 1.0f, new float[]{-1.0f, 0.5f});
             scene.getLayer("hud").addSprite(backMap);
         }
-        Sprite radarViewPort = new Sprite(radarTexHandle[0], primitiveMap, hudWidth, new float[]{1.4f, 0.5f});
+        Sprite radarViewPort = new Sprite(radarTexHandle[0], primitiveMap, hudWidth, new float[]{hudLeft, 0.5f});
         scene.getLayer("hud").addSprite(radarViewPort);
         Sprite radarHudSprite = new Sprite(renderer, R.drawable.radarhud, primitiveMap,
                 2.0f / radarScale, 2.0f / radarScale);
@@ -368,65 +369,71 @@ public class GameManager {
         Sprite optionsMenuBackSprite = new Sprite(renderer, R.drawable.mainbgr, movablePrimitiveMap,
                 4.0f, 2.0f);
         scene.getLayer("menu_options").addSprite(optionsMenuBackSprite);
+        float bSize = hudWidth / 2.0f;
+        float bTop = 1.0f - hudWidth - bSize / 2.0f;
+        float bLeft = hudLeft - hudWidth / 2.0f + bSize / 2.0f;
         Button stopButton = new Button(renderer, new int [] {R.drawable.stop, R.drawable.stop1},
-                movablePrimitiveMap, 0.25f, 0.25f, new Button.ClickListener() {
+                movablePrimitiveMap, bSize, bSize, new Button.ClickListener() {
             @Override
             public void onClick() {
                 submarineMovable.setMotionEnabled(false);
             }
-        }, new float[] {1.5f, -0.87f});
+        }, new float[] {bLeft, bTop});
+        Button menuButton = new Button(renderer, new int [] {R.drawable.menubutton, R.drawable.menubutton1},
+                movablePrimitiveMap, bSize, bSize, new Button.ClickListener() {
+            @Override
+            public void onClick() {
+                showMenuPause(true);
+            }
+        }, new float[] {bLeft + bSize, bTop});
 
         Button emergeButton = new Button(renderer, new int [] {R.drawable.emerge, R.drawable.emerge1},
-                movablePrimitiveMap, 0.25f, 0.25f, new Button.ClickListener() {
+                movablePrimitiveMap, bSize, bSize, new Button.ClickListener() {
             @Override
             public void onClick() {
                 submarineMovable.emerge();
             }
-        }, new float[] {0.95f, -0.5f});
+        }, new float[] {bLeft, bTop - bSize});
 
         Button plungeButton = new Button(renderer, new int [] {R.drawable.plunge, R.drawable.plunge1},
-                movablePrimitiveMap, 0.25f, 0.25f, new Button.ClickListener() {
+                movablePrimitiveMap, bSize, bSize, new Button.ClickListener() {
             @Override
             public void onClick() {
                 submarineMovable.plunge();
             }
-        }, new float[] {1.5f, -0.5f});
-        Button nextLevelButton = new Button(renderer, new int [] {R.drawable.nextlevel, R.drawable.nextlevel1},
-                movablePrimitiveMap, 0.25f, 0.25f, new Button.ClickListener() {
-            @Override
-            public void onClick() {
-                nextLevel();
-            }
-        }, new float[] {0.95f, -0.87f});
-        Button saveButton = new Button(renderer, new int [] {R.drawable.save, R.drawable.save1},
-                movablePrimitiveMap, 0.25f, 0.25f, new Button.ClickListener() {
-            @Override
-            public void onClick() {
-                saveGame(DEFAULT_SAVE);
-            }
-        }, new float[] {0.95f, -0.13f});
-        Button loadButton = new Button(renderer, new int [] {R.drawable.load, R.drawable.load1},
-                movablePrimitiveMap, 0.25f, 0.25f, new Button.ClickListener() {
-            @Override
-            public void onClick() {
-                loadGame(DEFAULT_SAVE);
-            }
-        }, new float[] {1.5f, -0.13f});
-        Button menuButton = new Button(renderer, new int [] {R.drawable.menubutton, R.drawable.menubutton1},
-                movablePrimitiveMap, 0.25f, 0.25f, new Button.ClickListener() {
-            @Override
-            public void onClick() {
-              showMenuPause(true);
-            }
-        }, new float[] {0.7f, -0.13f});
+        }, new float[] {bLeft + bSize, bTop - bSize});
+
         Layer hud = scene.getLayer("hud");
         hud.addSprite(stopButton);
+        hud.addSprite(menuButton);
         hud.addSprite(emergeButton);
         hud.addSprite(plungeButton);
-        hud.addSprite(nextLevelButton);
-        hud.addSprite(saveButton);
-        hud.addSprite(loadButton);
-        hud.addSprite(menuButton);
+        if (drawDebugInfo) {
+            Button nextLevelButton = new Button(renderer, new int[]{R.drawable.nextlevel, R.drawable.nextlevel1},
+                    movablePrimitiveMap, 0.25f, 0.25f, new Button.ClickListener() {
+                @Override
+                public void onClick() {
+                    nextLevel();
+                }
+            }, new float[]{bLeft - bSize, bTop + hudWidth});
+            Button saveButton = new Button(renderer, new int[]{R.drawable.save, R.drawable.save1},
+                    movablePrimitiveMap, 0.25f, 0.25f, new Button.ClickListener() {
+                @Override
+                public void onClick() {
+                    saveGame(DEFAULT_SAVE);
+                }
+            }, new float[]{bLeft - bSize, bTop + hudWidth - bSize});
+            Button loadButton = new Button(renderer, new int[]{R.drawable.load, R.drawable.load1},
+                    movablePrimitiveMap, 0.25f, 0.25f, new Button.ClickListener() {
+                @Override
+                public void onClick() {
+                    loadGame(DEFAULT_SAVE);
+                }
+            }, new float[]{bLeft - bSize, bTop + hudWidth - 2.0f * bSize});
+            hud.addSprite(nextLevelButton);
+            hud.addSprite(saveButton);
+            hud.addSprite(loadButton);
+        }
         Layer menu_pause = scene.getLayer("menu_pause");
         final TextButton resumeButton = new TextButton(0.0f, 0.8f, 1.5f, 0.3f, new int[] {
                 R.drawable.tbbackground, R.drawable.tbbackground1}, R.string.resume, 0.2f, movablePrimitiveMap,
