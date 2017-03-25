@@ -12,6 +12,7 @@ public class Camera {
     float maxX = 1.0f;
     float minY = -1.0f;
     float maxY = 1.0f;
+    float horOffset = 0.0f;
 
     public void setTarget(Sprite sprite) {
         target = sprite;
@@ -26,7 +27,7 @@ public class Camera {
 
     public float [] update(float [] mViewMatrix, float aspect, float scale) {
         if (target != null) {
-            float x = -target.getPosition()[0];
+            float x = -target.getPosition()[0] + horOffset;
             if (x < minX + scale / aspect)
                 x = minX + scale / aspect;
             if (x > maxX - scale / aspect)
@@ -44,5 +45,9 @@ public class Camera {
 
     public float [] getPosition(){
         return target!= null ? target.getPosition() : new float[] {0, 0};
+    }
+
+    public void setHorOffset(float offset) {
+        horOffset = offset;
     }
 }

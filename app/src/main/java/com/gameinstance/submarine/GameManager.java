@@ -83,6 +83,8 @@ public class GameManager {
 
     static Timer tileTimer;
 
+    static float hudWidth = 1.0f;
+
     public static void initGame(final GameRenderer renderer) {
         isMainMenu = startFromMenu;
         detectLocale();
@@ -166,7 +168,7 @@ public class GameManager {
             Sprite backMap = new Sprite(backTexHandle[0], primitiveMap, 1.0f, new float[]{-1.0f, 0.5f});
             scene.getLayer("hud").addSprite(backMap);
         }
-        Sprite radarViewPort = new Sprite(radarTexHandle[0], primitiveMap, 1.0f, new float[]{1.4f, 0.5f});
+        Sprite radarViewPort = new Sprite(radarTexHandle[0], primitiveMap, hudWidth, new float[]{1.4f, 0.5f});
         scene.getLayer("hud").addSprite(radarViewPort);
         Sprite radarHudSprite = new Sprite(renderer, R.drawable.radarhud, primitiveMap,
                 2.0f / radarScale, 2.0f / radarScale);
@@ -189,6 +191,7 @@ public class GameManager {
     public static void setCamera() {
         camera.setTarget(submarineMovable.getSprite());
         camera.setBounds(minX, maxX, minY, maxY);
+        camera.setHorOffset(-hudWidth / 2.0f);
         renderer.setCamera(camera);
     }
 
