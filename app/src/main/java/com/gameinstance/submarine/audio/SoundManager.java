@@ -35,7 +35,7 @@ public class SoundManager {
         sp.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
             @Override
             public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-                sp.play(sampleId, 1, 1, 1, isPlaying[loadedSoundsInv.get(sampleId)] ? -1 : 0, 1);
+                sp.play(sampleId, commonVolume, commonVolume, 1, isPlaying[loadedSoundsInv.get(sampleId)] ? -1 : 0, 1);
             }
         });
     }
