@@ -50,4 +50,11 @@ public class Tank extends Movable {
         }
         return false;
     }
+
+    @Override
+    public void update() {
+        if (motionEnabled && sprite.animation != null)
+          sprite.playAnimation();
+        super.update();
+    }
 }
