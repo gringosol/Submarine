@@ -75,7 +75,6 @@ public class Gameplay {
                         //todo выводим погон и звук
                         scene.getLayer("hud").addSprite(strapSprite);
                         GameManager.getSoundManager().playSound(R.raw.up_and_high_beep, false);
-                        currentLevel = null;
                         Timer endGameTimer = new Timer();
                         endGameTimer.schedule(new TimerTask() {
                             @Override

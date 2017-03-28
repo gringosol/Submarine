@@ -243,7 +243,7 @@ public class LevelLoader {
         tankMovable.getSprite().setPosition(x, y);
         tankMovable.setAngle(angle);
         if (spriteIds.length > 1) {
-            Animation tankAnimation = new Animation(700, true, getTankTexId(tankType));
+            Animation tankAnimation = new Animation(300, true, getTankTexId(tankType));
             tankBack.setAnimation(tankAnimation);
         }
         if (jsTank.has("enemy")) {

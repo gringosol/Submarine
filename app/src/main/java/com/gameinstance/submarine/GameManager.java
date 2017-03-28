@@ -691,6 +691,7 @@ public class GameManager {
         }
         levelId = 0;
         tileTimer.cancel();
+        gameplay.setCurrentLevel(null);
     }
 
     public static void clearMovables() {
