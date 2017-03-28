@@ -1024,7 +1024,12 @@ public class GameManager {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                scene.getLayer("hud").removeTextLine(textLine);
+                GameManager.getRenderer().getSurfaceView().queueEvent(new Runnable() {
+                    @Override
+                    public void run() {
+                        scene.getLayer("hud").removeTextLine(textLine);
+                    }
+                });
             }
         }, duration);
     }

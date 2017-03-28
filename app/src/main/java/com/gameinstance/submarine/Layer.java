@@ -31,8 +31,13 @@ public class Layer {
             sprites.add(sprite);
     }
 
-    public void removeSprite(Sprite sprite) {
-        sprites.remove(sprite);
+    public void removeSprite(final Sprite sprite) {
+        GameManager.getRenderer().getSurfaceView().queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                sprites.remove(sprite);
+            }
+        });
     }
 
     public void addSprites(List<Sprite> sprites) {
