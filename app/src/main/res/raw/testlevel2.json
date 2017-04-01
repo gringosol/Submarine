@@ -1,11 +1,42 @@
 {
+  "levelname" : "testlevel2",
   "background" : "tl2_bgr",
   "foreground" : "tl2_frg",
   "unitsize" : "0.5",
   "submarine" : {
     "type" : "default",
-    "x" : "0.2",
-    "y" : "0.0",
+    "x" : "-5.44",
+    "y" : "-4.55",
     "angle" : "0.0"
-  }
+  },
+     "ships" : [
+       {
+           "type" : "default",
+           "x" : "-4.84",
+           "y" : "3.24",
+           "angle" : "-0.3"
+       },
+       {
+           "type" : "default",
+           "x" : "-3.53",
+           "y" : "-0.78",
+           "angle" : "-0.3"
+       }
+     ],
+     "tanks" : [
+         {
+             "type" : "default",
+             "x" : "2.24",
+             "y" : "4.30",
+             "angle" : "2.5"
+         }
+       ],
+             "helis" : [
+                 {
+                     "type" : "default",
+                     "x" : "5.04",
+                     "y" : "-2.94",
+                     "angle" : "2.5"
+                 }
+               ]
 }

@@ -22,4 +22,5 @@
     <string name="briefing_level_1">Targets:</string>
     <string name="briefing_level_1_1">- pick up the agent</string>
     <string name="briefing_level_1_2">- pick up cargo and deliver to the base</string>
+    <string name="briefing_level_2_1">- collect all items</string>
 </resources>

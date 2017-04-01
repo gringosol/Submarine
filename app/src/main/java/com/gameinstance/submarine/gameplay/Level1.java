@@ -1,15 +1,11 @@
 package com.gameinstance.submarine.gameplay;
 
-import android.os.SystemClock;
-
 import com.gameinstance.submarine.GameManager;
 import com.gameinstance.submarine.Helicopter;
 import com.gameinstance.submarine.R;
-import com.gameinstance.submarine.Scene;
 import com.gameinstance.submarine.Ship;
 import com.gameinstance.submarine.Sprite;
 import com.gameinstance.submarine.Tank;
-import com.gameinstance.submarine.gameplay.tasks.MobTask;
 import com.gameinstance.submarine.gameplay.tasks.PatrolPoints;
 import com.gameinstance.submarine.gameplay.tasks.PatrolTwoPoints;
 import com.gameinstance.submarine.utils.MathUtils;

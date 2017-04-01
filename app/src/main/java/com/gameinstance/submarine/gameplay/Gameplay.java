@@ -37,6 +37,7 @@ public class Gameplay {
         briefingSprite = GameManager.addSprite(R.drawable.briefing, 0, 0, 4.0f, 2.0f);
         levels.clear();
         levels.put("testlevel", new Level1());
+        levels.put("testlevel2", new Level2());
     }
 
     public void update(){

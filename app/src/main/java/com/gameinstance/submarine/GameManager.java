@@ -60,7 +60,7 @@ public class GameManager {
     private static boolean isMainMenu;
     private static Gameplay gameplay;
 
-    private static boolean drawDebugInfo = false;
+    private static boolean drawDebugInfo = true;
     private static boolean startFromMenu = true;
 
     static int [] backTexHandle;
@@ -690,7 +690,8 @@ public class GameManager {
             gameplay.getCurrentLevel().onClose();
         }
         levelId = 0;
-        tileTimer.cancel();
+        if (tileTimer != null)
+          tileTimer.cancel();
         gameplay.setCurrentLevel(null);
     }
 
