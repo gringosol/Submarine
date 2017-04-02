@@ -21,7 +21,7 @@ public class TextLine {
     float lineHeight;
     GameRenderer renderer;
 
-    public TextLine(int resId, float [] pos, float lineHeight, GameRenderer renderer) {
+    public TextLine(int resId, float[] pos, float lineHeight, GameRenderer renderer) {
         this.resId = resId;
         this.pos = pos;
         this.lineHeight = lineHeight;

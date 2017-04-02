@@ -956,6 +956,7 @@ public class GameManager {
     }
 
     public static void startNewGame() {
+        currentLevel = 0;
         isMainMenu = false;
         gameplay = new Gameplay();
         gameplay.init();
@@ -1068,5 +1069,13 @@ public class GameManager {
 
     public static List<Sprite> getTilesToAnimate() {
         return tilesToAnimate;
+    }
+
+    public static int getCurrentLevel() {
+        return currentLevel;
+    }
+
+    public static int getLevelCount() {
+        return levelList.size();
     }
 }

@@ -80,16 +80,28 @@ public class Gameplay {
                         endGameTimer.schedule(new TimerTask() {
                             @Override
                             public void run() {
-                                scene.getLayer("hud").removeSprite(missionPassedSprite);
-                                scene.getLayer("hud").removeSprite(strapSprite);
-                                scene.getLayer("hud").addSprite(briefingSprite);
                                 GameManager.getRenderer().getSurfaceView().queueEvent(new Runnable() {
                                     @Override
                                     public void run() {
-                                        GameManager.nextLevel();
-                                        beforeNewLevel();
+                                        GameManager.getRenderer().setPaused(true);
+                                        scene.getLayer("hud").removeSprite(missionPassedSprite);
+                                        scene.getLayer("hud").removeSprite(strapSprite);
+                                        GameManager.getRenderer().setPaused(false);
                                     }
                                 });
+
+                                if (GameManager.getCurrentLevel() < GameManager.getLevelCount() - 1) {
+                                    GameManager.getRenderer().getSurfaceView().queueEvent(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            scene.getLayer("hud").addSprite(briefingSprite);
+                                            GameManager.nextLevel();
+                                            beforeNewLevel();
+                                        }
+                                    });
+                                } else {
+                                    GameEnding.init();
+                                }
                             }
                         }, 3000);
                     }
