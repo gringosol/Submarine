@@ -26,6 +26,7 @@ public class Level2 implements LevelLogic {
             new float [] { 4.14f,  3.54f},
             new float [] { 0.72f, -0.44f});
     transient List<Sprite> itemSprites = new ArrayList<>();
+    transient List<Marker> markers = new ArrayList<>();
     List<Boolean> itemVisibility = new ArrayList<>();
     int ambientMusicId = 0;
     transient List<Ship> ships;
@@ -38,6 +39,7 @@ public class Level2 implements LevelLogic {
             itemSprites.add(GameManager.addSprite(R.drawable.satelite, items.get(i)[0], items.get(i)[1], 0.1f, 0.1f));
             GameManager.getScene().getLayer("submarines").addSprite(itemSprites.get(itemSprites.size() - 1));
             itemVisibility.add(true);
+            markers.add(GameManager.getGameplay().addMarker(items.get(i), false));
         }
         completed = false;
         ships = GameManager.getScene().getShips();
@@ -57,6 +59,7 @@ public class Level2 implements LevelLogic {
                 if (dist < 0.1f) {
                     itemVisibility.set(i, false);
                     GameManager.getScene().getLayer("submarines").removeSprite(itemSprites.get(i));
+                    GameManager.getGameplay().removeMarker(markers.get(i));
                     GameManager.getSoundManager().playSound(R.raw.two_rings_from_ship_bell, false);
                 }
             }
@@ -78,10 +81,12 @@ public class Level2 implements LevelLogic {
                 new float [] { 4.14f,  3.54f},
                 new float [] { 0.72f, -0.44f});
         itemSprites = new ArrayList<>();
+        markers = new ArrayList<>();
         for (int i = 0; i < itemVisibility.size(); i++) {
             itemSprites.add(GameManager.addSprite(R.drawable.satelite, items.get(i)[0], items.get(i)[1], 0.1f, 0.1f));
             if (itemVisibility.get(i)) {
                 GameManager.getScene().getLayer("submarines").addSprite(itemSprites.get(i));
+                markers.add(GameManager.getGameplay().addMarker(items.get(i), false));
             }
         }
     }

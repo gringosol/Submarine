@@ -4,7 +4,6 @@ import com.gameinstance.submarine.GameManager;
 import com.gameinstance.submarine.Helicopter;
 import com.gameinstance.submarine.R;
 import com.gameinstance.submarine.Ship;
-import com.gameinstance.submarine.Sprite;
 import com.gameinstance.submarine.Tank;
 import com.gameinstance.submarine.gameplay.tasks.PatrolPoints;
 import com.gameinstance.submarine.gameplay.tasks.PatrolTwoPoints;
@@ -25,23 +24,23 @@ public class Level1 implements LevelLogic {
     float [] targetHarbor1 = new float[] {  1.7f, 4.7f  };
     float [] targetHarbor2 = new float[] {  1.9f, 4.57f  };
     float [] targetCarrier = new float[] {  5.71f, -1.07f  };
-    transient Sprite marker;
     int ambientMusicId = 0;
     int currentTarget = 0;
     long startTime;
     transient List<Ship> ships;
     transient List<Tank> tanks;
     transient List<Helicopter> helicopters;
+    transient Marker marker;
 
     @Override
     public void init() {
-        marker = GameManager.addSprite(R.drawable.marker, targetIsland[0], targetIsland[1], 0.1f, 0.1f);
-        GameManager.getScene().getLayer("ships_and_tanks").addSprite(marker);
+        marker = GameManager.getGameplay().addMarker(new float[] {targetIsland[0], targetIsland[1]}, true);
         completed = false;
         ships = GameManager.getScene().getShips();
         tanks = GameManager.getScene().getTanks();
         helicopters = GameManager.getScene().getHelis();
         setupActors();
+
     }
 
     @Override
@@ -54,9 +53,8 @@ public class Level1 implements LevelLogic {
                 if (dist < 0.2f) {
                     GameManager.getSubmarineMovable().setMotionEnabled(false);
                     tanks.get(1).setTarget(targetIsland1);
-                    marker.setPosition(targetHarbor[0], targetHarbor[1]);
+                    marker.setPosition(new float[]{targetHarbor[0], targetHarbor[1]});
                     currentTarget++;
-
                     tanks.get(1).setSpeed(0.003f);
                 }
                 break;
@@ -72,7 +70,7 @@ public class Level1 implements LevelLogic {
                 dist = MathUtils.distance(targetHarbor, GameManager.getSubmarineMovable()
                         .getSprite().getPosition());
                 if (dist < 0.2f) {
-                    marker.setPosition(targetCarrier[0], targetCarrier[1]);
+                    marker.setPosition(new float[]{targetCarrier[0], targetCarrier[1]});
                     GameManager.getSubmarineMovable().setMotionEnabled(false);
                     tanks.get(1).getSprite().setPosition(targetHarbor2[0], targetHarbor2[1]);
                     GameManager.getScene().getLayer("ships_and_tanks").addSprite(tanks.get(1).getSprite());
@@ -115,7 +113,7 @@ public class Level1 implements LevelLogic {
                 dist = MathUtils.distance(targetCarrier, GameManager.getSubmarineMovable()
                         .getSprite().getPosition());
                 if (dist < 0.3f) {
-                    GameManager.getScene().getLayer("ships_and_tanks").removeSprite(marker);
+                    GameManager.getGameplay().removeMarker(marker);
                     GameManager.getSubmarineMovable().setMotionEnabled(false);
                     tanks.get(1).setCollide(false);
                     tanks.get(1).getSprite().setPosition(ships.get(2).getSprite().getPosition()[0],
@@ -141,8 +139,7 @@ public class Level1 implements LevelLogic {
 
     @Override
     public void restore() {
-        marker = GameManager.addSprite(R.drawable.marker, targetIsland[0], targetIsland[1], 0.1f, 0.1f);
-        GameManager.getScene().getLayer("ships_and_tanks").addSprite(marker);
+        marker = GameManager.getGameplay().addMarker(new float[] {targetIsland[0], targetIsland[1]}, true);
         completed = false;
     }
 
