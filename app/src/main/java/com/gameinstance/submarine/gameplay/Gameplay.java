@@ -8,7 +8,9 @@ import com.gameinstance.submarine.Sprite;
 import com.gameinstance.submarine.Submarine;
 import com.gameinstance.submarine.utils.MathUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -28,6 +30,7 @@ public class Gameplay {
     LevelLogic currentLevel = null;
     Map<String, LevelLogic> levels = new HashMap<>();
     String languageOption = "";
+    List<Marker> markers = new ArrayList<>();
 
     public void init() {
         scene = GameManager.getScene();
@@ -45,6 +48,9 @@ public class Gameplay {
             return;
         if (currentLevel != null) {
             currentLevel.run();
+            for (Marker marker : markers) {
+                marker.update();
+            }
             if (currentLevel.isCompleted())
                 missionPassed();
         }
@@ -219,5 +225,17 @@ public class Gameplay {
 
     public void setLanguageOption(String v) {
         languageOption = v;
+    }
+
+    public Marker addMarker(float [] pos, boolean onLand) {
+        Marker marker = new Marker(pos, onLand);
+        marker.add();
+        markers.add(marker);
+        return marker;
+    }
+
+    public void removeMarker(Marker marker) {
+        marker.remove();
+        markers.remove(marker);
     }
 }

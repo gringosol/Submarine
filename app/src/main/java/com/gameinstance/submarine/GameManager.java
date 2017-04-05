@@ -1078,4 +1078,8 @@ public class GameManager {
     public static int getLevelCount() {
         return levelList.size();
     }
+
+    public static float getRadarScale() {
+        return radarScale;
+    }
 }

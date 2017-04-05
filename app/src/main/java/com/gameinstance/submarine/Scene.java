@@ -135,4 +135,8 @@ public class Scene {
         }
         return helicopters;
     }
+
+    public Layerset getLayerset(String name) {
+        return layerSets.get(name);
+    }
 }
