@@ -57,7 +57,7 @@ public class Marker {
         float subY = -radarViewMatrix[13];
         float posX = (pos[0] - subX);
         float posY = (pos[1] - subY);
-        float r = 1 / scale;
+        float r = 1 / scale - 0.15f;
         if (posX > r)
             posX = r;
         else if (posX < -r)

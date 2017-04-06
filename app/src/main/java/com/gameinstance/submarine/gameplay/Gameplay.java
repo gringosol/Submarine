@@ -66,7 +66,7 @@ public class Gameplay {
     public void missionPassed(){
         paused = true;
 
-        //todo выводим звуковое опопвещение и надпись
+        //выводим звуковое опопвещение и надпись
         GameManager.showMessage(R.string.level_complete, -1.0f, 0.5f, 2000);
         GameManager.getSoundManager().playSound(R.raw.two_rings_from_ship_bell, false);
 
@@ -79,7 +79,7 @@ public class Gameplay {
                 levelupTimer.schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        //todo выводим погон и звук
+                        //выводим погон и звук
                         scene.getLayer("hud").addSprite(strapSprite);
                         GameManager.getSoundManager().playSound(R.raw.up_and_high_beep, false);
                         Timer endGameTimer = new Timer();
@@ -102,7 +102,6 @@ public class Gameplay {
                                         public void run() {
                                             scene.getLayer("hud").addSprite(briefingSprite);
                                             GameManager.nextLevel();
-                                            beforeNewLevel();
                                         }
                                     });
                                 } else {

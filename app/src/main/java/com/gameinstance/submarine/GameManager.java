@@ -729,6 +729,7 @@ public class GameManager {
                 if (currentLevel >= levelList.size())
                     currentLevel = 0;
                 LevelLoader.loadLevel(GameActivity.getActivity(), levelList.get(currentLevel), true);
+                gameplay.beforeNewLevel();
 
             }
         });

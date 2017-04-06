@@ -124,11 +124,11 @@ public class Level1 implements LevelLogic {
                     GameManager.getScene().getLayer("aircrafts").addSprite(tanks.get(1).getSprite());
                     startTime = System.currentTimeMillis();
                     currentTarget++;
-                    ambientMusic.stop();
                 }
                 break;
             case 8://миссия пройдена
                 if (System.currentTimeMillis() - startTime > 2000) {
+                    ambientMusic.stop();
                     completed = true;
                     currentTarget++;
                 }
