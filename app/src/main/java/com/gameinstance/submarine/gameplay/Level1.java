@@ -1,5 +1,7 @@
 package com.gameinstance.submarine.gameplay;
 
+import android.media.MediaPlayer;
+
 import com.gameinstance.submarine.GameManager;
 import com.gameinstance.submarine.Helicopter;
 import com.gameinstance.submarine.R;
@@ -24,7 +26,8 @@ public class Level1 implements LevelLogic {
     float [] targetHarbor1 = new float[] {  1.7f, 4.7f  };
     float [] targetHarbor2 = new float[] {  1.9f, 4.57f  };
     float [] targetCarrier = new float[] {  5.71f, -1.07f  };
-    int ambientMusicId = 0;
+    transient MediaPlayer ambientMusic = MediaPlayer.create(GameManager.getRenderer().getActivityContext(),
+            R.raw.the_environment_lite);
     int currentTarget = 0;
     long startTime;
     transient List<Ship> ships;
@@ -40,7 +43,7 @@ public class Level1 implements LevelLogic {
         tanks = GameManager.getScene().getTanks();
         helicopters = GameManager.getScene().getHelis();
         setupActors();
-
+        ambientMusic.setLooping(true);
     }
 
     @Override
@@ -121,6 +124,7 @@ public class Level1 implements LevelLogic {
                     GameManager.getScene().getLayer("aircrafts").addSprite(tanks.get(1).getSprite());
                     startTime = System.currentTimeMillis();
                     currentTarget++;
+                    ambientMusic.stop();
                 }
                 break;
             case 8://миссия пройдена
@@ -140,12 +144,16 @@ public class Level1 implements LevelLogic {
     @Override
     public void restore() {
         marker = GameManager.getGameplay().addMarker(new float[] {targetIsland[0], targetIsland[1]}, true);
+        ambientMusic = MediaPlayer.create(GameManager.getRenderer().getActivityContext(),
+                R.raw.the_environment_lite);
+        ambientMusic.setLooping(true);
         completed = false;
     }
 
     @Override
     public void onClose() {
-        GameManager.getSoundManager().stopSound(ambientMusicId);
+        if (ambientMusic.isPlaying())
+            ambientMusic.stop();
     }
 
     @Override
@@ -157,7 +165,7 @@ public class Level1 implements LevelLogic {
 
     public void onShow() {
         GameManager.showMessage(R.string.go_to_marker, -1.0f, 0.5f, 3000);
-        ambientMusicId = GameManager.getSoundManager().playSound(R.raw.the_environment_lite, true);
+        ambientMusic.start();
     }
 
     private void setupActors() {

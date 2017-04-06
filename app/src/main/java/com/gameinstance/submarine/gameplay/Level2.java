@@ -1,5 +1,7 @@
 package com.gameinstance.submarine.gameplay;
 
+import android.media.MediaPlayer;
+
 import com.gameinstance.submarine.GameManager;
 import com.gameinstance.submarine.Helicopter;
 import com.gameinstance.submarine.R;
@@ -28,7 +30,8 @@ public class Level2 implements LevelLogic {
     transient List<Sprite> itemSprites = new ArrayList<>();
     transient List<Marker> markers = new ArrayList<>();
     List<Boolean> itemVisibility = new ArrayList<>();
-    int ambientMusicId = 0;
+    transient MediaPlayer ambientMusic = MediaPlayer.create(GameManager.getRenderer().getActivityContext(),
+            R.raw.molecular_dance_lite);
     transient List<Ship> ships;
     transient List<Tank> tanks;
     transient List<Helicopter> helicopters;
@@ -46,6 +49,7 @@ public class Level2 implements LevelLogic {
         tanks = GameManager.getScene().getTanks();
         helicopters = GameManager.getScene().getHelis();
         setupActors();
+        ambientMusic.setLooping(true);
     }
 
     @Override
@@ -65,6 +69,8 @@ public class Level2 implements LevelLogic {
             }
         }
         completed = !notCompl;
+        if (completed)
+            ambientMusic.stop();
     }
 
     @Override
@@ -89,11 +95,15 @@ public class Level2 implements LevelLogic {
                 markers.add(GameManager.getGameplay().addMarker(items.get(i), false));
             }
         }
+        ambientMusic = MediaPlayer.create(GameManager.getRenderer().getActivityContext(),
+                R.raw.molecular_dance_lite);
+        ambientMusic.setLooping(true);
     }
 
     @Override
     public void onClose() {
-        GameManager.getSoundManager().stopSound(ambientMusicId);
+        if (ambientMusic.isPlaying())
+            ambientMusic.stop();
     }
 
     @Override
@@ -103,7 +113,7 @@ public class Level2 implements LevelLogic {
     }
 
     public void onShow() {
-        ambientMusicId = GameManager.getSoundManager().playSound(R.raw.the_environment_lite, true);
+        ambientMusic.start();
     }
 
     private void setupActors() {
