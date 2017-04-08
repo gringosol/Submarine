@@ -12,6 +12,7 @@ public class Helicopter extends Movable {
         isEnemy = true;
         setSoundSource(new SoundSource(GameManager.getSoundManager(), 0.5f));
         setCurrentSound(R.raw.helicopter02, true);
+        this.type = heliType;
     }
 
     @Override

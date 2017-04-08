@@ -8,6 +8,7 @@ public class Tank extends Movable {
     public Tank(Sprite sprite, String type) {
         super(sprite);
         isEnemy = true;
+        this.type = type;
     }
 
     @Override
