@@ -55,7 +55,7 @@ public class GameManager {
     private static final String DEFAULT_SAVE = "quicksave";
     private static final String OPT_LANGUAGE = "option_language";
     private static final String OPT_VOLUME = "option_volume";
-    private static final float radarScale = 0.25f;
+    public static final float radarScale = 0.25f;
     private static final int radarViewportSize = 512;
     private static boolean isMainMenu;
     private static Gameplay gameplay;
@@ -171,20 +171,6 @@ public class GameManager {
         }
         Sprite radarViewPort = new Sprite(radarTexHandle[0], primitiveMap, hudWidth, new float[]{hudLeft, 0.5f});
         scene.getLayer("hud").addSprite(radarViewPort);
-        Sprite radarHudSprite = new Sprite(renderer, R.drawable.radarhud, primitiveMap,
-                2.0f / radarScale, 2.0f / radarScale);
-        scene.getLayer("radarhud").addSprite(radarHudSprite);
-        Sprite radarArrowSprite = new Sprite(renderer, R.drawable.radararrow, primitiveMap,
-                2.0f / radarScale, 2.0f / radarScale);
-        scene.getLayer("radarhud").addSprite(radarArrowSprite);
-        final Movable radarArrowMovable = new Movable(radarArrowSprite) {
-            @Override
-            public void update() {
-                setAngle(getAngle() - 0.5f);
-            }
-        };
-        scene.addMovable(radarArrowMovable);
-        radarArrowMovable.setCollide(false);
         gameplay = new Gameplay();
         gameplay.init();
     }
@@ -685,6 +671,7 @@ public class GameManager {
         scene.getLayer("submarines").clear();
         scene.getLayer("ships_and_tanks").clear();
         scene.getLayer("aircrafts").clear();
+        scene.getLayer("radarhud").clear();
         clearMovables();
         if (gameplay.getCurrentLevel() != null) {
             gameplay.getCurrentLevel().onClose();

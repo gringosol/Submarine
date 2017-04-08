@@ -1,7 +1,9 @@
 package com.gameinstance.submarine.gameplay;
 
 import com.gameinstance.submarine.GameManager;
+import com.gameinstance.submarine.GameRenderer;
 import com.gameinstance.submarine.Movable;
+import com.gameinstance.submarine.Primitive;
 import com.gameinstance.submarine.R;
 import com.gameinstance.submarine.Scene;
 import com.gameinstance.submarine.Sprite;
@@ -31,6 +33,9 @@ public class Gameplay {
     Map<String, LevelLogic> levels = new HashMap<>();
     String languageOption = "";
     List<Marker> markers = new ArrayList<>();
+    Sprite radarHudSprite;
+    Sprite radarArrowSprite;
+    Movable radarArrowMovable;
 
     public void init() {
         scene = GameManager.getScene();
@@ -130,6 +135,7 @@ public class Gameplay {
                 paused = false;
                 if (GameManager.getRenderer().getPaused())
                     GameManager.getRenderer().setPaused(false);
+                addRadarHud();
                 if (currentLevel != null)
                     currentLevel.onShow();
             }
@@ -236,5 +242,34 @@ public class Gameplay {
     public void removeMarker(Marker marker) {
         marker.remove();
         markers.remove(marker);
+    }
+
+    public void addRadarHud() {
+        GameManager.getRenderer().getSurfaceView().queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                GameRenderer renderer = GameManager.getRenderer();
+                float radarScale = GameManager.radarScale;
+                Map<Integer, Primitive> primitiveMap = GameManager.getMovablePrimitiveMap();
+                if (radarHudSprite == null)
+                    radarHudSprite = new Sprite(renderer, R.drawable.radarhud, primitiveMap,
+                        2.0f / radarScale, 2.0f / radarScale);
+                scene.getLayer("radarhud").addSprite(radarHudSprite);
+                if (radarArrowSprite == null)
+                    radarArrowSprite = new Sprite(renderer, R.drawable.radararrow, primitiveMap,
+                        2.0f / radarScale, 2.0f / radarScale);
+                scene.getLayer("radarhud").addSprite(radarArrowSprite);
+                if (radarArrowMovable == null) {
+                    radarArrowMovable = new Movable(radarArrowSprite) {
+                        @Override
+                        public void update() {
+                            setAngle(getAngle() - 0.5f);
+                        }
+                    };
+                    scene.addMovable(radarArrowMovable);
+                    radarArrowMovable.setCollide(false);
+                }
+            }
+        });
     }
 }
