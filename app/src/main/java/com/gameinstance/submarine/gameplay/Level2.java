@@ -20,8 +20,7 @@ import java.util.List;
  * Created by gringo on 01.04.2017 16:38.
  *
  */
-public class Level2 implements LevelLogic {
-    private boolean completed = false;
+public class Level2 extends AbstractLevel {
     transient List<float []> items = Arrays.asList(new float [] {-5.55f, -0.71f},
             new float [] {-2.13f,  2.71f},
             new float [] { 0.37f,  6.99f},
@@ -30,11 +29,6 @@ public class Level2 implements LevelLogic {
     transient List<Sprite> itemSprites = new ArrayList<>();
     transient List<Marker> markers = new ArrayList<>();
     List<Boolean> itemVisibility = new ArrayList<>();
-    transient MediaPlayer ambientMusic = MediaPlayer.create(GameManager.getRenderer().getActivityContext(),
-            R.raw.molecular_dance_lite);
-    transient List<Ship> ships;
-    transient List<Tank> tanks;
-    transient List<Helicopter> helicopters;
 
     @Override
     public void init() {
@@ -44,11 +38,8 @@ public class Level2 implements LevelLogic {
             itemVisibility.add(true);
             markers.add(GameManager.getGameplay().addMarker(items.get(i), false));
         }
-        completed = false;
-        ships = GameManager.getScene().getShips();
-        tanks = GameManager.getScene().getTanks();
-        helicopters = GameManager.getScene().getHelis();
-        setupActors();
+        ambientMusic = MediaPlayer.create(GameManager.getRenderer().getActivityContext(),
+                R.raw.molecular_dance_lite);
         ambientMusic.setLooping(true);
     }
 
@@ -74,13 +65,7 @@ public class Level2 implements LevelLogic {
     }
 
     @Override
-    public boolean isCompleted() {
-        return completed;
-    }
-
-    @Override
     public void restore() {
-        completed = false;
         items = Arrays.asList(new float [] {-5.55f, -0.71f},
                 new float [] {-2.13f,  2.71f},
                 new float [] { 0.37f,  6.99f},
@@ -97,13 +82,6 @@ public class Level2 implements LevelLogic {
         }
         ambientMusic = MediaPlayer.create(GameManager.getRenderer().getActivityContext(),
                 R.raw.molecular_dance_lite);
-        ambientMusic.setLooping(true);
-    }
-
-    @Override
-    public void onClose() {
-        if (ambientMusic.isPlaying())
-            ambientMusic.stop();
     }
 
     @Override
@@ -113,10 +91,11 @@ public class Level2 implements LevelLogic {
     }
 
     public void onShow() {
-        ambientMusic.start();
+        super.onShow();
     }
 
-    private void setupActors() {
+    @Override
+    protected void setupActors() {
         List<float []> sh1Points = Arrays.asList(new float [] {-4.84f,  3.24f},
                 new float [] {-2.65f,  3.68f},
                 new float [] { 0.64f,  6.46f},

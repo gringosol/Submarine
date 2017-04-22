@@ -765,6 +765,11 @@ public class GameManager {
                 jsMovable.put("angle", movable.getAngle());
                 if (movable.getType() != null)
                     jsMovable.put("type", movable.getType());
+                if (movable.getSprite().getScaleX() != 1.0f)
+                    jsMovable.put("w", movable.getSprite().getScaleX());
+                if (movable.getSprite().getScaleY() != 1.0f)
+                    jsMovable.put("h", movable.getSprite().getScaleY());
+                jsMovable.put("enemy", movable.getIsEnemy() ? 1 : 0);
                 if (movable instanceof Ship) {
                     ships.add(jsMovable);
                 }
@@ -814,6 +819,7 @@ public class GameManager {
         editor.putString(filename, s);
         editor.apply();
     }
+    //todo сделать сохранение всех атрибутов для мобов
 
     public static void loadGame(String filename) {
         String s;

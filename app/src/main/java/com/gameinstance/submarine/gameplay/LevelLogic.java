@@ -7,10 +7,10 @@ import java.io.Serializable;
  *
  */
 public interface LevelLogic extends Serializable {
-    void init();
+    void commonInit();
     void run();
     boolean isCompleted();
-    void restore();
+    void commonRestore();
     void onClose();
     void briefing();
     void onShow();

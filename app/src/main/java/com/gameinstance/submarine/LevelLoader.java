@@ -5,7 +5,6 @@ import android.content.res.Resources;
 
 import com.gameinstance.submarine.gameplay.LevelLogic;
 import com.gameinstance.submarine.gameplay.tasks.MobTask;
-import com.gameinstance.submarine.gameplay.tasks.PatrolTwoPoints;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -103,7 +102,7 @@ public class LevelLoader {
                     if (GameManager.getGameplay().getLevels().containsKey(levelname)) {
                         LevelLogic levelLogic = GameManager.getGameplay().getLevels().get(levelname);
                         GameManager.getGameplay().setCurrentLevel(levelLogic);
-                        levelLogic.init();
+                        levelLogic.commonInit();
                     }
                 }
             }
@@ -378,7 +377,7 @@ public class LevelLoader {
                         ObjectInputStream objectInputStream =
                                 new ObjectInputStream(inputStream);
                         level = cl1.cast(objectInputStream.readObject());
-                        level.restore();
+                        level.commonRestore();
                         objectInputStream.close();
                         inputStream.close();
                     } catch (IOException e) {

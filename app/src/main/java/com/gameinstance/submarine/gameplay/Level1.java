@@ -3,10 +3,7 @@ package com.gameinstance.submarine.gameplay;
 import android.media.MediaPlayer;
 
 import com.gameinstance.submarine.GameManager;
-import com.gameinstance.submarine.Helicopter;
 import com.gameinstance.submarine.R;
-import com.gameinstance.submarine.Ship;
-import com.gameinstance.submarine.Tank;
 import com.gameinstance.submarine.gameplay.tasks.PatrolPoints;
 import com.gameinstance.submarine.gameplay.tasks.PatrolTwoPoints;
 import com.gameinstance.submarine.utils.MathUtils;
@@ -18,32 +15,23 @@ import java.util.List;
  * Created by gringo on 01.01.2017 13:07.
  *
  */
-public class Level1 implements LevelLogic {
-    private boolean completed = false;
+public class Level1 extends AbstractLevel {
     float [] targetIsland = new float[] {  -4.1f, 0.2f  };
     float [] targetIsland1 = new float[] {  -4.0f, 0.2f  };
     float [] targetHarbor = new float[] {  1.94f, 4.41f  };
     float [] targetHarbor1 = new float[] {  1.7f, 4.7f  };
     float [] targetHarbor2 = new float[] {  1.9f, 4.57f  };
     float [] targetCarrier = new float[] {  5.71f, -1.07f  };
-    transient MediaPlayer ambientMusic = MediaPlayer.create(GameManager.getRenderer().getActivityContext(),
-            R.raw.the_environment_lite);
     int currentTarget = 0;
     long startTime;
-    transient List<Ship> ships;
-    transient List<Tank> tanks;
-    transient List<Helicopter> helicopters;
+
     transient Marker marker;
 
     @Override
     public void init() {
         marker = GameManager.getGameplay().addMarker(new float[] {targetIsland[0], targetIsland[1]}, true);
-        completed = false;
-        ships = GameManager.getScene().getShips();
-        tanks = GameManager.getScene().getTanks();
-        helicopters = GameManager.getScene().getHelis();
-        setupActors();
-        ambientMusic.setLooping(true);
+        ambientMusic = MediaPlayer.create(GameManager.getRenderer().getActivityContext(),
+                R.raw.the_environment_lite);
     }
 
     @Override
@@ -137,23 +125,10 @@ public class Level1 implements LevelLogic {
     }
 
     @Override
-    public boolean isCompleted() {
-        return completed;
-    }
-
-    @Override
     public void restore() {
         marker = GameManager.getGameplay().addMarker(new float[] {targetIsland[0], targetIsland[1]}, true);
         ambientMusic = MediaPlayer.create(GameManager.getRenderer().getActivityContext(),
                 R.raw.the_environment_lite);
-        ambientMusic.setLooping(true);
-        completed = false;
-    }
-
-    @Override
-    public void onClose() {
-        if (ambientMusic.isPlaying())
-            ambientMusic.stop();
     }
 
     @Override
@@ -164,11 +139,12 @@ public class Level1 implements LevelLogic {
     }
 
     public void onShow() {
+        super.onShow();
         GameManager.showMessage(R.string.go_to_marker, -1.0f, 0.5f, 3000);
-        ambientMusic.start();
     }
 
-    private void setupActors() {
+    @Override
+    protected void setupActors() {
         List<float []> sh1Points = Arrays.asList(new float [] {-4.17f, -2.29f},
                 new float [] {-5.07f, -1.59f}, new float[] {-5.15f, -0.93f},
                 new float[] {-4.99f, -0.26f}, new float[] {-4.71f, 0.39f},
