@@ -26,12 +26,19 @@ public class Level1 extends AbstractLevel {
     long startTime;
 
     transient Marker marker;
+    float [] currentMarkerPosition = new float[2];
 
     @Override
     public void init() {
         marker = GameManager.getGameplay().addMarker(new float[] {targetIsland[0], targetIsland[1]}, true);
+        setMarkerPosition(targetIsland[0], targetIsland[1]);
         ambientMusic = MediaPlayer.create(GameManager.getRenderer().getActivityContext(),
                 R.raw.the_environment_lite);
+    }
+
+    private void setMarkerPosition(float x, float y) {
+        currentMarkerPosition = new float[]{x, y};
+        marker.setPosition(currentMarkerPosition);
     }
 
     @Override
@@ -44,7 +51,7 @@ public class Level1 extends AbstractLevel {
                 if (dist < 0.2f) {
                     GameManager.getSubmarineMovable().setMotionEnabled(false);
                     tanks.get(1).setTarget(targetIsland1);
-                    marker.setPosition(new float[]{targetHarbor[0], targetHarbor[1]});
+                    setMarkerPosition(targetHarbor[0], targetHarbor[1]);
                     currentTarget++;
                     tanks.get(1).setSpeed(0.003f);
                 }
@@ -61,7 +68,7 @@ public class Level1 extends AbstractLevel {
                 dist = MathUtils.distance(targetHarbor, GameManager.getSubmarineMovable()
                         .getSprite().getPosition());
                 if (dist < 0.2f) {
-                    marker.setPosition(new float[]{targetCarrier[0], targetCarrier[1]});
+                    setMarkerPosition(targetCarrier[0], targetCarrier[1]);
                     GameManager.getSubmarineMovable().setMotionEnabled(false);
                     tanks.get(1).getSprite().setPosition(targetHarbor2[0], targetHarbor2[1]);
                     GameManager.getScene().getLayer("ships_and_tanks").addSprite(tanks.get(1).getSprite());
@@ -127,6 +134,7 @@ public class Level1 extends AbstractLevel {
     @Override
     public void restore() {
         marker = GameManager.getGameplay().addMarker(new float[] {targetIsland[0], targetIsland[1]}, true);
+        setMarkerPosition(currentMarkerPosition[0], currentMarkerPosition[1]);
         ambientMusic = MediaPlayer.create(GameManager.getRenderer().getActivityContext(),
                 R.raw.the_environment_lite);
     }

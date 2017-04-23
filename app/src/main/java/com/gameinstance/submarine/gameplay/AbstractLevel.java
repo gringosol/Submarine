@@ -80,4 +80,10 @@ public class AbstractLevel implements LevelLogic {
 
     protected void setupActors() {
     }
+
+    @Override
+    public void onFail() {
+        if (ambientMusic != null && ambientMusic.isPlaying())
+            ambientMusic.stop();
+    }
 }

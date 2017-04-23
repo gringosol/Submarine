@@ -148,6 +148,8 @@ public class Gameplay {
     }
 
     public void missionFailed(){
+        if (currentLevel != null)
+            currentLevel.onFail();
         paused = true;
         scene.getLayer("hud").addSprite(missionFailedSprite);
         Timer endGameTimer = new Timer();

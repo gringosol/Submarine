@@ -14,4 +14,5 @@ public interface LevelLogic extends Serializable {
     void onClose();
     void briefing();
     void onShow();
+    void onFail();
 }
