@@ -38,8 +38,7 @@ public class Level2 extends AbstractLevel {
             itemVisibility.add(true);
             markers.add(GameManager.getGameplay().addMarker(items.get(i), false));
         }
-        ambientMusic = MediaPlayer.create(GameManager.getRenderer().getActivityContext(),
-                R.raw.molecular_dance_lite);
+        ambientMusic = GameManager.getSoundManager().addMediaPlayer(R.raw.molecular_dance_lite);
         ambientMusic.setLooping(true);
     }
 
@@ -80,8 +79,7 @@ public class Level2 extends AbstractLevel {
                 markers.add(GameManager.getGameplay().addMarker(items.get(i), false));
             }
         }
-        ambientMusic = MediaPlayer.create(GameManager.getRenderer().getActivityContext(),
-                R.raw.molecular_dance_lite);
+        ambientMusic = GameManager.getSoundManager().addMediaPlayer(R.raw.molecular_dance_lite);
     }
 
     @Override

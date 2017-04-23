@@ -32,8 +32,7 @@ public class Level1 extends AbstractLevel {
     public void init() {
         marker = GameManager.getGameplay().addMarker(new float[] {targetIsland[0], targetIsland[1]}, true);
         setMarkerPosition(targetIsland[0], targetIsland[1]);
-        ambientMusic = MediaPlayer.create(GameManager.getRenderer().getActivityContext(),
-                R.raw.the_environment_lite);
+        ambientMusic = GameManager.getSoundManager().addMediaPlayer(R.raw.the_environment_lite);
     }
 
     private void setMarkerPosition(float x, float y) {
@@ -135,8 +134,7 @@ public class Level1 extends AbstractLevel {
     public void restore() {
         marker = GameManager.getGameplay().addMarker(new float[] {targetIsland[0], targetIsland[1]}, true);
         setMarkerPosition(currentMarkerPosition[0], currentMarkerPosition[1]);
-        ambientMusic = MediaPlayer.create(GameManager.getRenderer().getActivityContext(),
-                R.raw.the_environment_lite);
+        ambientMusic = GameManager.getSoundManager().addMediaPlayer(R.raw.the_environment_lite);
     }
 
     @Override

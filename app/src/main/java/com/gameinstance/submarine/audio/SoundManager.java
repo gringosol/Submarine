@@ -2,11 +2,15 @@ package com.gameinstance.submarine.audio;
 
 import android.content.Context;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.media.SoundPool;
 
 import com.gameinstance.submarine.GameManager;
+import com.gameinstance.submarine.R;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,6 +29,7 @@ public class SoundManager {
     Context context;
     Map<Integer, SoundSource> soundSources = new HashMap<>();
     float commonVolume = 1.0f;
+    List<MediaPlayer> mediaPlayers = new ArrayList<>();
 
     public SoundManager(int channelCount){
         soundCount = channelCount;
@@ -98,5 +103,18 @@ public class SoundManager {
                 }
             }
         }
+        for (MediaPlayer mediaPlayer : mediaPlayers) {
+            if (mediaPlayer != null) {
+                mediaPlayer.setVolume(commonVolume, commonVolume);
+            }
+        }
+    }
+
+    public MediaPlayer addMediaPlayer(int resource) {
+        MediaPlayer mediaPlayer = MediaPlayer.create(GameManager.getRenderer().getActivityContext(),
+                resource);
+        mediaPlayers.add(mediaPlayer);
+        mediaPlayer.setVolume(commonVolume, commonVolume);
+        return mediaPlayer;
     }
 }
