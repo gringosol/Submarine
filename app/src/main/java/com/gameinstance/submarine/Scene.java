@@ -139,4 +139,12 @@ public class Scene {
     public Layerset getLayerset(String name) {
         return layerSets.get(name);
     }
+
+    public void deactivateMovables() {
+        if (getMovables() == null)
+            return;
+        for (Movable movable : getMovables()) {
+            movable.deactivate();
+        }
+    }
 }

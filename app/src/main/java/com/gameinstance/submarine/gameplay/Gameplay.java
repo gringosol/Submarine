@@ -70,7 +70,7 @@ public class Gameplay {
 
     public void missionPassed(){
         paused = true;
-
+        GameManager.getScene().deactivateMovables();
         //выводим звуковое опопвещение и надпись
         GameManager.showMessage(R.string.level_complete, -1.0f, 0.5f, 2000);
         GameManager.getSoundManager().playSound(R.raw.two_rings_from_ship_bell, false);
@@ -150,6 +150,7 @@ public class Gameplay {
     public void missionFailed(){
         if (currentLevel != null)
             currentLevel.onFail();
+        GameManager.getScene().deactivateMovables();
         paused = true;
         scene.getLayer("hud").addSprite(missionFailedSprite);
         Timer endGameTimer = new Timer();

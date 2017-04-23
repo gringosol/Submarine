@@ -683,6 +683,7 @@ public class GameManager {
     }
 
     public static void clearMovables() {
+        scene.deactivateMovables();
         List<Movable> movablesToClear = new ArrayList<>();
         for (Movable movable : scene.getMovables()) {
             if (movable instanceof Ship || movable instanceof Tank || movable instanceof Helicopter)

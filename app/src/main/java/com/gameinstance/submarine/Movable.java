@@ -247,4 +247,10 @@ public class Movable {
     public float getSpeed() {
         return speed;
     }
+
+    public void deactivate() {
+        if (soundSource != null) {
+            soundSource.stop();
+        }
+    }
 }
