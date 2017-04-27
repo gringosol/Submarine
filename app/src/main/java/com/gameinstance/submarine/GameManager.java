@@ -53,6 +53,7 @@ public class GameManager {
     static Camera camera;
     static int levelId = 0;
     private static final String DEFAULT_SAVE = "quicksave";
+    public static final String AUTO_SAVE = "autosave";
     private static final String OPT_LANGUAGE = "option_language";
     private static final String OPT_VOLUME = "option_volume";
     public static final float radarScale = 0.25f;
@@ -573,7 +574,16 @@ public class GameManager {
 
 
         Layer menu_main = scene.getLayer("menu_main");
-        TextButton newGameButton = new TextButton(0.0f, 0.8f, 1.5f, 0.3f, new int[] {
+        TextButton resumeGameButton = new TextButton(0.0f, 0.8f, 1.5f, 0.3f, new int[] {
+                R.drawable.tbbackground, R.drawable.tbbackground1}, R.string.resume, 0.2f, movablePrimitiveMap,
+                new Button.ClickListener() {
+                    @Override
+                    public void onClick() {
+                        loadGame(AUTO_SAVE);
+                    }
+                }, -10);
+        resumeGameButton.addToLayer(menu_main);
+        TextButton newGameButton = new TextButton(0.0f, 0.4f, 1.5f, 0.3f, new int[] {
                 R.drawable.tbbackground, R.drawable.tbbackground1}, R.string.new_game, 0.2f, movablePrimitiveMap,
                 new Button.ClickListener() {
                     @Override
@@ -582,7 +592,7 @@ public class GameManager {
                     }
                 }, -10);
         newGameButton.addToLayer(menu_main);
-        TextButton ldButton1 = new TextButton(0.0f, 0.4f, 1.5f, 0.3f, new int[] {
+        TextButton ldButton1 = new TextButton(0.0f, 0.0f, 1.5f, 0.3f, new int[] {
                 R.drawable.tbbackground, R.drawable.tbbackground1}, R.string.load, 0.2f, movablePrimitiveMap,
                 new Button.ClickListener() {
                     @Override
@@ -591,7 +601,7 @@ public class GameManager {
                     }
                 }, -10);
         ldButton1.addToLayer(menu_main);
-        TextButton optionsButton1 = new TextButton(0.0f, 0.0f, 1.5f, 0.3f, new int[] {
+        TextButton optionsButton1 = new TextButton(0.0f, -0.4f, 1.5f, 0.3f, new int[] {
                 R.drawable.tbbackground, R.drawable.tbbackground1}, R.string.options, 0.2f, movablePrimitiveMap,
                 new Button.ClickListener() {
                     @Override
@@ -600,7 +610,7 @@ public class GameManager {
                     }
                 }, -10);
         optionsButton1.addToLayer(menu_main);
-        TextButton exitButton1 = new TextButton(0.0f, -0.4f, 1.5f, 0.3f, new int[] {
+        TextButton exitButton1 = new TextButton(0.0f, -0.8f, 1.5f, 0.3f, new int[] {
                 R.drawable.tbbackground, R.drawable.tbbackground1}, R.string.exit, 0.2f, movablePrimitiveMap,
                 new Button.ClickListener() {
                     @Override

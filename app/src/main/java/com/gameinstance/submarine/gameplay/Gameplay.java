@@ -136,8 +136,10 @@ public class Gameplay {
                 if (GameManager.getRenderer().getPaused())
                     GameManager.getRenderer().setPaused(false);
                 addRadarHud();
-                if (currentLevel != null)
+                if (currentLevel != null) {
                     currentLevel.onShow();
+                    GameManager.saveGame(GameManager.AUTO_SAVE);
+                }
             }
         }, 3000);
 
