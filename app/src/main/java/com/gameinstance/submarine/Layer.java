@@ -26,9 +26,14 @@ public class Layer {
         this.optimize = optimize;
     }
 
-    public void addSprite(Sprite sprite) {
+    public void addSprite(final Sprite sprite) {
         if (!sprites.contains(sprite))
-            sprites.add(sprite);
+            GameManager.getRenderer().getSurfaceView().queueEvent(new Runnable() {
+                @Override
+                public void run() {
+                    sprites.add(sprite);
+                }
+            });
     }
 
     public void removeSprite(final Sprite sprite) {

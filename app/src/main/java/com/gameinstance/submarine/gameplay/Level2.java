@@ -77,6 +77,8 @@ public class Level2 extends AbstractLevel {
             if (itemVisibility.get(i)) {
                 GameManager.getScene().getLayer("submarines").addSprite(itemSprites.get(i));
                 markers.add(GameManager.getGameplay().addMarker(items.get(i), false));
+            } else {
+                markers.add(null);
             }
         }
         ambientMusic = GameManager.getSoundManager().addMediaPlayer(R.raw.molecular_dance_lite);
