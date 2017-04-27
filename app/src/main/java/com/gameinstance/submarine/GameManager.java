@@ -850,12 +850,8 @@ public class GameManager {
                 renderer.getSurfaceView().queueEvent(new Runnable() {
                     @Override
                     public void run() {
-                        if (levId != levelId) {
-                            clearLevel();
-                            LevelLoader.loadLevel(GameActivity.getActivity(), levId, false);
-                        } else {
-                            clearMovables();
-                        }
+                        clearLevel();
+                        LevelLoader.loadLevel(GameActivity.getActivity(), levId, false);
                         int j = 0;
                         for (Integer lev : levelList) {
                             if (lev.equals(levId)) {
