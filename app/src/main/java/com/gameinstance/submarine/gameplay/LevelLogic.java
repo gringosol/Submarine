@@ -15,4 +15,6 @@ public interface LevelLogic extends Serializable {
     void briefing();
     void onShow();
     void onFail();
+    int getScore();
+    int getTotalScore();
 }

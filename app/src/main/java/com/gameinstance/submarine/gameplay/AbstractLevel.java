@@ -19,9 +19,11 @@ public class AbstractLevel implements LevelLogic {
     transient List<Tank> tanks;
     transient List<Helicopter> helicopters;
     transient MediaPlayer ambientMusic;
+    int totalScore;
 
     @Override
     public void commonInit() {
+        totalScore = GameManager.getGameplay().getTotalScore();
         commonSetup();
         setupActors();
         init();
@@ -85,5 +87,15 @@ public class AbstractLevel implements LevelLogic {
     public void onFail() {
         if (ambientMusic != null && ambientMusic.isPlaying())
             ambientMusic.stop();
+    }
+
+    @Override
+    public int getScore() {
+        return 100;
+    }
+
+    @Override
+    public int getTotalScore() {
+        return totalScore;
     }
 }

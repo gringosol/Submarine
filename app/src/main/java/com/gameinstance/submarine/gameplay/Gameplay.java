@@ -28,6 +28,7 @@ public class Gameplay {
     Sprite missionFailedSprite;
     Sprite missionPassedSprite;
     Sprite strapSprite;
+    List<Sprite> strapSprites = new ArrayList<>();
     Sprite briefingSprite;
     LevelLogic currentLevel = null;
     Map<String, LevelLogic> levels = new HashMap<>();
@@ -36,12 +37,18 @@ public class Gameplay {
     Sprite radarHudSprite;
     Sprite radarArrowSprite;
     Movable radarArrowMovable;
+    int totalScore = 0;
+    static int SCORE_STEP = 100;
+    int [] straps = new int[] {R.drawable.strap_1, R.drawable.strap_2, R.drawable.strap_3};
 
     public void init() {
         scene = GameManager.getScene();
         missionFailedSprite = GameManager.addSprite(R.drawable.failed, 0, 0, 4.0f, 2.67f);
         missionPassedSprite = GameManager.addSprite(R.drawable.levelup, 0, 0, 4.0f, 2.67f);
-        strapSprite = GameManager.addSprite(R.drawable.strap_1, 0, 0, 1.0f, 1.0f);
+        for (int strap : straps) {
+            strapSprites.add(GameManager.addSprite(strap, 0, 0, 1.0f, 1.0f));
+        }
+
         briefingSprite = GameManager.addSprite(R.drawable.briefing, 0, 0, 4.0f, 2.0f);
         levels.clear();
         levels.put("testlevel", new Level1());
@@ -74,7 +81,9 @@ public class Gameplay {
         //выводим звуковое опопвещение и надпись
         GameManager.showMessage(R.string.level_complete, -1.0f, 0.5f, 2000);
         GameManager.getSoundManager().playSound(R.raw.two_rings_from_ship_bell, false);
-
+        if (currentLevel != null) {
+            totalScore = totalScore + currentLevel.getScore();
+        }
         Timer notifyTimer = new Timer();
         notifyTimer.schedule(new TimerTask() {
             @Override
@@ -85,7 +94,18 @@ public class Gameplay {
                     @Override
                     public void run() {
                         //выводим погон и звук
-                        scene.getLayer("hud").addSprite(strapSprite);
+                        strapSprite = null;
+                        if (currentLevel != null) {
+                            if (totalScore - currentLevel.getTotalScore() >= SCORE_STEP) {
+                                int n = totalScore / SCORE_STEP - 1;
+                                if (n < 0)
+                                    n= 0;
+                                if (n >= straps.length)
+                                    n = straps.length - 1;
+                                strapSprite = strapSprites.get(n);
+                                scene.getLayer("hud").addSprite(strapSprite);
+                            }
+                        }
                         GameManager.getSoundManager().playSound(R.raw.up_and_high_beep, false);
                         Timer endGameTimer = new Timer();
                         endGameTimer.schedule(new TimerTask() {
@@ -96,7 +116,8 @@ public class Gameplay {
                                     public void run() {
                                         GameManager.getRenderer().setPaused(true);
                                         scene.getLayer("hud").removeSprite(missionPassedSprite);
-                                        scene.getLayer("hud").removeSprite(strapSprite);
+                                        if (strapSprite != null)
+                                            scene.getLayer("hud").removeSprite(strapSprite);
                                         GameManager.getRenderer().setPaused(false);
                                     }
                                 });
@@ -276,5 +297,9 @@ public class Gameplay {
                 }
             }
         });
+    }
+
+    public int getTotalScore() {
+        return totalScore;
     }
 }
