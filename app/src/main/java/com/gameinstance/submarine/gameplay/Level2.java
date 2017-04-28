@@ -34,6 +34,7 @@ public class Level2 extends AbstractLevel {
     public void init() {
         for (int i = 0; i < items.size(); i++) {
             itemSprites.add(GameManager.addSprite(R.drawable.satelite, items.get(i)[0], items.get(i)[1], 0.1f, 0.1f));
+            itemSprites.get(i).setRotation((float)(Math.random() * 360.0));
             GameManager.getScene().getLayer("submarines").addSprite(itemSprites.get(itemSprites.size() - 1));
             itemVisibility.add(true);
             markers.add(GameManager.getGameplay().addMarker(items.get(i), false));
@@ -74,6 +75,7 @@ public class Level2 extends AbstractLevel {
         markers = new ArrayList<>();
         for (int i = 0; i < itemVisibility.size(); i++) {
             itemSprites.add(GameManager.addSprite(R.drawable.satelite, items.get(i)[0], items.get(i)[1], 0.1f, 0.1f));
+            itemSprites.get(i).setRotation((float)(Math.random() * 360.0));
             if (itemVisibility.get(i)) {
                 GameManager.getScene().getLayer("submarines").addSprite(itemSprites.get(i));
                 markers.add(GameManager.getGameplay().addMarker(items.get(i), false));
