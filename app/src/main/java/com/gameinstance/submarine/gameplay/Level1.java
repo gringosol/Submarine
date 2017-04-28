@@ -1,7 +1,5 @@
 package com.gameinstance.submarine.gameplay;
 
-import android.media.MediaPlayer;
-
 import com.gameinstance.submarine.GameManager;
 import com.gameinstance.submarine.R;
 import com.gameinstance.submarine.gameplay.tasks.PatrolPoints;
