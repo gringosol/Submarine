@@ -9,6 +9,7 @@ public class Tank extends Movable {
         super(sprite);
         isEnemy = true;
         this.type = type;
+        setMaxRadius(1.0f);
     }
 
     @Override

@@ -10,5 +10,6 @@ public class Ship extends Movable {
         super(sprite);
         isEnemy = true;
         this.type = shipType;
+        setMaxRadius(0.75f);
     }
 }
