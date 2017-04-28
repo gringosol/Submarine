@@ -162,7 +162,7 @@ public class Gameplay {
                     GameManager.saveGame(GameManager.AUTO_SAVE);
                 }
             }
-        }, 3000);
+        }, 5000);
 
     }
 

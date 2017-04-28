@@ -88,8 +88,8 @@ public class Level2 extends AbstractLevel {
 
     @Override
     public void briefing() {
-        GameManager.showMessage(R.string.briefing_level_1, -1.0f, 0.5f, 2000);
-        GameManager.showMessage(R.string.briefing_level_2_1, -1.0f, 0.2f, 2000);
+        GameManager.showMessage(R.string.briefing_level_1, -1.0f, 0.5f, 4500);
+        GameManager.showMessage(R.string.briefing_level_2_1, -1.0f, 0.2f, 4500);
     }
 
     public void onShow() {

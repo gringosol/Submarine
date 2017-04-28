@@ -52,7 +52,7 @@ public class Level1 extends AbstractLevel {
                     tanks.get(1).setTarget(targetIsland1);
                     setMarkerPosition(targetHarbor[0], targetHarbor[1]);
                     currentTarget++;
-                    tanks.get(1).setSpeed(0.003f);
+                    tanks.get(1).setSpeed(0.01f);
                 }
                 break;
             case 1: //ждем Кузьмича, растормаживаем лодку, скрываем кузьмича
@@ -135,13 +135,22 @@ public class Level1 extends AbstractLevel {
         marker = GameManager.getGameplay().addMarker(new float[] {targetIsland[0], targetIsland[1]}, true);
         setMarkerPosition(currentMarkerPosition[0], currentMarkerPosition[1]);
         ambientMusic = GameManager.getSoundManager().addMediaPlayer(R.raw.the_environment_lite);
+        switch (currentTarget) {
+            case 1:
+                tanks.get(1).setTarget(targetIsland1);
+                tanks.get(1).setSpeed(0.01f);
+                break;
+            case 6:
+                tanks.get(1).setTarget(targetHarbor2);
+                break;
+        }
     }
 
     @Override
     public void briefing() {
-        GameManager.showMessage(R.string.briefing_level_1, -1.0f, 0.5f, 2000);
-        GameManager.showMessage(R.string.briefing_level_1_1, -1.0f, 0.2f, 2000);
-        GameManager.showMessage(R.string.briefing_level_1_2, -1.0f, -0.1f, 2000);
+        GameManager.showMessage(R.string.briefing_level_1, -1.0f, 0.5f, 4500);
+        GameManager.showMessage(R.string.briefing_level_1_1, -1.0f, 0.2f, 4500);
+        GameManager.showMessage(R.string.briefing_level_1_2, -1.0f, -0.1f, 4500);
     }
 
     public void onShow() {
