@@ -31,6 +31,7 @@ public class Submarine extends Movable {
         if (shallowWarning == null) {
             shallowWarning = new TextLine(R.string.too_shallow, new float[] {-0.3f, 0.5f}, 0.2f, renderer);
         }
+        speed = 0.025f;
     }
 
     public int getDepth() {

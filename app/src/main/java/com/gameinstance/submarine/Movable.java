@@ -10,7 +10,7 @@ import com.gameinstance.submarine.gameplay.tasks.MobTask;
 public class Movable {
     Sprite sprite;
     float [] target = new float[] {0, 0};
-    float speed = 0.01f;
+    float speed = 0.015f;
     float angularSpeed = 0.1f;
     float angle = 0;
     float previousAngle = 0;
