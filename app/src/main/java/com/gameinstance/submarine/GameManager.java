@@ -769,6 +769,9 @@ public class GameManager {
                     throw new RuntimeException(e.getMessage());
                 }
             }
+            if (gameplay.getDataToSave() != null) {
+                savedData.put("gameplayData", gameplay.getDataToSave());
+            }
             for (Movable movable : scene.getMovables()) {
                 JSONObject jsMovable = new JSONObject();
                 jsMovable.put("x", movable.getSprite().getPosition()[0]);
@@ -845,7 +848,9 @@ public class GameManager {
                 final float y = (float)submarine.getDouble("y");
                 final float angle = (float)submarine.getDouble("angle");
 
-
+                if (loadedData.has("gameplayData")) {
+                    gameplay.restoreSavedData(loadedData.getString("gameplayData"));
+                }
 
                 renderer.getSurfaceView().queueEvent(new Runnable() {
                     @Override
@@ -957,13 +962,13 @@ public class GameManager {
     }
 
     public static void startNewGame() {
-        currentLevel = 0;
-        isMainMenu = false;
-        gameplay = new Gameplay();
-        gameplay.init();
         renderer.getSurfaceView().queueEvent( new Runnable() {
                 @Override
                 public void run() {
+                    currentLevel = 0;
+                    isMainMenu = false;
+                    gameplay = new Gameplay();
+                    gameplay.init();
                     renderer.setPaused(true);
                     scene.getLayerSets().get("Menu").setEnabled(false);
                     scene.getLayerSets().get("BackBuffer").setEnabled(true);

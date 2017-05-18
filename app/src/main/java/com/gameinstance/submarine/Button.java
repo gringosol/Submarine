@@ -97,4 +97,10 @@ public class Button extends Sprite {
     public void setTimerInterval(int v) {
         timerInterval = v;
     }
+
+    @Override
+    public void setVisible(boolean v) {
+        super.setVisible(v);
+        enabled = v;
+    }
 }

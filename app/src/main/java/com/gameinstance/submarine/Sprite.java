@@ -22,6 +22,7 @@ public class Sprite {
     float [] rotateMatrix = new float[16];
     int texHandle;
     Animation animation;
+    boolean visible = true;
 
     public Sprite(GameRenderer renderer, int texResourseId, Map<Integer, Primitive> primitives, float width,
                   float height) {
@@ -50,6 +51,8 @@ public class Sprite {
     }
 
     public void draw(float [] viewMatrix, float [] projectionMatrix, int programHandle) {
+        if (!visible)
+            return;
         Matrix.setIdentityM(modelMatrix, 0);
         Matrix.setIdentityM(scaleMatrix, 0);
         Matrix.setIdentityM(translateMatrix, 0);
@@ -66,6 +69,8 @@ public class Sprite {
     }
 
     public void draw(float [] viewMatrix, float [] projectionMatrix, float [] color, int programHandle) {
+        if (!visible)
+            return;
         Matrix.setIdentityM(modelMatrix, 0);
         Matrix.setIdentityM(scaleMatrix, 0);
         Matrix.setIdentityM(translateMatrix, 0);
@@ -117,5 +122,13 @@ public class Sprite {
 
     public void playAnimation() {
         animation.play(this);
+    }
+
+    public void setVisible(boolean v) {
+        visible = v;
+    }
+
+    public boolean getVisible() {
+        return  visible;
     }
 }

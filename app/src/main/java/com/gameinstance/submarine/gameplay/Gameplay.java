@@ -1,7 +1,9 @@
 package com.gameinstance.submarine.gameplay;
 
+import com.gameinstance.submarine.Button;
 import com.gameinstance.submarine.GameManager;
 import com.gameinstance.submarine.GameRenderer;
+import com.gameinstance.submarine.Layer;
 import com.gameinstance.submarine.Movable;
 import com.gameinstance.submarine.Primitive;
 import com.gameinstance.submarine.R;
@@ -40,8 +42,15 @@ public class Gameplay {
     int totalScore = 0;
     static int SCORE_STEP = 100;
     int [] straps = new int[] {R.drawable.strap_1, R.drawable.strap_2, R.drawable.strap_3};
+    GameRenderer renderer;
+    int empCount = 0;
+    Button empButton;
+    private static final float bSize = 0.4f;
+    private static final float empRadius = 4.0f;
+    private static final int empDelay = 10000;
 
     public void init() {
+        renderer = GameManager.getRenderer();
         scene = GameManager.getScene();
         missionFailedSprite = GameManager.addSprite(R.drawable.failed, 0, 0, 4.0f, 2.67f);
         missionPassedSprite = GameManager.addSprite(R.drawable.levelup, 0, 0, 4.0f, 2.67f);
@@ -53,6 +62,17 @@ public class Gameplay {
         levels.clear();
         levels.put("testlevel", new Level1());
         levels.put("testlevel2", new Level2());
+        Layer hud = scene.getLayer("hud");
+        float leftScreenSide = -1 / renderer.getAspect();
+        empButton = new Button(renderer, new int [] {R.drawable.flash, R.drawable.flash1},
+                GameManager.getMovablePrimitiveMap(), bSize, bSize, new Button.ClickListener() {
+            @Override
+            public void onClick() {
+                applyEmp();
+            }
+        }, new float[] {leftScreenSide + bSize, 0.5f});
+        hud.addSprite(empButton);
+        empButton.setVisible(false);
     }
 
     public void update(){
@@ -211,20 +231,24 @@ public class Gameplay {
         Submarine submarine = GameManager.getSubmarineMovable();
         if (submarineDepth != submarine.getDepth()) {
             submarineDepth = submarine.getDepth();
-            for (Movable movable : scene.getMovables()) {
-                if (movable.getIsEnemy()) {
-                    switch (submarineDepth) {
-                        case 0:
-                            movable.setViewRadius(movable.getMaxRadius());
-                            break;
-                        case 1:
-                            movable.setViewRadius(movable.getMaxRadius() * 0.6f);
-                            break;
-                        case 2:
-                            movable.setViewRadius(submarine.getMotionEnabled() ?
-                                    movable.getMaxRadius() * 0.2f : 0);
-                            break;
-                    }
+            refreshVisibility(submarine);
+        }
+    }
+
+    public void refreshVisibility(Submarine submarine) {
+        for (Movable movable : scene.getMovables()) {
+            if (movable.getIsEnemy() && movable.getViewRadius() != 0.01f) {
+                switch (submarineDepth) {
+                    case 0:
+                        movable.setViewRadius(movable.getMaxRadius());
+                        break;
+                    case 1:
+                        movable.setViewRadius(movable.getMaxRadius() * 0.6f);
+                        break;
+                    case 2:
+                        movable.setViewRadius(submarine.getMotionEnabled() ?
+                                movable.getMaxRadius() * 0.2f : 0);
+                        break;
                 }
             }
         }
@@ -301,5 +325,57 @@ public class Gameplay {
 
     public int getTotalScore() {
         return totalScore;
+    }
+
+    public String getDataToSave() {
+        return null;
+    }
+
+    public void restoreSavedData(String data) {
+
+    }
+
+    public void addEmp() {
+        if (!empButton.getVisible()) {
+            empButton.setVisible(true);
+        }
+        empCount++;
+    }
+
+    public void applyEmp() {
+        if (empCount > 0) {
+            empCount--;
+            final List<Movable> enemyMovables = getEnemyMovablesInRadius(empRadius);
+            for (Movable movable : enemyMovables) {
+                movable.setMotionEnabled(false);
+                movable.setViewRadius(0.01f);
+            }
+            Timer restoreTimer = new Timer();
+            restoreTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    for(Movable movable : enemyMovables) {
+                        movable.setMotionEnabled(true);
+                        movable.setViewRadius(0.02f);
+                        refreshVisibility(GameManager.getSubmarineMovable());
+                    }
+                }
+            }, empDelay);
+            if (empCount <= 0 && empButton != null) {
+                empButton.setVisible(false);
+            }
+        }
+    }
+
+    public List<Movable> getEnemyMovablesInRadius(float empRadius) {
+        List<Movable> movables = new ArrayList<>();
+        for (Movable movable : GameManager.getScene().getMovables()) {
+            float dist = MathUtils.distance(movable.getSprite().getPosition(),
+                    GameManager.getSubmarineMovable().getSprite().getPosition());
+            if (movable.getIsEnemy() && dist <= empRadius) {
+                movables.add(movable);
+            }
+        }
+        return movables;
     }
 }
