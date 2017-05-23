@@ -48,6 +48,8 @@ public class Gameplay {
     private static final float bSize = 0.4f;
     private static final float empRadius = 4.0f;
     private static final int empDelay = 10000;
+    List<Timer> events = new ArrayList<>();
+    Map<Timer, Integer> eventCountMap = new HashMap<>();
 
     public void init() {
         renderer = GameManager.getRenderer();
@@ -351,13 +353,32 @@ public class Gameplay {
                 movable.setViewRadius(0.01f);
             }
             Timer restoreTimer = new Timer();
+            final Submarine submarine = GameManager.getSubmarineMovable();
+            final Sprite empSprite = GameManager.addSprite(R.drawable.viewcircle,
+                    submarine.getSprite().getPosition()[0], submarine.getSprite().getPosition()[1],
+                    0.25f, 0.25f);
+            GameManager.getSoundManager().playSound(R.raw.up_and_high_beep, false);
+            scene.getLayer("submarines").addSprite(empSprite);
+            scheduleEvent(new Runnable() {
+                @Override
+                public void run() {
+                    scene.getLayer("submarines").removeSprite(empSprite);
+                }
+            }, 500);
+            scheduleEvent(new Runnable() {
+                @Override
+                public void run() {
+                    float sx = empSprite.getScaleX();
+                    empSprite.setScale(sx * 1.5f, sx * 1.5f);
+                }
+            }, 50, 10);
             restoreTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     for(Movable movable : enemyMovables) {
                         movable.setMotionEnabled(true);
                         movable.setViewRadius(0.02f);
-                        refreshVisibility(GameManager.getSubmarineMovable());
+                        refreshVisibility(submarine);
                     }
                 }
             }, empDelay);
@@ -377,5 +398,48 @@ public class Gameplay {
             }
         }
         return movables;
+    }
+
+    public void scheduleEvent(final Runnable runnable, int delay) {
+        Timer timer = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                runnable.run();
+            }
+        };
+        timer.schedule(task, delay);
+        events.add(timer);
+    }
+
+    public void scheduleEvent(final Runnable runnable, int period, final int count) {
+        final Timer timer = new Timer();
+        if (count != 0)
+            eventCountMap.put(timer, 0);
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                Integer curCnt = eventCountMap.get(timer);
+                if (curCnt == null || count == 0) {
+                    runnable.run();
+                } else {
+                    if (curCnt < count) {
+                        runnable.run();
+                        curCnt++;
+                        eventCountMap.put(timer, curCnt);
+                    }
+                }
+            }
+        };
+        timer.schedule(task, period, period);
+        events.add(timer);
+    }
+
+    public void clearEvents() {
+        for (Timer timer : events) {
+            timer.cancel();
+        }
+        events.clear();
+        eventCountMap.clear();
     }
 }

@@ -682,6 +682,7 @@ public class GameManager {
         scene.getLayer("ships_and_tanks").clear();
         scene.getLayer("aircrafts").clear();
         scene.getLayer("radarhud").clear();
+        gameplay.clearEvents();
         clearMovables();
         if (gameplay.getCurrentLevel() != null) {
             gameplay.getCurrentLevel().onClose();
