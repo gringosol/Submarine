@@ -47,7 +47,9 @@ public class Gameplay {
     int [] straps = new int[] {R.drawable.strap_1, R.drawable.strap_2, R.drawable.strap_3};
     GameRenderer renderer;
     int empCount = 0;
+    int baitCount = 0;
     Button empButton;
+    Button baitButton;
     private static final float bSize = 0.4f;
     private static final float empRadius = 4.0f;
     private static final int empDelay = 10000;
@@ -81,7 +83,18 @@ public class Gameplay {
             empButton.setVisible(false);
             empButton.setTimerInterval(5000);
         }
-
+        if (baitButton == null) {
+            baitButton = new Button(renderer, new int [] {R.drawable.bait, R.drawable.bait1},
+                    GameManager.getMovablePrimitiveMap(), bSize, bSize, new Button.ClickListener() {
+                @Override
+                public void onClick() {
+                    applyBait();
+                }
+            }, new float[] {leftScreenSide + bSize, -0.5f});
+            hud.addSprite(baitButton);
+            baitButton.setVisible(false);
+            baitButton.setTimerInterval(5000);
+        }
     }
 
     public void update(){
@@ -464,5 +477,21 @@ public class Gameplay {
         }
         events.clear();
         eventCountMap.clear();
+    }
+
+    public void addBait() {
+        if (!baitButton.getVisible()) {
+            baitButton.setVisible(true);
+        }
+        baitCount++;
+    }
+
+    public void applyBait() {
+        if (baitCount > 0) {
+            baitCount--;
+            if (baitCount == 0) {
+                baitButton.setVisible(false);
+            }
+        }
     }
 }
