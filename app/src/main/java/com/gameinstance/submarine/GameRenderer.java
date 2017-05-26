@@ -76,17 +76,17 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         initializeOglState();
         createShaders();
         initializeMatrices();
-        GameManager.initGame(this);
-        mScene = GameManager.getScene();
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
-        float aspect = height / (float)width;
+        aspect = height / (float)width;
         Matrix.scaleM(mProjectionMatrix, 0, aspect, 1.0f, 1.0f);
         this.width = width;
         this.height = height;
+        GameManager.initGame(this);
+        mScene = GameManager.getScene();
     }
 
     @Override

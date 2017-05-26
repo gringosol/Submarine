@@ -12,6 +12,9 @@ import com.gameinstance.submarine.Sprite;
 import com.gameinstance.submarine.Submarine;
 import com.gameinstance.submarine.utils.MathUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,15 +69,19 @@ public class Gameplay {
         levels.put("testlevel2", new Level2());
         Layer hud = scene.getLayer("hud");
         float leftScreenSide = -1 / renderer.getAspect();
-        empButton = new Button(renderer, new int [] {R.drawable.flash, R.drawable.flash1},
-                GameManager.getMovablePrimitiveMap(), bSize, bSize, new Button.ClickListener() {
-            @Override
-            public void onClick() {
-                applyEmp();
-            }
-        }, new float[] {leftScreenSide + bSize, 0.5f});
-        hud.addSprite(empButton);
-        empButton.setVisible(false);
+        if (empButton == null) {
+            empButton = new Button(renderer, new int [] {R.drawable.flash, R.drawable.flash1},
+                    GameManager.getMovablePrimitiveMap(), bSize, bSize, new Button.ClickListener() {
+                @Override
+                public void onClick() {
+                    applyEmp();
+                }
+            }, new float[] {leftScreenSide + bSize, 0.5f});
+            hud.addSprite(empButton);
+            empButton.setVisible(false);
+            empButton.setTimerInterval(5000);
+        }
+
     }
 
     public void update(){
@@ -330,11 +337,27 @@ public class Gameplay {
     }
 
     public String getDataToSave() {
-        return null;
+        JSONObject gameplayData = new JSONObject();
+        try {
+            gameplayData.put("empCount", empCount);
+            return gameplayData.toString();
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void restoreSavedData(String data) {
-
+        try {
+            JSONObject gameplayData = new JSONObject(data);
+            if (gameplayData.has("empCount")) {
+                empCount = gameplayData.getInt("empCount");
+                if (empCount > 0) {
+                    empButton.setVisible(true);
+                }
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void addEmp() {
@@ -348,10 +371,6 @@ public class Gameplay {
         if (empCount > 0) {
             empCount--;
             final List<Movable> enemyMovables = getEnemyMovablesInRadius(empRadius);
-            for (Movable movable : enemyMovables) {
-                movable.setMotionEnabled(false);
-                movable.setViewRadius(0.01f);
-            }
             Timer restoreTimer = new Timer();
             final Submarine submarine = GameManager.getSubmarineMovable();
             final Sprite empSprite = GameManager.addSprite(R.drawable.viewcircle,
@@ -363,6 +382,10 @@ public class Gameplay {
                 @Override
                 public void run() {
                     scene.getLayer("submarines").removeSprite(empSprite);
+                    for (Movable movable : enemyMovables) {
+                        movable.setMotionEnabled(false);
+                        movable.setViewRadius(0.01f);
+                    }
                 }
             }, 500);
             scheduleEvent(new Runnable() {

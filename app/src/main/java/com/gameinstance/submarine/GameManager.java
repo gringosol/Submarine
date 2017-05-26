@@ -968,7 +968,9 @@ public class GameManager {
                 public void run() {
                     currentLevel = 0;
                     isMainMenu = false;
-                    gameplay = new Gameplay();
+                    if (gameplay == null) {
+                        gameplay = new Gameplay();
+                    }
                     gameplay.init();
                     renderer.setPaused(true);
                     scene.getLayerSets().get("Menu").setEnabled(false);
