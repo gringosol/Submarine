@@ -10,6 +10,7 @@ import com.gameinstance.submarine.R;
 import com.gameinstance.submarine.Scene;
 import com.gameinstance.submarine.Sprite;
 import com.gameinstance.submarine.Submarine;
+import com.gameinstance.submarine.gameplay.tasks.GoToPointByRouteTask;
 import com.gameinstance.submarine.utils.MathUtils;
 
 import org.json.JSONException;
@@ -489,6 +490,11 @@ public class Gameplay {
     public void applyBait() {
         if (baitCount > 0) {
             baitCount--;
+            final List<Movable> enemyMovables = getEnemyMovablesInRadius(empRadius);
+            for (Movable movable : enemyMovables) {
+                movable.setCurrentTask(new GoToPointByRouteTask(movable,
+                        GameManager.getSubmarineMovable().getSprite().getPosition()));
+            }
             if (baitCount == 0) {
                 baitButton.setVisible(false);
             }

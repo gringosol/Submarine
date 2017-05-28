@@ -87,6 +87,11 @@ public class GameManager {
     static float hudWidth = 1.0f;
     static float hudLeft = 1.4f;
 
+    static int [] pathMap = null;
+    static int pathHeight = 0;
+    static int pathWidth = 0;
+    static float pathCellSize = 0;
+
     public static void initGame(final GameRenderer renderer) {
         isMainMenu = startFromMenu;
         detectLocale();
@@ -1090,5 +1095,37 @@ public class GameManager {
 
     public static float getRadarScale() {
         return radarScale;
+    }
+
+    public static int [] getPathMap() {
+        return pathMap;
+    }
+
+    public static int getPathWidth() {
+        return pathWidth;
+    }
+
+    public static int getPathHeight() {
+        return pathHeight;
+    }
+
+    public static float getPathCellSize() {
+        return pathCellSize;
+    }
+
+    public static void setPathMap(int [] map) {
+        pathMap = map;
+    }
+
+    public static void setPathWidth(int width) {
+        pathWidth = width;
+    }
+
+    public static void setPathHeight(int height) {
+        pathHeight = height;
+    }
+
+    public static void setPathCellSize(float cellSize) {
+        pathCellSize = cellSize;
     }
 }

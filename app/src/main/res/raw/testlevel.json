@@ -2,6 +2,7 @@
   "levelname" : "testlevel",
   "background" : "tl1_bgr",
   "foreground" : "tl111_frg",
+  "pathMap" : "tl1_path",
   "unitsize" : "0.5",
   "submarine" : {
     "type" : "default",

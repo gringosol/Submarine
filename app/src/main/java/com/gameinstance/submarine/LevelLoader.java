@@ -5,6 +5,7 @@ import android.content.res.Resources;
 
 import com.gameinstance.submarine.gameplay.LevelLogic;
 import com.gameinstance.submarine.gameplay.tasks.MobTask;
+import com.gameinstance.submarine.utils.RawResourceReader;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -77,6 +78,7 @@ public class LevelLoader {
         try {
             jsonObject = new JSONObject(jsonString);
             loadLandscape(jsonObject);
+            loadPathMap(jsonObject);
             loadSubmarine(jsonObject);
             if (withMobs) {
                 if (jsonObject.has("ships")) {
@@ -391,5 +393,35 @@ public class LevelLoader {
             throw new RuntimeException(e.getMessage());
         }
         return level;
+    }
+
+    private static void loadPathMap(JSONObject jsonObject) {
+        if (jsonObject.has("pathMap")) {
+            try {
+                String pathMapName = jsonObject.getString("pathMap");
+                int pathMapResourceId = res.getIdentifier(pathMapName, "raw", activity.getPackageName());
+                String jsMapStr = RawResourceReader.readTextFileFromRawResource(renderer.getActivityContext(),
+                        pathMapResourceId);
+                JSONObject pathMapObject = new JSONObject(jsMapStr);
+                int width = pathMapObject.getInt("width");
+                int height = pathMapObject.getInt("height");
+                GameManager.setPathWidth(width);
+                GameManager.setPathHeight(height);
+                GameManager.setPathCellSize((float)pathMapObject.getDouble("cellSize"));
+                int [] map = new int[width * height];
+                JSONArray points = pathMapObject.getJSONArray("pathMap");
+                for (int i = 0; i < points.length(); i++) {
+                    map[i] = points.getInt(i);
+                }
+                GameManager.setPathMap(map);
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            GameManager.setPathMap(null);
+            GameManager.setPathWidth(0);
+            GameManager.setPathHeight(0);
+            GameManager.setPathCellSize(0);
+        }
     }
 }

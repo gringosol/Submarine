@@ -2,6 +2,7 @@ package com.gameinstance.submarine.gameplay;
 
 import com.gameinstance.submarine.GameManager;
 import com.gameinstance.submarine.R;
+import com.gameinstance.submarine.gameplay.tasks.GoToPointByRouteTask;
 import com.gameinstance.submarine.gameplay.tasks.PatrolPoints;
 import com.gameinstance.submarine.gameplay.tasks.PatrolTwoPoints;
 import com.gameinstance.submarine.utils.MathUtils;
