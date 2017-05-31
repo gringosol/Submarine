@@ -138,9 +138,9 @@ public class MathUtils {
         int finish = finishX + width * finishY;
         List<Integer> path = findPath(map, start, finish, width, height);
         List<float[]> points = new ArrayList<>();
-        for (int i = path.size() - 1; i > 0; i-- ) {
+        for (int i = path.size() - 1; i >= 0; i-- ) {
             float x = (path.get(i) % width) * cellSize + 0.5f * cellSize - 0.5f * width * cellSize;
-            float y = -(path.get(i) / width) * cellSize + 0.5f * cellSize + 0.5f * height * cellSize;
+            float y = -(path.get(i) / width) * cellSize - 0.5f * cellSize + 0.5f * height * cellSize;
             points.add(new float[] {x, y});
         }
         return points;
