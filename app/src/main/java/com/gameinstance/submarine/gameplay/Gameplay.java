@@ -53,6 +53,7 @@ public class Gameplay {
     Button baitButton;
     private static final float bSize = 0.4f;
     private static final float empRadius = 4.0f;
+    private static final float baitRadius = 10.0f;
     private static final int empDelay = 10000;
     List<Timer> events = new ArrayList<>();
     Map<Timer, Integer> eventCountMap = new HashMap<>();
@@ -490,7 +491,7 @@ public class Gameplay {
     public void applyBait() {
         if (baitCount > 0) {
             baitCount--;
-            final List<Movable> enemyMovables = getEnemyMovablesInRadius(empRadius);
+            final List<Movable> enemyMovables = getEnemyMovablesInRadius(baitRadius);
             for (Movable movable : enemyMovables) {
                 movable.setCurrentTask(new GoToPointByRouteTask(movable,
                         GameManager.getSubmarineMovable().getSprite().getPosition()));
