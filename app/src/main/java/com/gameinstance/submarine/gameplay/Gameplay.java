@@ -8,9 +8,11 @@ import com.gameinstance.submarine.Movable;
 import com.gameinstance.submarine.Primitive;
 import com.gameinstance.submarine.R;
 import com.gameinstance.submarine.Scene;
+import com.gameinstance.submarine.Ship;
 import com.gameinstance.submarine.Sprite;
 import com.gameinstance.submarine.Submarine;
 import com.gameinstance.submarine.gameplay.tasks.GoToPointByRouteTask;
+import com.gameinstance.submarine.gameplay.tasks.MobTask;
 import com.gameinstance.submarine.utils.MathUtils;
 
 import org.json.JSONException;
@@ -55,8 +57,10 @@ public class Gameplay {
     private static final float empRadius = 4.0f;
     private static final float baitRadius = 10.0f;
     private static final int empDelay = 10000;
+    private static final int baitDelay = 15000;
     List<Timer> events = new ArrayList<>();
     Map<Timer, Integer> eventCountMap = new HashMap<>();
+    Sprite baitSprite;
 
     public void init() {
         renderer = GameManager.getRenderer();
@@ -96,6 +100,14 @@ public class Gameplay {
             hud.addSprite(baitButton);
             baitButton.setVisible(false);
             baitButton.setTimerInterval(5000);
+        }
+        if (baitSprite == null ){
+            GameManager.getRenderer().getSurfaceView().queueEvent(new Runnable() {
+                @Override
+                public void run() {
+                    baitSprite = GameManager.addSprite(R.drawable.soundcircle, 0, 0, 0.25f, 0.25f);
+                }
+            });
         }
     }
 
@@ -426,16 +438,21 @@ public class Gameplay {
         }
     }
 
-    public List<Movable> getEnemyMovablesInRadius(float empRadius) {
+    public List<Movable> getEnemyMovablesInRadius(float empRadius, Class<? extends Movable> movClass) {
         List<Movable> movables = new ArrayList<>();
         for (Movable movable : GameManager.getScene().getMovables()) {
             float dist = MathUtils.distance(movable.getSprite().getPosition(),
                     GameManager.getSubmarineMovable().getSprite().getPosition());
-            if (movable.getIsEnemy() && dist <= empRadius) {
+            if (movable.getIsEnemy() && dist <= empRadius
+                    && (movClass == null || movable.getClass().equals(movClass))) {
                 movables.add(movable);
             }
         }
         return movables;
+    }
+
+    public List<Movable> getEnemyMovablesInRadius(float empRadius) {
+        return getEnemyMovablesInRadius(empRadius, null);
     }
 
     public void scheduleEvent(final Runnable runnable, int delay) {
@@ -491,11 +508,48 @@ public class Gameplay {
     public void applyBait() {
         if (baitCount > 0) {
             baitCount--;
-            final List<Movable> enemyMovables = getEnemyMovablesInRadius(baitRadius);
-            for (Movable movable : enemyMovables) {
-                movable.setCurrentTask(new GoToPointByRouteTask(movable,
-                        GameManager.getSubmarineMovable().getSprite().getPosition()));
+            final List<Movable> enemyMovables = getEnemyMovablesInRadius(baitRadius, Ship.class);
+            for (final Movable movable : enemyMovables) {
+                final MobTask currentTask  = movable.getCurrentTask();
+                final MobTask backTask = new GoToPointByRouteTask(movable,
+                        GameManager.getSubmarineMovable().getSprite().getPosition(),
+                        movable.getSprite().getPosition()) {
+                    @Override
+                    public void onComplete() {
+                        movable.setCurrentTask(currentTask);
+                        currentTask.onRestore();
+                    }
+                };
+                movable.setCurrentTask(new GoToPointByRouteTask(movable, null,
+                GameManager.getSubmarineMovable().getSprite().getPosition()) {
+                    @Override
+                    public void onComplete() {
+                        movable.setCurrentTask(backTask);
+                    }
+                });
             }
+            final Submarine submarine = GameManager.getSubmarineMovable();
+            float [] subPos = submarine.getSprite().getPosition();
+            baitSprite.setPosition(subPos[0], subPos[1]);
+            scene.getLayer("submarines").addSprite(baitSprite);
+            final int sId = GameManager.getSoundManager().playSound(R.raw.sonar, true);
+            scheduleEvent(new Runnable() {
+                    @Override
+                    public void run() {
+                        scene.getLayer("submarines").removeSprite(baitSprite);
+                        GameManager.getSoundManager().stopSound(sId);
+                    }
+                }, baitDelay);
+                scheduleEvent(new Runnable() {
+                    @Override
+                    public void run() {
+                        float sx = baitSprite.getScaleX();
+                        if (sx > 1.5f) {
+                            sx = 1.0f / 1.05f;
+                        }
+                        baitSprite.setScale(sx * 1.05f, sx * 1.05f);
+                        }
+                }, 50, baitDelay / 50);
             if (baitCount == 0) {
                 baitButton.setVisible(false);
             }
