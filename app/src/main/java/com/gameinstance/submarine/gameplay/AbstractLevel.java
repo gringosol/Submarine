@@ -38,6 +38,7 @@ public class AbstractLevel implements LevelLogic {
     }
 
     private void commonSetup() {
+        GameManager.getGameplay().clearPackages();
         completed = false;
         ships = GameManager.getScene().getShips();
         tanks = GameManager.getScene().getTanks();

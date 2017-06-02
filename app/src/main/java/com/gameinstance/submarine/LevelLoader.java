@@ -103,6 +103,7 @@ public class LevelLoader {
                     String levelname = jsonObject.getString("levelname");
                     if (GameManager.getGameplay().getLevels().containsKey(levelname)) {
                         LevelLogic levelLogic = GameManager.getGameplay().getLevels().get(levelname);
+                        GameManager.getGameplay().loadCustomLevelData(jsonObject);
                         GameManager.getGameplay().setCurrentLevel(levelLogic);
                         levelLogic.commonInit();
                     }

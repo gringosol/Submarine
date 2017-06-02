@@ -15,6 +15,7 @@ import com.gameinstance.submarine.gameplay.tasks.GoToPointByRouteTask;
 import com.gameinstance.submarine.gameplay.tasks.MobTask;
 import com.gameinstance.submarine.utils.MathUtils;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -61,6 +62,7 @@ public class Gameplay {
     List<Timer> events = new ArrayList<>();
     Map<Timer, Integer> eventCountMap = new HashMap<>();
     Sprite baitSprite;
+    List<SeaPackage> packages = new ArrayList<>();
 
     public void init() {
         renderer = GameManager.getRenderer();
@@ -121,6 +123,9 @@ public class Gameplay {
             }
             if (currentLevel.isCompleted())
                 missionPassed();
+        }
+        for (SeaPackage seaPackage : packages) {
+            seaPackage.update();
         }
     }
 
@@ -554,5 +559,60 @@ public class Gameplay {
                 baitButton.setVisible(false);
             }
         }
+    }
+
+    public void addSeaPackage(final float [] pos, final int texId, final Runnable action) {
+        GameManager.getRenderer().getSurfaceView().queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                SeaPackage seaPackage = new SeaPackage(pos, texId, action);
+                GameManager.getScene().getLayer("landscape").addSprite(seaPackage.sprite);
+                packages.add(seaPackage);
+            }
+        });
+    }
+
+    public void clearPackages() {
+        packages.clear();
+    }
+
+    public void loadCustomLevelData(JSONObject jsObject) {
+        try {
+            if (jsObject.has("emps")) {
+                JSONArray emps = jsObject.getJSONArray("emps");
+                for (int i = 0; i < emps.length(); i++) {
+                    JSONObject jsEmp = emps.getJSONObject(i);
+                    Runnable action = new Runnable() {
+                        @Override
+                        public void run() {
+                            addEmp();
+                        }
+                    };
+                    loadSeaPachage(jsEmp, action, R.drawable.flash_trnsp);
+                }
+            }
+            if (jsObject.has("baits")) {
+                JSONArray baits = jsObject.getJSONArray("baits");
+                for (int i = 0; i < baits.length(); i++) {
+                    JSONObject jsBait = baits.getJSONObject(i);
+                    Runnable action =  new Runnable() {
+                        @Override
+                        public void run() {
+                            addBait();
+                        }
+                    };
+                    loadSeaPachage(jsBait, action, R.drawable.bait_trnsp);
+                }
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void loadSeaPachage(JSONObject jsPackage, Runnable action, int texId) throws JSONException{
+        float[] pos = new float[2];
+        pos[0] = (float) jsPackage.getDouble("x");
+        pos[1] = (float) jsPackage.getDouble("y");
+        addSeaPackage(pos, texId, action);
     }
 }
