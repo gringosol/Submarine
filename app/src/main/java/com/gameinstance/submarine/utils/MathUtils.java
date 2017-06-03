@@ -1,6 +1,7 @@
 package com.gameinstance.submarine.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -46,21 +47,31 @@ public class MathUtils {
         }
     }
 
-    private static void markPath(int [] map, int curPos, int finish, int width, int height,
+    private static void markPath(int [] map, int start, int finish, int width, int height,
                                  int curDist, int[] newMap) {
-        newMap[curPos] = curDist;
-        if (curPos != finish) {
-            List<Integer> neighbors = getNeighbors(curPos, width, height);
-            List<Integer> validNeighbors = new ArrayList<>();
-            for (Integer neighbor : neighbors) {
-                if (map[neighbor] != 1 && (newMap[neighbor] == -1 || curDist + 1 < newMap[neighbor])) {
-                    validNeighbors.add(neighbor);
-                }
-            }
-            for (Integer pos : validNeighbors) {
-                markPath(map, pos, finish, width, height, curDist + 1, newMap);
+        newMap[start] = curDist;
+        List<Integer> startWave = Collections.singletonList(start);
+        if (start != finish) {
+            List<Integer> newWave = getNextWave(startWave, width, height, newMap, map);
+            while (newWave != null && !newWave.contains(finish)) {
+                newWave = getNextWave(newWave, width, height, newMap, map);
             }
         }
+    }
+
+    private static List<Integer> getNextWave(List<Integer> currentWave, int width,
+                                             int height, int [] newMap, int [] map) {
+        List<Integer> acceptedNeighbors = new ArrayList<>();
+        for (Integer currentNode : currentWave) {
+            List<Integer> neighbors = getNeighbors(currentNode, width, height);
+            for (Integer neighbor : neighbors) {
+                if (newMap[neighbor] == -1 && map[neighbor] != 1) {
+                    newMap[neighbor] = newMap[currentNode] + 1;
+                    acceptedNeighbors.add(neighbor);
+                }
+            }
+        }
+        return acceptedNeighbors;
     }
 
     private static List<Integer> getNeighbors(int pos, int width, int height) {
