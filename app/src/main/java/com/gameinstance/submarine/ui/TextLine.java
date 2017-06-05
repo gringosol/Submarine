@@ -26,11 +26,19 @@ public class TextLine {
         this.pos = pos;
         this.lineHeight = lineHeight;
         this.renderer = renderer;
-        initTexLine(resId, pos, lineHeight, renderer);
+        String text = GameManager.getString(resId);
+        initTexLine(text, pos, lineHeight, renderer);
     }
 
-    public void initTexLine(int resId, float [] pos, float lineHeight, GameRenderer renderer) {
-        String text = GameManager.getString(resId);
+    public TextLine(String text, float[] pos, float lineHeight, GameRenderer renderer) {
+        this.pos = pos;
+        this.lineHeight = lineHeight;
+        this.renderer = renderer;
+        initTexLine(text, pos, lineHeight, renderer);
+    }
+
+    public void initTexLine(String text, float [] pos, float lineHeight, GameRenderer renderer) {
+
         letters = new Letter[text.length()];
         float charWidth = lineHeight * charAspect;
         if (primitive == null)
@@ -48,7 +56,8 @@ public class TextLine {
 
     public void reinit() {
         if (resId != null) {
-            initTexLine(resId, pos, lineHeight, renderer);
+            String text = GameManager.getString(resId);
+            initTexLine(text, pos, lineHeight, renderer);
         }
     }
 

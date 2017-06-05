@@ -13,6 +13,7 @@ import com.gameinstance.submarine.Sprite;
 import com.gameinstance.submarine.Submarine;
 import com.gameinstance.submarine.gameplay.tasks.GoToPointByRouteTask;
 import com.gameinstance.submarine.gameplay.tasks.MobTask;
+import com.gameinstance.submarine.ui.TextLine;
 import com.gameinstance.submarine.utils.MathUtils;
 
 import org.json.JSONArray;
@@ -63,6 +64,8 @@ public class Gameplay {
     Map<Timer, Integer> eventCountMap = new HashMap<>();
     Sprite baitSprite;
     List<SeaPackage> packages = new ArrayList<>();
+    TextLine textEmp;
+    TextLine textBait;
 
     public void init() {
         renderer = GameManager.getRenderer();
@@ -397,11 +400,13 @@ public class Gameplay {
             empButton.setVisible(true);
         }
         empCount++;
+        textEmp = updateTextCount(textEmp, empCount, empButton.getPosition());
     }
 
     public void applyEmp() {
         if (empCount > 0) {
             empCount--;
+            textEmp = updateTextCount(textEmp, empCount, empButton.getPosition());
             final List<Movable> enemyMovables = getEnemyMovablesInRadius(empRadius);
             Timer restoreTimer = new Timer();
             final Submarine submarine = GameManager.getSubmarineMovable();
@@ -508,11 +513,13 @@ public class Gameplay {
             baitButton.setVisible(true);
         }
         baitCount++;
+        textBait = updateTextCount(textBait, baitCount, baitButton.getPosition());
     }
 
     public void applyBait() {
         if (baitCount > 0) {
             baitCount--;
+            textBait = updateTextCount(textBait, baitCount, baitButton.getPosition());
             final List<Movable> enemyMovables = getEnemyMovablesInRadius(baitRadius, Ship.class);
             for (final Movable movable : enemyMovables) {
                 final MobTask currentTask  = movable.getCurrentTask();
@@ -585,6 +592,7 @@ public class Gameplay {
                     Runnable action = new Runnable() {
                         @Override
                         public void run() {
+                            GameManager.getSoundManager().playSound(R.raw.up_and_high_beep, false);
                             addEmp();
                         }
                     };
@@ -598,6 +606,7 @@ public class Gameplay {
                     Runnable action =  new Runnable() {
                         @Override
                         public void run() {
+                            GameManager.getSoundManager().playSound(R.raw.up_and_high_beep, false);
                             addBait();
                         }
                     };
@@ -614,5 +623,17 @@ public class Gameplay {
         pos[0] = (float) jsPackage.getDouble("x");
         pos[1] = (float) jsPackage.getDouble("y");
         addSeaPackage(pos, texId, action);
+    }
+
+    private TextLine updateTextCount(TextLine textLine, Integer number, float [] pos) {
+        if (textLine != null) {
+            GameManager.getScene().getLayer("hud").removeTextLine(textLine);
+            textLine = null;
+        }
+        if (number > 1) {
+            textLine = new TextLine(number.toString(), pos, 0.2f, renderer);
+            GameManager.getScene().getLayer("hud").addTextline(textLine);
+        }
+        return textLine;
     }
 }
