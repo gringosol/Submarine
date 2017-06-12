@@ -20,6 +20,7 @@ public class Layer {
     public boolean isGui = false;
     public boolean visible = true;
     private boolean optimize;
+    Float transparency = null;
 
     public Layer(int programHandle, boolean optimize) {
         this.programHandle = programHandle;
@@ -61,15 +62,19 @@ public class Layer {
     public void drawLayer(float [] viewMatrix, float [] projectionMatrix) {
         GLES20.glUseProgram(programHandle);
         if (sprites != null) {
-            if (color == null) {
+            if (color == null && transparency == null) {
                 for (Sprite sprite : sprites) {
                     if (!optimize || inScreen(viewMatrix, projectionMatrix, sprite)) {
                         sprite.draw(viewMatrix, projectionMatrix, programHandle);
                     }
                 }
-            } else {
+            } else if (transparency == null) {
                 for (Sprite sprite : sprites) {
                     sprite.draw(viewMatrix, projectionMatrix, color, programHandle);
+                }
+            } else {
+                for (Sprite sprite : sprites) {
+                    sprite.draw(viewMatrix, projectionMatrix, sprite.getTransparency(), programHandle);
                 }
             }
         }
@@ -98,5 +103,9 @@ public class Layer {
         float scrH = 2.1f / projectionMatrix[5];
         return MathUtils.testQuads(screenCenter, sprite.getPosition(), scrW, scrH, sprite.getScaleX(),
                 sprite.getScaleY());
+    }
+
+    public void setTransparency(float t) {
+        transparency = t;
     }
 }

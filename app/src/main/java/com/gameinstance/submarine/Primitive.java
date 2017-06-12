@@ -23,6 +23,7 @@ public class Primitive {
     int mTransformMatrixHandle;
     int mTextureUniformHandle;
     int mColorHandle = -1;
+    int mTransparencyHandle = -1;
     int mPositionHandle;
     int mTexCoordHandle;
 
@@ -105,10 +106,29 @@ public class Primitive {
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
     }
 
+    public void draw(float [] projectionMatrix, float [] viewMatrix, float [] modelMatrix, float fTransparensy) {
+        float [] resultMatrix = new float[16];
+        Matrix.setIdentityM(resultMatrix, 0);
+        Matrix.multiplyMM(resultMatrix, 0, viewMatrix, 0, modelMatrix, 0);
+        Matrix.multiplyMM(resultMatrix, 0, projectionMatrix, 0, resultMatrix, 0);
+        GLES20.glUniformMatrix4fv(mTransformMatrixHandle, 1, false, resultMatrix, 0);
+        GLES20.glUniform1i(mTextureUniformHandle, 0);
+        GLES20.glUniform1f(mTransparencyHandle, fTransparensy);
+        mTexCoordinates.position(0);
+        GLES20.glVertexAttribPointer(mPositionHandle, mPositionDataSize, GLES20.GL_FLOAT, false, 0, mPositions);
+        GLES20.glEnableVertexAttribArray(mPositionHandle);
+        GLES20.glVertexAttribPointer(mTexCoordHandle, mTexCoordDataSize, GLES20.GL_FLOAT, false, 0, mTexCoordinates);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
+    }
+
     public void onDestroy() {
         mPositions.limit(0);
         mPositions = null;
         mTexCoordinates.limit(0);
         mTexCoordinates = null;
+    }
+
+    public void setmTransparencyHandle(int handle) {
+        mTransparencyHandle = handle;
     }
 }

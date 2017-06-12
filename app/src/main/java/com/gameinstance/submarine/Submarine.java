@@ -19,6 +19,8 @@ public class Submarine extends Movable {
     boolean shallow = false;
     int lastMessageShallowShow = 0;
 
+    WaveTrack waveTrack;
+
     public Submarine(Sprite sprite, int [] resIds, GameRenderer renderer) {
         super(sprite);
         this.resIds = resIds;
@@ -32,6 +34,13 @@ public class Submarine extends Movable {
             shallowWarning = new TextLine(R.string.too_shallow, new float[] {-0.3f, 0.5f}, 0.2f, renderer);
         }
         speed = 0.025f;
+        waveTrack = new WaveTrack(this);
+    }
+
+    @Override
+    public void move() {
+        super.move();
+        waveTrack.update(getDepth() == 0);
     }
 
     public int getDepth() {

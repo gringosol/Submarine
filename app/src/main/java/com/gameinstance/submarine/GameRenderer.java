@@ -23,8 +23,6 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public class GameRenderer implements GLSurfaceView.Renderer {
     private final Context mActivityContext;
-    private int mDefaultProgramHandle = 0;
-    private int mSimpleProgramHandle = 0;
     int mPositionHandle;
     int mTexCordHandle;
     int mTramsformMatrixHandle;
@@ -33,7 +31,12 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     int mTexCordHandle2;
     int mTramsformMatrixHandle2;
     int mTextureUniformHandle2;
+    int mPositionHandle3;
+    int mTexCordHandle3;
+    int mTramsformMatrixHandle3;
+    int mTextureUniformHandle3;
     int mColorHandle;
+    int mTransparencyHandle;
     Map<String, Integer> programHandles = new HashMap<>();
     boolean paused = false;
 
@@ -157,6 +160,13 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 mTramsformMatrixHandle2, mColorHandle, null);
     }
 
+    public Primitive createPrimitiveTransparent() {
+        Primitive primitive =  new Primitive(mPositionHandle3, mTexCordHandle3, mTextureUniformHandle3,
+                mTramsformMatrixHandle3);
+        primitive.setmTransparencyHandle(mTransparencyHandle);
+        return primitive;
+    }
+
     public void setCamera(Camera camera) {
         this.camera = camera;
     }
@@ -177,8 +187,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 R.raw.default_fragment_shader);
         final int vertexShaderHandle = ShaderUtils.compileShader(GLES20.GL_VERTEX_SHADER, vertexShader);
         final int fragmentShaderHandle = ShaderUtils.compileShader(GLES20.GL_FRAGMENT_SHADER, fragmentShader);
-        mDefaultProgramHandle = ShaderUtils.createAndLinkProgram(vertexShaderHandle, fragmentShaderHandle,
-                new String[] {"a_Position", "a_TexCoordinate"});
+        int mDefaultProgramHandle = ShaderUtils.createAndLinkProgram(vertexShaderHandle, fragmentShaderHandle,
+                new String[]{"a_Position", "a_TexCoordinate"});
         programHandles.put("DefaultProgramHandle", mDefaultProgramHandle);
         mPositionHandle = GLES20.glGetAttribLocation(mDefaultProgramHandle, "a_Position");
         mTexCordHandle = GLES20.glGetAttribLocation(mDefaultProgramHandle, "a_TexCoordinate");
@@ -190,14 +200,28 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 R.raw.simple_fragment_shader);
         final int vertexShaderHandle2 = ShaderUtils.compileShader(GLES20.GL_VERTEX_SHADER, vertexShader2);
         final int fragmentShaderHandle2 = ShaderUtils.compileShader(GLES20.GL_FRAGMENT_SHADER, fragmentShader2);
-        mSimpleProgramHandle = ShaderUtils.createAndLinkProgram(vertexShaderHandle2, fragmentShaderHandle2,
-                new String[] {"a_Position", "a_TexCoordinate"});
+        int mSimpleProgramHandle = ShaderUtils.createAndLinkProgram(vertexShaderHandle2, fragmentShaderHandle2,
+                new String[]{"a_Position", "a_TexCoordinate"});
         programHandles.put("SimpleProgramHandle", mSimpleProgramHandle);
         mPositionHandle2 = GLES20.glGetAttribLocation(mSimpleProgramHandle, "a_Position");
         mTexCordHandle2 = GLES20.glGetAttribLocation(mSimpleProgramHandle, "a_TexCoordinate");
         mTramsformMatrixHandle2 = GLES20.glGetUniformLocation(mSimpleProgramHandle, "u_MTransform");
         mTextureUniformHandle2 = GLES20.glGetUniformLocation(mSimpleProgramHandle, "u_Texture");
         mColorHandle = GLES20.glGetUniformLocation(mSimpleProgramHandle, "u_Color");
+        final String vertexShader3 = RawResourceReader.readTextFileFromRawResource(mActivityContext,
+                R.raw.transparent_vertex_shader);
+        final String fragmentShader3 = RawResourceReader.readTextFileFromRawResource(mActivityContext,
+                R.raw.transparent_fragment_shader);
+        final int vertexShaderHandle3 = ShaderUtils.compileShader(GLES20.GL_VERTEX_SHADER, vertexShader3);
+        final int fragmentShaderHandle3 = ShaderUtils.compileShader(GLES20.GL_FRAGMENT_SHADER, fragmentShader3);
+        int TransparentProgramHandle = ShaderUtils.createAndLinkProgram(vertexShaderHandle3, fragmentShaderHandle3,
+                new String[]{"a_Position", "a_TexCoordinate"});
+        programHandles.put("TransparentProgramHandle", TransparentProgramHandle);
+        mPositionHandle3 = GLES20.glGetAttribLocation(TransparentProgramHandle, "a_Position");
+        mTexCordHandle3 = GLES20.glGetAttribLocation(TransparentProgramHandle, "a_TexCoordinate");
+        mTramsformMatrixHandle3 = GLES20.glGetUniformLocation(TransparentProgramHandle, "u_MTransform");
+        mTextureUniformHandle3 = GLES20.glGetUniformLocation(TransparentProgramHandle, "u_Texture");
+        mTransparencyHandle = GLES20.glGetUniformLocation(TransparentProgramHandle, "u_Transp");
     }
 
     private void initializeOglState() {

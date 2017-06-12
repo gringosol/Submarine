@@ -127,9 +127,11 @@ public class GameManager {
         addPrimitive(texPrimitive);
         Primitive colPrimitive = renderer.createPrimitiveColored();
         addPrimitive(colPrimitive);
+        Primitive transparentPrimitive = renderer.createPrimitiveTransparent();
         movablePrimitiveMap = new HashMap<>();
         movablePrimitiveMap.put(renderer.getProgramHandle("SimpleProgramHandle"), colPrimitive);
         movablePrimitiveMap.put(renderer.getProgramHandle("DefaultProgramHandle"), texPrimitive);
+        movablePrimitiveMap.put(renderer.getProgramHandle("TransparentProgramHandle"), transparentPrimitive);
         camera = new Camera();
 
         if (!startFromMenu) { //todo - test entity, exclude if branch in future
@@ -308,7 +310,7 @@ public class GameManager {
                 "aircrafts"), radarTexHandle, radarProjMatrix, new int[] {radarViewportSize, radarViewportSize}, false));
         scene.addLayerSet("Menu", new Layerset(Arrays.asList("menu_main", "menu_pause", "menu_options",
                 "menu_confirm_dialog"), null, renderer.getDefaultProjectionMatrix(), null, false));
-        scene.addLayerSet("Front", new Layerset(Arrays.asList("landscape", "submarines", "ships_and_tanks",
+        scene.addLayerSet("Front", new Layerset(Arrays.asList("landscape", "waves", "submarines", "ships_and_tanks",
                 "aircrafts", "hud"), null, renderer.getDefaultProjectionMatrix(), null, false));
         scene.getLayerSets().get("Menu").setEnabled(startFromMenu);
         scene.getLayerSets().get("BackBuffer").setEnabled(!startFromMenu);
@@ -321,6 +323,9 @@ public class GameManager {
         scene.addLayer("mobs_back", mobs_back);
         Layer landscape = new Layer(renderer.getProgramHandle("DefaultProgramHandle"), true);
         scene.addLayer("landscape", landscape);
+        Layer waves = new Layer(renderer.getProgramHandle("TransparentProgramHandle"), true);
+        scene.addLayer("waves", waves);
+        waves.setTransparency(1.0f);
         Layer submarines = new Layer(renderer.getProgramHandle("DefaultProgramHandle"), true);
         scene.addLayer("submarines", submarines);
         Layer shipsAndTanks = new Layer(renderer.getProgramHandle("DefaultProgramHandle"), true);
