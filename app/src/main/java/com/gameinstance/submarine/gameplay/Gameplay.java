@@ -40,7 +40,7 @@ public class Gameplay {
     Sprite strapSprite;
     List<Sprite> strapSprites = new ArrayList<>();
     Sprite briefingSprite;
-    LevelLogic currentLevel = null;
+    AbstractLevel currentLevel = null;
     Map<String, LevelLogic> levels = new HashMap<>();
     String languageOption = "";
     List<Marker> markers = new ArrayList<>();
@@ -120,7 +120,7 @@ public class Gameplay {
         if (!scene.getLayerSets().get("Front").getEnabled() || paused)
             return;
         if (currentLevel != null) {
-            currentLevel.run();
+            currentLevel.runLevel();
             for (Marker marker : markers) {
                 marker.update();
             }
@@ -298,7 +298,7 @@ public class Gameplay {
         }
     }
 
-    public void setCurrentLevel(LevelLogic level) {
+    public void setCurrentLevel(AbstractLevel level) {
         currentLevel = level;
     }
 

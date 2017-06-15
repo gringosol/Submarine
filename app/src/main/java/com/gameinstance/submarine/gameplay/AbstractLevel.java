@@ -20,6 +20,7 @@ public class AbstractLevel implements LevelLogic {
     transient List<Helicopter> helicopters;
     transient MediaPlayer ambientMusic;
     int totalScore;
+    Cutscene cutscene;
 
     @Override
     public void commonInit() {
@@ -52,6 +53,13 @@ public class AbstractLevel implements LevelLogic {
     }
 
     public void init() {
+    }
+
+    public void runLevel() {
+        if (cutscene != null && !cutscene.isFinished) {
+            cutscene.run();
+        }
+        run();
     }
 
     @Override
