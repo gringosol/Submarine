@@ -32,6 +32,29 @@ public class MathUtils {
         return !(maxx1 < minx2 || minx1 > maxx2 || maxy1 < miny2 || miny1 > maxy2);
     }
 
+    public static float [] getDirection(float [] p1, float [] p2) {
+        float [] dir = new float[2];
+        float dist = distance(p1, p2);
+        dir[0] = p2[0] - p1[0];
+        dir[1] = p2[1] - p1[1];
+        if (dist != 0) {
+            dir[0] /= dist;
+            dir[1] /= dist;
+        }
+        return dir;
+    }
+
+    public static float [] vecSum(float [] p1, float [] p2) {
+        float [] p = new float[2];
+        p[0] = p1[0] + p2[0];
+        p[1] = p1[1] + p2[1];
+        return p;
+    }
+
+    public static float [] vecMulFloat(float [] p, float x) {
+        return new float[] {p[0] * x, p[1] * x};
+    }
+
     public static List<Integer> findPath(int [] map, int start, int finish, int width, int height) {
         int [] newMap = new int[map.length];
         for (int i = 0; i < newMap.length; i++) {

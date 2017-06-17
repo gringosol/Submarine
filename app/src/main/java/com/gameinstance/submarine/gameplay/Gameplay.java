@@ -41,7 +41,7 @@ public class Gameplay {
     List<Sprite> strapSprites = new ArrayList<>();
     Sprite briefingSprite;
     AbstractLevel currentLevel = null;
-    Map<String, LevelLogic> levels = new HashMap<>();
+    Map<String, AbstractLevel> levels = new HashMap<>();
     String languageOption = "";
     List<Marker> markers = new ArrayList<>();
     Sprite radarHudSprite;
@@ -306,7 +306,7 @@ public class Gameplay {
         return currentLevel;
     }
 
-    public Map<String, LevelLogic> getLevels() {
+    public Map<String, AbstractLevel> getLevels() {
         return levels;
     }
 

@@ -3,6 +3,7 @@ package com.gameinstance.submarine;
 import android.app.Activity;
 import android.content.res.Resources;
 
+import com.gameinstance.submarine.gameplay.AbstractLevel;
 import com.gameinstance.submarine.gameplay.LevelLogic;
 import com.gameinstance.submarine.gameplay.tasks.MobTask;
 import com.gameinstance.submarine.utils.RawResourceReader;
@@ -102,7 +103,7 @@ public class LevelLoader {
                 if (jsonObject.has("levelname")) {
                     String levelname = jsonObject.getString("levelname");
                     if (GameManager.getGameplay().getLevels().containsKey(levelname)) {
-                        LevelLogic levelLogic = GameManager.getGameplay().getLevels().get(levelname);
+                        AbstractLevel levelLogic = GameManager.getGameplay().getLevels().get(levelname);
                         GameManager.getGameplay().loadCustomLevelData(jsonObject);
                         GameManager.getGameplay().setCurrentLevel(levelLogic);
                         levelLogic.commonInit();
@@ -363,13 +364,13 @@ public class LevelLoader {
         return task;
     }
 
-    public static LevelLogic loadLevelState(JSONObject jsLevel) {
-        LevelLogic level = null;
+    public static AbstractLevel loadLevelState(JSONObject jsLevel) {
+        AbstractLevel level = null;
         try {
             if (jsLevel.has("levelclass") && jsLevel.has("levelstate")) {
                 try {
                     Class cl = Class.forName(jsLevel.getString("levelclass"));
-                    Class<? extends LevelLogic> cl1 = cl;
+                    Class<? extends AbstractLevel> cl1 = cl;
                     JSONArray byteArray = jsLevel.getJSONArray("levelstate");
                     byte [] bytes = new byte[byteArray.length()];
                     for (int i = 0; i < byteArray.length(); i++) {

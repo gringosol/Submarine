@@ -2,11 +2,11 @@ package com.gameinstance.submarine.gameplay;
 
 import com.gameinstance.submarine.GameManager;
 import com.gameinstance.submarine.R;
-import com.gameinstance.submarine.gameplay.tasks.GoToPointByRouteTask;
 import com.gameinstance.submarine.gameplay.tasks.PatrolPoints;
 import com.gameinstance.submarine.gameplay.tasks.PatrolTwoPoints;
 import com.gameinstance.submarine.utils.MathUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,6 +32,10 @@ public class Level1 extends AbstractLevel {
         marker = GameManager.getGameplay().addMarker(new float[] {targetIsland[0], targetIsland[1]}, true);
         setMarkerPosition(targetIsland[0], targetIsland[1]);
         ambientMusic = GameManager.getSoundManager().addMediaPlayer(R.raw.the_environment_lite);
+        List<CutsceneAction> actions = new ArrayList<>();
+        CameraMotion cameraMotion = new CameraMotion(new float[] {-2.0f, 0}, 1.0f);
+        actions.add(cameraMotion);
+        cutscene = new Cutscene(actions);
     }
 
     private void setMarkerPosition(float x, float y) {
