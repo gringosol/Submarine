@@ -1,5 +1,6 @@
 package com.gameinstance.submarine.gameplay;
 
+import com.gameinstance.submarine.Animation;
 import com.gameinstance.submarine.Button;
 import com.gameinstance.submarine.GameManager;
 import com.gameinstance.submarine.GameRenderer;
@@ -66,6 +67,7 @@ public class Gameplay {
     List<SeaPackage> packages = new ArrayList<>();
     TextLine textEmp;
     TextLine textBait;
+    Sprite blinkingArrow;
 
     public void init() {
         renderer = GameManager.getRenderer();
@@ -114,6 +116,10 @@ public class Gameplay {
                 }
             });
         }
+        blinkingArrow = GameManager.addSprite(R.drawable.yellowarrow, 0, 0, 0.5f, 0.5f);
+        blinkingArrow.setAnimation(new Animation(300, true, R.drawable.yellowarrow, R.drawable.yellowarrow1));
+        blinkingArrow.setVisible(false);
+        GameManager.getScene().getLayer("aircrafts").addSprite(blinkingArrow);
     }
 
     public void update(){
@@ -635,5 +641,9 @@ public class Gameplay {
             GameManager.getScene().getLayer("hud").addTextline(textLine);
         }
         return textLine;
+    }
+
+    public Sprite getBlinkingArrow() {
+        return blinkingArrow;
     }
 }

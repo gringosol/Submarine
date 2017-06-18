@@ -2,6 +2,13 @@ package com.gameinstance.submarine.gameplay;
 
 import com.gameinstance.submarine.GameManager;
 import com.gameinstance.submarine.R;
+import com.gameinstance.submarine.gameplay.cutscene.CameraMotion;
+import com.gameinstance.submarine.gameplay.cutscene.Cutscene;
+import com.gameinstance.submarine.gameplay.cutscene.CutsceneAction;
+import com.gameinstance.submarine.gameplay.cutscene.Idle;
+import com.gameinstance.submarine.gameplay.cutscene.SetCameraToSprite;
+import com.gameinstance.submarine.gameplay.cutscene.ShowMessage;
+import com.gameinstance.submarine.gameplay.cutscene.ShowSprite;
 import com.gameinstance.submarine.gameplay.tasks.PatrolPoints;
 import com.gameinstance.submarine.gameplay.tasks.PatrolTwoPoints;
 import com.gameinstance.submarine.utils.MathUtils;
@@ -32,10 +39,6 @@ public class Level1 extends AbstractLevel {
         marker = GameManager.getGameplay().addMarker(new float[] {targetIsland[0], targetIsland[1]}, true);
         setMarkerPosition(targetIsland[0], targetIsland[1]);
         ambientMusic = GameManager.getSoundManager().addMediaPlayer(R.raw.the_environment_lite);
-        List<CutsceneAction> actions = new ArrayList<>();
-        CameraMotion cameraMotion = new CameraMotion(new float[] {-2.0f, 0}, 1.0f);
-        actions.add(cameraMotion);
-        cutscene = new Cutscene(actions);
     }
 
     private void setMarkerPosition(float x, float y) {
@@ -158,7 +161,41 @@ public class Level1 extends AbstractLevel {
 
     public void onShow() {
         super.onShow();
-        GameManager.showMessage(R.string.go_to_marker, -1.0f, 0.5f, 3000);
+        List<CutsceneAction> actions = new ArrayList<>();
+
+        ShowMessage showMessage = new ShowMessage(R.string.go_to_marker, -1.0f, 0.5f, 3000);
+        actions.add(showMessage);
+        CameraMotion cameraMotion = new CameraMotion(targetIsland, 1.0f);
+        actions.add(cameraMotion);
+        ShowSprite showSprite = new ShowSprite(GameManager.getGameplay().getBlinkingArrow(),
+                3000, targetIsland[0] - 0.25f, targetIsland[1] + 0.25f);
+        actions.add(showSprite);
+        Idle idle = new Idle(1000);
+        actions.add(idle);
+
+        ShowMessage showMessage1 = new ShowMessage(R.string.set_kuzia_to_harbor, -1.0f, 0.5f, 3000);
+        actions.add(showMessage1);
+        CameraMotion cameraMotion1 = new CameraMotion(targetHarbor, 1.0f);
+        actions.add(cameraMotion1);
+        ShowSprite showSprite1 = new ShowSprite(GameManager.getGameplay().getBlinkingArrow(),
+                3000, targetHarbor[0] - 0.25f, targetHarbor[1] + 0.25f);
+        actions.add(showSprite1);
+        Idle idle1 = new Idle(1000);
+        actions.add(idle1);
+
+        ShowMessage showMessage2 = new ShowMessage(R.string.go_to_carrier, -1.0f, 0.5f, 3000);
+        actions.add(showMessage2);
+        CameraMotion cameraMotion2 = new CameraMotion(targetCarrier, 1.0f);
+        actions.add(cameraMotion2);
+        ShowSprite showSprite2 = new ShowSprite(GameManager.getGameplay().getBlinkingArrow(),
+                3000, targetCarrier[0] - 0.25f, targetCarrier[1] + 0.25f);
+        actions.add(showSprite2);
+        Idle idle2 = new Idle(1000);
+        actions.add(idle2);
+
+        SetCameraToSprite setCameraToSprite = new SetCameraToSprite(GameManager.getSubmarineMovable().getSprite());
+        actions.add(setCameraToSprite);
+        cutscene = new Cutscene(actions);
     }
 
     @Override

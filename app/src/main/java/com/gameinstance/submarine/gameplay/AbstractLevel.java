@@ -6,6 +6,7 @@ import com.gameinstance.submarine.GameManager;
 import com.gameinstance.submarine.Helicopter;
 import com.gameinstance.submarine.Ship;
 import com.gameinstance.submarine.Tank;
+import com.gameinstance.submarine.gameplay.cutscene.Cutscene;
 
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class AbstractLevel implements LevelLogic {
     }
 
     public void runLevel() {
-        if (cutscene != null && !cutscene.isFinished) {
+        if (cutscene != null && !cutscene.getFinished()) {
             cutscene.run();
         }
         run();

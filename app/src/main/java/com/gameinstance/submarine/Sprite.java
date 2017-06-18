@@ -157,4 +157,8 @@ public class Sprite {
     public float getTransparency() {
         return transparency;
     }
+
+    public Animation getAnimation() {
+        return animation;
+    }
 }

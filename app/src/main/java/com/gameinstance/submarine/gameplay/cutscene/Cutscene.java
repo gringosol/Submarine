@@ -1,4 +1,4 @@
-package com.gameinstance.submarine.gameplay;
+package com.gameinstance.submarine.gameplay.cutscene;
 
 import java.util.List;
 

@@ -20,6 +20,8 @@
 
     <string name="too_shallow">Слишком мелко</string>
     <string name="go_to_marker">Плывите к маркеру</string>
+    <string name="set_kuzia_to_harbor">Доставьте Кузьмича в сарай</string>
+    <string name="go_to_carrier">Доставьте Кузьмича на авианосец</string>
 
     <string name="russian">Русский</string>
     <string name="english">English</string>

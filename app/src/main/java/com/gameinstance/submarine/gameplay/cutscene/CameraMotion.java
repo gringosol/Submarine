@@ -1,7 +1,8 @@
-package com.gameinstance.submarine.gameplay;
+package com.gameinstance.submarine.gameplay.cutscene;
 
 import com.gameinstance.submarine.GameManager;
 import com.gameinstance.submarine.GameRenderer;
+import com.gameinstance.submarine.gameplay.cutscene.CutsceneAction;
 import com.gameinstance.submarine.utils.MathUtils;
 
 /**

@@ -16,6 +16,8 @@
 
     <string name="too_shallow">Zbyt płytko</string>
     <string name="go_to_marker">Płyń do markiera</string>
+    <string name="set_kuzia_to_harbor">Dostarcz Kuzmicza do szopy</string>
+    <string name="go_to_carrier">Dostarcz Kuzmicza do lotniskowca</string>
 
     <string name="level_complete">Misja zakończona</string>
 

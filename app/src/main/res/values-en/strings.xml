@@ -16,6 +16,8 @@
 
     <string name="too_shallow">Too shallow</string>
     <string name="go_to_marker">Go to the marker</string>
+    <string name="set_kuzia_to_harbor">Deliver Kuzmich to the barn</string>
+    <string name="go_to_carrier">Deliver Kuzmich to the carrier</string>
 
     <string name="level_complete">Mission complete</string>
 
