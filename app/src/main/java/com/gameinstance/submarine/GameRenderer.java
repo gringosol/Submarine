@@ -35,6 +35,10 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     int mTexCordHandle3;
     int mTramsformMatrixHandle3;
     int mTextureUniformHandle3;
+    int mPositionHandle4;
+    int mTexCordHandle4;
+    int mTramsformMatrixHandle4;
+    int mTextureUniformHandle4;
     int mColorHandle;
     int mTransparencyHandle;
     Map<String, Integer> programHandles = new HashMap<>();
@@ -167,6 +171,11 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         return primitive;
     }
 
+    public Primitive createPrimitiveLandscape() {
+        return   new Primitive(mPositionHandle4, mTexCordHandle4, mTextureUniformHandle4,
+                mTramsformMatrixHandle4);
+    }
+
     public void setCamera(Camera camera) {
         this.camera = camera;
     }
@@ -222,6 +231,19 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         mTramsformMatrixHandle3 = GLES20.glGetUniformLocation(TransparentProgramHandle, "u_MTransform");
         mTextureUniformHandle3 = GLES20.glGetUniformLocation(TransparentProgramHandle, "u_Texture");
         mTransparencyHandle = GLES20.glGetUniformLocation(TransparentProgramHandle, "u_Transp");
+        final String vertexShader4 = RawResourceReader.readTextFileFromRawResource(mActivityContext,
+                R.raw.lanscape_vertex_shader);
+        final String fragmentShader4 = RawResourceReader.readTextFileFromRawResource(mActivityContext,
+                R.raw.landscape_fragment_shader);
+        final int vertexShaderHandle4 = ShaderUtils.compileShader(GLES20.GL_VERTEX_SHADER, vertexShader4);
+        final int fragmentShaderHandle4 = ShaderUtils.compileShader(GLES20.GL_FRAGMENT_SHADER, fragmentShader4);
+        int LandscapeProgramHandle = ShaderUtils.createAndLinkProgram(vertexShaderHandle4, fragmentShaderHandle4,
+                new String[]{"a_Position", "a_TexCoordinate"});
+        programHandles.put("LandscapeProgramHandle", LandscapeProgramHandle);
+        mPositionHandle4 = GLES20.glGetAttribLocation(LandscapeProgramHandle, "a_Position");
+        mTexCordHandle4 = GLES20.glGetAttribLocation(LandscapeProgramHandle, "a_TexCoordinate");
+        mTramsformMatrixHandle4 = GLES20.glGetUniformLocation(LandscapeProgramHandle, "u_MTransform");
+        mTextureUniformHandle4 = GLES20.glGetUniformLocation(LandscapeProgramHandle, "u_Texture");
     }
 
     private void initializeOglState() {

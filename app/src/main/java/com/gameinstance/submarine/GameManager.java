@@ -128,10 +128,12 @@ public class GameManager {
         Primitive colPrimitive = renderer.createPrimitiveColored();
         addPrimitive(colPrimitive);
         Primitive transparentPrimitive = renderer.createPrimitiveTransparent();
+        Primitive landscapePrimitive = renderer.createPrimitiveLandscape();
         movablePrimitiveMap = new HashMap<>();
         movablePrimitiveMap.put(renderer.getProgramHandle("SimpleProgramHandle"), colPrimitive);
         movablePrimitiveMap.put(renderer.getProgramHandle("DefaultProgramHandle"), texPrimitive);
         movablePrimitiveMap.put(renderer.getProgramHandle("TransparentProgramHandle"), transparentPrimitive);
+        movablePrimitiveMap.put(renderer.getProgramHandle("LandscapeProgramHandle"), landscapePrimitive);
         camera = new Camera();
 
         if (!startFromMenu) { //todo - test entity, exclude if branch in future
@@ -191,8 +193,6 @@ public class GameManager {
     }
 
     public static Sprite [] createLandScape(int textureId, int pixelsPerUnit, float unitSize, Primitive primitive) {
-        Map<Integer, Primitive> primitiveMap = new HashMap<>();
-        primitiveMap.put(renderer.getProgramHandle("DefaultProgramHandle"), primitive);
         int [] texHandles = TextureHelper.loadTexture2(renderer.getActivityContext(), textureId, pixelsPerUnit);
         int n = texHandles[0];
         int m = texHandles[1];
@@ -201,7 +201,7 @@ public class GameManager {
         float top = (m * unitSize) / 2.0f - 0.5f * unitSize;
         for (int j = 0; j < m; j++) {
             for (int i = 0; i < n; i++) {
-                sprites[j * n + i] = new Sprite(texHandles[j * n + i + 2], primitiveMap,
+                sprites[j * n + i] = new Sprite(texHandles[j * n + i + 2], GameManager.getMovablePrimitiveMap(),
                         unitSize, new float[] {left + i * unitSize, top - j * unitSize});
             }
         }
@@ -236,8 +236,6 @@ public class GameManager {
 
     public static Sprite [] createLandScapeTiled(int textureId, int pixelsPerUnit, float unitSize, Primitive primitive) {
         tilesToAnimate.clear();
-        Map<Integer, Primitive> primitiveMap = new HashMap<>();
-        primitiveMap.put(renderer.getProgramHandle("DefaultProgramHandle"), primitive);
         int [] texHandles = TextureHelper.loadTileset(renderer.getActivityContext(), textureId, pixelsPerUnit, tileCount);
         Sprite [] sprites = new Sprite[tileCountX * tileCountY];
         float left = -(tileCountX * unitSize) / 2.0f + 0.5f * unitSize;
@@ -245,7 +243,7 @@ public class GameManager {
         for (int y = 0; y < tileCountY; y++) {
             for (int x = 0; x < tileCountX; x++) {
                 int index = tileMap[y][x][0];
-                sprites[y * tileCountX + x] = new Sprite(texHandles[index], primitiveMap,
+                sprites[y * tileCountX + x] = new Sprite(texHandles[index], GameManager.getMovablePrimitiveMap(),
                         unitSize, new float[] {left + x * unitSize, top - y * unitSize});
                 if (tileFrameCount > 1) {
                     List<Integer> indices = new ArrayList<>();
@@ -321,7 +319,7 @@ public class GameManager {
         Layer mobs_back = new Layer(renderer.getProgramHandle("SimpleProgramHandle"), false);
         mobs_back.setColor(new float[] {1.0f, 0.0f, 0.0f, 0.5f });
         scene.addLayer("mobs_back", mobs_back);
-        Layer landscape = new Layer(renderer.getProgramHandle("DefaultProgramHandle"), true);
+        Layer landscape = new Layer(renderer.getProgramHandle("LandscapeProgramHandle"), true);
         scene.addLayer("landscape", landscape);
         Layer waves = new Layer(renderer.getProgramHandle("TransparentProgramHandle"), true);
         scene.addLayer("waves", waves);
