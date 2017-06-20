@@ -54,7 +54,7 @@ public class Level1 extends AbstractLevel {
                 dist = MathUtils.distance(targetIsland, GameManager.getSubmarineMovable()
                         .getSprite().getPosition());
                 if (dist < 0.2f) {
-                    GameManager.getSubmarineMovable().setMotionEnabled(false);
+                    GameManager.getSubmarineMovable().setMotionDenied(true);
                     tanks.get(1).setTarget(targetIsland1);
                     setMarkerPosition(targetHarbor[0], targetHarbor[1]);
                     currentTarget++;
@@ -65,7 +65,7 @@ public class Level1 extends AbstractLevel {
                 dist = MathUtils.distance(targetIsland1, tanks.get(1).getSprite().getPosition());
                 if (dist < 0.1f) {
                     GameManager.getScene().getLayer("ships_and_tanks").removeSprite(tanks.get(1).getSprite());
-                    GameManager.getSubmarineMovable().setMotionEnabled(true);
+                    GameManager.getSubmarineMovable().setMotionDenied(false);
                     currentTarget++;
                 }
                 break;
@@ -74,7 +74,7 @@ public class Level1 extends AbstractLevel {
                         .getSprite().getPosition());
                 if (dist < 0.2f) {
                     setMarkerPosition(targetCarrier[0], targetCarrier[1]);
-                    GameManager.getSubmarineMovable().setMotionEnabled(false);
+                    GameManager.getSubmarineMovable().setMotionDenied(true);
                     tanks.get(1).getSprite().setPosition(targetHarbor2[0], targetHarbor2[1]);
                     GameManager.getScene().getLayer("ships_and_tanks").addSprite(tanks.get(1).getSprite());
 
@@ -107,7 +107,7 @@ public class Level1 extends AbstractLevel {
                 dist = MathUtils.distance(targetHarbor2, tanks.get(1).getSprite().getPosition());
                 if (dist < 0.1f) {
                     GameManager.getScene().getLayer("ships_and_tanks").removeSprite(tanks.get(1).getSprite());
-                    GameManager.getSubmarineMovable().setMotionEnabled(true);
+                    GameManager.getSubmarineMovable().setMotionDenied(false);
                     startTime = System.currentTimeMillis();
                     currentTarget++;
                 }
@@ -117,7 +117,7 @@ public class Level1 extends AbstractLevel {
                         .getSprite().getPosition());
                 if (dist < 0.3f) {
                     GameManager.getGameplay().removeMarker(marker);
-                    GameManager.getSubmarineMovable().setMotionEnabled(false);
+                    GameManager.getSubmarineMovable().setMotionDenied(true);
                     tanks.get(1).setCollide(false);
                     tanks.get(1).getSprite().setPosition(ships.get(2).getSprite().getPosition()[0],
                             ships.get(2).getSprite().getPosition()[1]);
@@ -128,6 +128,7 @@ public class Level1 extends AbstractLevel {
                 break;
             case 8://миссия пройдена
                 if (System.currentTimeMillis() - startTime > 2000) {
+                    GameManager.getSubmarineMovable().setMotionDenied(false);
                     ambientMusic.stop();
                     completed = true;
                     currentTarget++;

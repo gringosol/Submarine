@@ -16,6 +16,7 @@ public class Movable {
     float previousAngle = 0;
     float [] previousPosition = new float[] {0, 0};
     boolean motionEnabled = false;
+    boolean motionDenied = false;
     boolean collide = true;
     MobTask currentTask = null;
     Sprite viewCircle = null;
@@ -89,7 +90,8 @@ public class Movable {
     public void setTarget(float [] newTarget) {
         target[0] = newTarget[0];
         target[1] = newTarget[1];
-        motionEnabled = true;
+        if (!motionDenied)
+            motionEnabled = true;
     }
 
     public float [] getTarget() {
@@ -252,5 +254,10 @@ public class Movable {
         if (soundSource != null) {
             soundSource.stop();
         }
+    }
+
+    public void setMotionDenied(boolean b){
+        motionDenied = b;
+        motionEnabled = !b;
     }
 }
