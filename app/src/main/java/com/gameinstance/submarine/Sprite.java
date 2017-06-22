@@ -104,6 +104,25 @@ public class Sprite {
         primitives.get(programHandle).draw(projectionMatrix, viewMatrix, modelMatrix, transparency);
     }
 
+    public void draw(float [] viewMatrix, float [] projectionMatrix, int programHandle,
+                     int bgrTexHandle, long time) {
+        if (!visible)
+            return;
+        Matrix.setIdentityM(modelMatrix, 0);
+        Matrix.setIdentityM(scaleMatrix, 0);
+        Matrix.setIdentityM(translateMatrix, 0);
+        Matrix.setIdentityM(rotateMatrix, 0);
+        Matrix.scaleM(scaleMatrix, 0, scaleX, scaleY, 1.0f);
+        Matrix.translateM(translateMatrix, 0, position[0], position[1], 0);
+        Matrix.rotateM(rotateMatrix, 0, angle, 0, 0, 1.0f);
+        Matrix.multiplyMM(modelMatrix, 0, rotateMatrix, 0, scaleMatrix, 0);
+        Matrix.multiplyMM(modelMatrix, 0, translateMatrix, 0, modelMatrix, 0);
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texHandle);
+
+        primitives.get(programHandle).draw(projectionMatrix, viewMatrix, modelMatrix, time);
+    }
+
     public void setPosition(float x, float y) {
         position[0] = x;
         position[1] = y;

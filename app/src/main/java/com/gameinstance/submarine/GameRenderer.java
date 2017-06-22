@@ -41,6 +41,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     int mTextureUniformHandle4;
     int mColorHandle;
     int mTransparencyHandle;
+    int mTexBgrHandle;
+    int mModelMatrixHandle;
     Map<String, Integer> programHandles = new HashMap<>();
     boolean paused = false;
 
@@ -172,8 +174,15 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     }
 
     public Primitive createPrimitiveLandscape() {
-        return   new Primitive(mPositionHandle4, mTexCordHandle4, mTextureUniformHandle4,
+        Primitive primitive = new Primitive(mPositionHandle4, mTexCordHandle4, mTextureUniformHandle4,
                 mTramsformMatrixHandle4);
+        primitive.setmTexBgrHandle(mTexBgrHandle);
+        primitive.setmModelMatrixHandle(mModelMatrixHandle);
+        return primitive;
+    }
+
+    public int getmTexBgrHandle() {
+        return mTexBgrHandle;
     }
 
     public void setCamera(Camera camera) {
@@ -244,6 +253,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         mTexCordHandle4 = GLES20.glGetAttribLocation(LandscapeProgramHandle, "a_TexCoordinate");
         mTramsformMatrixHandle4 = GLES20.glGetUniformLocation(LandscapeProgramHandle, "u_MTransform");
         mTextureUniformHandle4 = GLES20.glGetUniformLocation(LandscapeProgramHandle, "u_Texture");
+        mTexBgrHandle = GLES20.glGetUniformLocation(LandscapeProgramHandle, "u_Map");
+        mModelMatrixHandle = GLES20.glGetUniformLocation(LandscapeProgramHandle, "u_MModel");
     }
 
     private void initializeOglState() {

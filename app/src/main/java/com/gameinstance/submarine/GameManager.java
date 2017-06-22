@@ -320,6 +320,7 @@ public class GameManager {
         mobs_back.setColor(new float[] {1.0f, 0.0f, 0.0f, 0.5f });
         scene.addLayer("mobs_back", mobs_back);
         Layer landscape = new Layer(renderer.getProgramHandle("LandscapeProgramHandle"), true);
+        landscape.setBgrTexHandle(backTexHandle[0]);
         scene.addLayer("landscape", landscape);
         Layer waves = new Layer(renderer.getProgramHandle("TransparentProgramHandle"), true);
         scene.addLayer("waves", waves);

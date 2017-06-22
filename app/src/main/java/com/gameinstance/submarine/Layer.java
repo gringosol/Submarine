@@ -21,6 +21,7 @@ public class Layer {
     public boolean visible = true;
     private boolean optimize;
     Float transparency = null;
+    Integer bgrTexHandle = null;
 
     public Layer(int programHandle, boolean optimize) {
         this.programHandle = programHandle;
@@ -62,15 +63,24 @@ public class Layer {
     public void drawLayer(float [] viewMatrix, float [] projectionMatrix) {
         GLES20.glUseProgram(programHandle);
         if (sprites != null) {
-            if (color == null && transparency == null) {
+            if (color == null && transparency == null && bgrTexHandle == null) {
                 for (Sprite sprite : sprites) {
                     if (!optimize || inScreen(viewMatrix, projectionMatrix, sprite)) {
                         sprite.draw(viewMatrix, projectionMatrix, programHandle);
                     }
                 }
-            } else if (transparency == null) {
+            } else if (transparency == null && bgrTexHandle == null) {
                 for (Sprite sprite : sprites) {
                     sprite.draw(viewMatrix, projectionMatrix, color, programHandle);
+                }
+            } else if (transparency == null) {
+                GLES20.glUniform1i(GameManager.getRenderer().getmTexBgrHandle(), 1);
+                GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
+                GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, bgrTexHandle);
+                for (Sprite sprite : sprites) {
+                    if (!optimize || inScreen(viewMatrix, projectionMatrix, sprite)) {
+                        sprite.draw(viewMatrix, projectionMatrix, programHandle, bgrTexHandle, 0);
+                    }
                 }
             } else {
                 for (Sprite sprite : sprites) {
@@ -107,5 +117,9 @@ public class Layer {
 
     public void setTransparency(float t) {
         transparency = t;
+    }
+
+    public void setBgrTexHandle(int handle) {
+        bgrTexHandle = handle;
     }
 }
