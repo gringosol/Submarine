@@ -22,10 +22,12 @@ public class Layer {
     private boolean optimize;
     Float transparency = null;
     Integer bgrTexHandle = null;
+    long startTime;
 
     public Layer(int programHandle, boolean optimize) {
         this.programHandle = programHandle;
         this.optimize = optimize;
+        startTime = System.currentTimeMillis();
     }
 
     public void addSprite(final Sprite sprite) {
@@ -77,9 +79,10 @@ public class Layer {
                 GLES20.glUniform1i(GameManager.getRenderer().getmTexBgrHandle(), 1);
                 GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
                 GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, bgrTexHandle);
+                long time = System.currentTimeMillis() - startTime;
                 for (Sprite sprite : sprites) {
                     if (!optimize || inScreen(viewMatrix, projectionMatrix, sprite)) {
-                        sprite.draw(viewMatrix, projectionMatrix, programHandle, bgrTexHandle, 0);
+                        sprite.draw(viewMatrix, projectionMatrix, programHandle, time);
                     }
                 }
             } else {

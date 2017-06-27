@@ -43,6 +43,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     int mTransparencyHandle;
     int mTexBgrHandle;
     int mModelMatrixHandle;
+    int mTimeHandle;
     Map<String, Integer> programHandles = new HashMap<>();
     boolean paused = false;
 
@@ -178,6 +179,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 mTramsformMatrixHandle4);
         primitive.setmTexBgrHandle(mTexBgrHandle);
         primitive.setmModelMatrixHandle(mModelMatrixHandle);
+        primitive.setmTimeHandle(mTimeHandle);
         return primitive;
     }
 
@@ -255,6 +257,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         mTextureUniformHandle4 = GLES20.glGetUniformLocation(LandscapeProgramHandle, "u_Texture");
         mTexBgrHandle = GLES20.glGetUniformLocation(LandscapeProgramHandle, "u_Map");
         mModelMatrixHandle = GLES20.glGetUniformLocation(LandscapeProgramHandle, "u_MModel");
+        mTimeHandle = GLES20.glGetUniformLocation(LandscapeProgramHandle, "u_Time");
     }
 
     private void initializeOglState() {

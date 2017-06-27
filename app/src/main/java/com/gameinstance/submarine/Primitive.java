@@ -28,6 +28,7 @@ public class Primitive {
     int mTexCoordHandle;
     int mTexBgrHandle = -1;
     int mModelMatrixHandle;
+    int mTimeHandle;
 
     public Primitive(int mPositionHandle, int mTexCoordHandle, int mTextureUniformHandle, int mTransformMatrixHandle, int mColorHandle, float [] texCoord) {
         this.mTextureUniformHandle = mTextureUniformHandle;
@@ -131,7 +132,7 @@ public class Primitive {
         GLES20.glUniformMatrix4fv(mTransformMatrixHandle, 1, false, resultMatrix, 0);
         GLES20.glUniformMatrix4fv(mModelMatrixHandle, 1, false, modelMatrix, 0);
         GLES20.glUniform1i(mTextureUniformHandle, 0);
-        //GLES20.glUniform1i(mTexBgrHandle, 1);
+        GLES20.glUniform1f(mTimeHandle, (float)time / 1000.0f);
         mTexCoordinates.position(0);
         GLES20.glVertexAttribPointer(mPositionHandle, mPositionDataSize, GLES20.GL_FLOAT, false, 0, mPositions);
         GLES20.glEnableVertexAttribArray(mPositionHandle);
@@ -156,5 +157,9 @@ public class Primitive {
 
     public void setmModelMatrixHandle (int h) {
         mModelMatrixHandle = h;
+    }
+
+    public void setmTimeHandle(int h) {
+        mTimeHandle = h;
     }
 }

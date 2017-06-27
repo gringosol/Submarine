@@ -104,8 +104,7 @@ public class Sprite {
         primitives.get(programHandle).draw(projectionMatrix, viewMatrix, modelMatrix, transparency);
     }
 
-    public void draw(float [] viewMatrix, float [] projectionMatrix, int programHandle,
-                     int bgrTexHandle, long time) {
+    public void draw(float [] viewMatrix, float [] projectionMatrix, int programHandle, long time) {
         if (!visible)
             return;
         Matrix.setIdentityM(modelMatrix, 0);
