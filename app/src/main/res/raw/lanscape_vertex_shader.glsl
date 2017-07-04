@@ -16,5 +16,7 @@ void main() {
   v_Position.y = coord.y * 0.5 + 0.5;
   v_RealPosition = u_MModel * a_Position;
   v_Time = u_Time;
-  gl_Position =   u_MTransform * a_Position;
+  vec4 newPos = u_MTransform * a_Position;
+  //newPos = vec4(newPos.x + 0.05 * sin ((newPos.x + newPos.y) * 5.0 + v_Time), newPos.y + 0.05 * cos ((newPos.x + newPos.y) * 5.0 + v_Time), newPos.z, newPos.w);
+  gl_Position = newPos;
 }
