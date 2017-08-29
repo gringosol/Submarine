@@ -1,0 +1,50 @@
+{
+  "levelname" : "lev1",
+  "background" : "lv1_b",
+  "foreground" : "lv1_m",
+  "pathMap" : "lv1_path",
+  "unitsize" : "0.5",
+  "submarine" : {
+    "type" : "default",
+    "x" : "4.89",
+    "y" : "-6.9",
+    "angle" : "0.0"
+  },
+  "ships" : [
+    {
+     "type" : "default",
+     "x" : "7.45",
+     "y" : "-6.09",
+     "angle" : "-0.3"
+    },
+    {
+     "type" : "default",
+     "x" : "-4.58",
+     "y" : "-7.2",
+     "angle" : "-0.3"
+    },
+    {
+     "type" : "default",
+     "x" : "-7.8",
+     "y" : "2.3",
+     "angle" : "-0.3"
+    },
+    {
+         "type" : "apl",
+         "x" : "-0.42",
+         "y" : "2.94",
+         "w" : "2.0",
+         "h" : "2.0",
+         "angle" : "-0.3",
+         "enemy" : "0"
+        }
+     ],
+    "helis" : [
+         {
+             "type" : "default",
+             "x" : "-7.8",
+             "y" : "2.3",
+             "angle" : "2.5"
+         }
+    ]
+}

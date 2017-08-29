@@ -7,6 +7,7 @@ import com.gameinstance.submarine.Helicopter;
 import com.gameinstance.submarine.Ship;
 import com.gameinstance.submarine.Tank;
 import com.gameinstance.submarine.gameplay.cutscene.Cutscene;
+import com.gameinstance.submarine.utils.MathUtils;
 
 import java.util.List;
 
@@ -107,5 +108,14 @@ public class AbstractLevel implements LevelLogic {
     @Override
     public int getTotalScore() {
         return totalScore;
+    }
+
+    public boolean isSubmarineInPoint(float [] point, float radius) {
+        float dist = MathUtils.distance(point, GameManager.getSubmarineMovable().getSprite().getPosition());
+        return dist <= radius;
+    }
+
+    public boolean isSubmarineInPoint(float [] point) {
+        return isSubmarineInPoint(point, 0.2f);
     }
 }

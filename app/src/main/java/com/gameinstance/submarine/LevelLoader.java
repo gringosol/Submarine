@@ -42,6 +42,7 @@ public class LevelLoader {
         shipSrites = new HashMap<>();
         shipSrites.put("default", new Integer[] {R.drawable.ship1});
         shipSrites.put("carrier", new Integer [] {R.drawable.carrier});
+        shipSrites.put("apl", new Integer [] {R.drawable.apl});
     }
 
     private static final Map<String, Integer []> tankSprites;
