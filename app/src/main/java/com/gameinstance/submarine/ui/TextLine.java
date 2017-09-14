@@ -20,24 +20,37 @@ public class TextLine {
     float [] pos;
     float lineHeight;
     GameRenderer renderer;
+    int lineLength;
+    int visibleChars = -1;
 
-    public TextLine(int resId, float[] pos, float lineHeight, GameRenderer renderer) {
+    public TextLine(int resId, float[] pos, float lineHeight, GameRenderer renderer, int lineLength) {
         this.resId = resId;
         this.pos = pos;
         this.lineHeight = lineHeight;
         this.renderer = renderer;
         String text = GameManager.getString(resId);
-        initTexLine(text, pos, lineHeight, renderer);
+        initTexLine(text, pos, lineHeight, renderer, lineLength);
+        this.lineLength = lineLength;
     }
 
-    public TextLine(String text, float[] pos, float lineHeight, GameRenderer renderer) {
+    public TextLine(int resId, float[] pos, float lineHeight, GameRenderer renderer) {
+        this(resId, pos, lineHeight, renderer, 80);
+    }
+
+    public TextLine(String text, float[] pos, float lineHeight, GameRenderer renderer, int lineLength) {
         this.pos = pos;
         this.lineHeight = lineHeight;
         this.renderer = renderer;
-        initTexLine(text, pos, lineHeight, renderer);
+        initTexLine(text, pos, lineHeight, renderer, lineLength);
+        this.lineLength = lineLength;
     }
 
-    public void initTexLine(String text, float [] pos, float lineHeight, GameRenderer renderer) {
+    public TextLine(String text, float[] pos, float lineHeight, GameRenderer renderer) {
+        this(text, pos, lineHeight, renderer, 80);
+    }
+
+    public void initTexLine(String text, float [] pos, float lineHeight, GameRenderer renderer,
+                            int lineLength) {
 
         letters = new Letter[text.length()];
         float charWidth = lineHeight * charAspect;
@@ -49,7 +62,8 @@ public class TextLine {
         for (char ch : text.toCharArray()) {
             letters[i] = new Letter(renderer, R.drawable.textbackground, primitiveMap, charWidth,
                     lineHeight, ch);
-            letters[i].setPosition(pos[0] + i * charWidth * charAspect, pos[1]);
+            letters[i].setPosition(pos[0] + (i % lineLength) * charWidth * charAspect, pos[1]
+                    - lineHeight * 1.2f * (i / lineLength));
             i++;
         }
     }
@@ -57,17 +71,30 @@ public class TextLine {
     public void reinit() {
         if (resId != null) {
             String text = GameManager.getString(resId);
-            initTexLine(text, pos, lineHeight, renderer);
+            initTexLine(text, pos, lineHeight, renderer, lineLength);
         }
     }
 
     public void draw(float [] viewMatrix, float [] projectionMatrix, int programHandle) {
+        int i = 0;
         for (Letter letter : letters) {
             letter.draw(viewMatrix, projectionMatrix, programHandle);
+            i++;
+            if (visibleChars > 0 && i >= visibleChars) {
+                break;
+            }
         }
     }
 
     public static float getCharAspect() {
         return charAspect;
+    }
+
+    public void setVisibleChars(int n) {
+        visibleChars = n;
+    }
+
+    public int getVisibleChars() {
+        return visibleChars;
     }
 }

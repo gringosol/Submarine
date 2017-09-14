@@ -14,6 +14,7 @@ import com.gameinstance.submarine.Sprite;
 import com.gameinstance.submarine.Submarine;
 import com.gameinstance.submarine.gameplay.tasks.GoToPointByRouteTask;
 import com.gameinstance.submarine.gameplay.tasks.MobTask;
+import com.gameinstance.submarine.ui.BriefWindow;
 import com.gameinstance.submarine.ui.TextLine;
 import com.gameinstance.submarine.utils.MathUtils;
 
@@ -22,6 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +70,7 @@ public class Gameplay {
     TextLine textEmp;
     TextLine textBait;
     Sprite blinkingArrow;
+    BriefWindow mainBriefWindow;
 
     public void init() {
         renderer = GameManager.getRenderer();
@@ -121,6 +124,7 @@ public class Gameplay {
         blinkingArrow.setAnimation(new Animation(300, true, R.drawable.yellowarrow, R.drawable.yellowarrow1));
         blinkingArrow.setVisible(false);
         GameManager.getScene().getLayer("aircrafts").addSprite(blinkingArrow);
+        mainBriefWindow = new BriefWindow(Arrays.asList("test1234567890"), 1.5f, 0.5f, baitButton, 200, 2);
     }
 
     public void update(){
@@ -646,5 +650,9 @@ public class Gameplay {
 
     public Sprite getBlinkingArrow() {
         return blinkingArrow;
+    }
+
+    public void showBriefWindow() {
+        mainBriefWindow.show();
     }
 }

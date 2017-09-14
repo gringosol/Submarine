@@ -13,6 +13,9 @@ import java.util.List;
 
 public class Lev1 extends AbstractLevel {
     float [] targetStrait = new float[] {2.70f, 2.83f};
+    float [] empPos = new float[] {-7.32f,  3.22f};
+    float [] targetGate = new float[] {-3.46f, 0.46f};
+    float [] targetExit = new float[] {-2.5f, -6.85f};
     float [] currentMarkerPosition = new float[2];
     transient List<float[]> sh1points;
     transient List<float[]> sh2points;
@@ -24,7 +27,7 @@ public class Lev1 extends AbstractLevel {
 
     @Override
     public void init() {
-        marker = GameManager.getGameplay().addMarker(targetStrait, false);
+        marker = GameManager.getGameplay().addMarker(targetStrait, true);
         setMarkerPosition(targetStrait[0], targetStrait[1]);
     }
 
@@ -34,10 +37,57 @@ public class Lev1 extends AbstractLevel {
             case 0:
                 if (isSubmarineInPoint(targetStrait, 0.5f)) {
                     alarm();
+                    //briefMessageGoToEmp
+                    GameManager.getGameplay().showBriefWindow();
+                    setEmpTarget();
                     currentTarget++;
                 }
                 break;
+            case 1:
+                if (hasEmp()) {
+                    setGateTarget();
+                    //briefMessageGoToGate
+                    currentTarget++;
+                }
+                break;
+            case 2:
+                if (isSubmarineInPoint(targetGate, 0.3f)) {
+                    //briefMessageApplyEmp
+                    currentTarget++;
+                }
+                break;
+            case 3:
+                if (!hasEmp()) {
+                    //briefMessageGoToExit
+                    setExitTarget();
+                    currentTarget++;
+                }
+                break;
+            case 4:
+                if (isSubmarineInPoint(targetExit, 0.3f)) {
+                    currentTarget++;
+                    completed = true;
+                }
+                break;
         }
+    }
+
+    private void setEmpTarget() {
+        setMarkerPosition(empPos[0], empPos[1]);
+        marker.showOnLand = false;
+    }
+
+    private boolean hasEmp() {
+        return GameManager.getGameplay().empCount > 0;
+    }
+
+    private void setGateTarget() {
+        marker.showOnLand = true;
+        setMarkerPosition(targetGate[0], targetGate[1]);
+    }
+
+    private void setExitTarget() {
+        setMarkerPosition(targetExit[0], targetExit[1]);
     }
 
     @Override
