@@ -124,7 +124,10 @@ public class Gameplay {
         blinkingArrow.setAnimation(new Animation(300, true, R.drawable.yellowarrow, R.drawable.yellowarrow1));
         blinkingArrow.setVisible(false);
         GameManager.getScene().getLayer("aircrafts").addSprite(blinkingArrow);
-        mainBriefWindow = new BriefWindow(Arrays.asList("test1234567890"), 1.5f, 0.5f, baitButton, 200, 2);
+        Sprite admiralSprite = GameManager.addSprite(R.drawable.admiral1, 0, 0, 0.25f, 0.25f);
+        admiralSprite.setAnimation(new Animation(300, true, R.drawable.admiral1, R.drawable.admiral2));
+        mainBriefWindow = new BriefWindow(Arrays.asList("test1234567890", "Hallo submarine",
+                "Jeszcze raz"), 1.5f, 0.5f, admiralSprite, 200, 2);
     }
 
     public void update(){

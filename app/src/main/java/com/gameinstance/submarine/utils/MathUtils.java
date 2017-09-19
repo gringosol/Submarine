@@ -179,4 +179,8 @@ public class MathUtils {
         }
         return points;
     }
+
+    public static float min(float x1, float x2) {
+        return x1 < x2 ? x1 : x2;
+    }
 }

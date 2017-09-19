@@ -72,4 +72,8 @@ public class Animation {
         setFrame(sprite, currentFrame);
         currentFrame++;
     }
+
+    public void stop() {
+        enabled = false;
+    }
 }

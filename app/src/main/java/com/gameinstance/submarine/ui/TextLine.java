@@ -4,6 +4,7 @@ import com.gameinstance.submarine.GameManager;
 import com.gameinstance.submarine.GameRenderer;
 import com.gameinstance.submarine.Primitive;
 import com.gameinstance.submarine.R;
+import com.gameinstance.submarine.utils.MathUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,6 +44,15 @@ public class TextLine {
         this.renderer = renderer;
         initTexLine(text, pos, lineHeight, renderer, lineLength);
         this.lineLength = lineLength;
+    }
+
+    public TextLine(String text, float[] pos, float lineHeight, GameRenderer renderer, float lineLengthUnits) {
+        this.pos = pos;
+        this.lineHeight = lineHeight;
+        this.renderer = renderer;
+        this.lineLength = (int)(lineLengthUnits / (lineHeight * charAspect * charAspect));
+        initTexLine(text, pos, lineHeight, renderer, lineLength);
+
     }
 
     public TextLine(String text, float[] pos, float lineHeight, GameRenderer renderer) {
@@ -96,5 +106,9 @@ public class TextLine {
 
     public int getVisibleChars() {
         return visibleChars;
+    }
+
+    public float getLineWidthInUnits() {
+        return MathUtils.min(letters.length, lineLength) * charAspect * lineHeight * charAspect;
     }
 }
