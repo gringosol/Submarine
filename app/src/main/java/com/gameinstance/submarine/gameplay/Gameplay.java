@@ -126,8 +126,7 @@ public class Gameplay {
         GameManager.getScene().getLayer("aircrafts").addSprite(blinkingArrow);
         Sprite admiralSprite = GameManager.addSprite(R.drawable.admiral1, 0, 0, 0.25f, 0.25f);
         admiralSprite.setAnimation(new Animation(300, true, R.drawable.admiral1, R.drawable.admiral2));
-        mainBriefWindow = new BriefWindow(Arrays.asList("test1234567890", "Hallo submarine",
-                "Jeszcze raz"), 1.5f, 0.5f, admiralSprite, 200, 2);
+        mainBriefWindow = new BriefWindow(new ArrayList<String>(), 2.0f, 0.5f, admiralSprite, 200, 3);
     }
 
     public void update(){
@@ -655,7 +654,12 @@ public class Gameplay {
         return blinkingArrow;
     }
 
-    public void showBriefWindow() {
+    public void showBriefWindow(List<Integer> resources) {
+        List<String> messages = new ArrayList<>();
+        for (Integer r : resources) {
+            messages.add(GameManager.getString(r));
+        }
+        mainBriefWindow.setMessages(messages);
         mainBriefWindow.show();
     }
 }

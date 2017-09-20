@@ -23,6 +23,7 @@ public class TextLine {
     GameRenderer renderer;
     int lineLength;
     int visibleChars = -1;
+    float charInterval = 0.6f;
 
     public TextLine(int resId, float[] pos, float lineHeight, GameRenderer renderer, int lineLength) {
         this.resId = resId;
@@ -72,8 +73,8 @@ public class TextLine {
         for (char ch : text.toCharArray()) {
             letters[i] = new Letter(renderer, R.drawable.textbackground, primitiveMap, charWidth,
                     lineHeight, ch);
-            letters[i].setPosition(pos[0] + (i % lineLength) * charWidth * charAspect, pos[1]
-                    - lineHeight * 1.2f * (i / lineLength));
+            letters[i].setPosition(pos[0] + (i % lineLength) * charWidth * charInterval, pos[1]
+                    - lineHeight * (i / lineLength));
             i++;
         }
     }
@@ -109,6 +110,6 @@ public class TextLine {
     }
 
     public float getLineWidthInUnits() {
-        return MathUtils.min(letters.length, lineLength) * charAspect * lineHeight * charAspect;
+        return MathUtils.min(letters.length, lineLength) * charAspect * lineHeight * charInterval;
     }
 }

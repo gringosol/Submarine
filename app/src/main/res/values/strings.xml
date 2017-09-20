@@ -34,4 +34,11 @@
    <string name="briefing_level_1_2">- забрать груз и доставить на базу</string>
    <string name="briefing_level_2_1">- собрать все предметы</string>
    <string name="main_title">SUBMARINE</string>
+
+
+    <!-- Lev1 -->
+    <string name="lev1_plunge">Немедленно погрузитесь!</string>
+    <string name="lev1_path_blocked">Путь назад заблокирован. Согласно спутниковым данным, глубоководный проход находится на востоке отсюда.</string>
+    <string name="lev1_go_to_emp">Следуйте в указанный район для получения EMP устройства.</string>
+
 </resources>

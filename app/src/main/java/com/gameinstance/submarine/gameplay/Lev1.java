@@ -1,6 +1,7 @@
 package com.gameinstance.submarine.gameplay;
 
 import com.gameinstance.submarine.GameManager;
+import com.gameinstance.submarine.R;
 import com.gameinstance.submarine.gameplay.tasks.PatrolPoints;
 
 import java.util.Arrays;
@@ -38,7 +39,8 @@ public class Lev1 extends AbstractLevel {
                 if (isSubmarineInPoint(targetStrait, 0.5f)) {
                     alarm();
                     //briefMessageGoToEmp
-                    GameManager.getGameplay().showBriefWindow();
+                    GameManager.getGameplay().showBriefWindow(Arrays.asList(R.string.lev1_plunge,
+                            R.string.lev1_path_blocked, R.string.lev1_go_to_emp));
                     setEmpTarget();
                     currentTarget++;
                 }

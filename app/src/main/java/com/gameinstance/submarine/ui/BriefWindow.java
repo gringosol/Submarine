@@ -21,30 +21,37 @@ public class BriefWindow {
     float charSpeed;
     float width;
     float height;
+    float x;
+    float y;
     int stringDelay;
     Timer charTimer;
     int currentLine = 0;
     boolean lineDelay = false;
+    float lineHeight;
 
-    public BriefWindow(List<String> messages, float width, float height, Sprite icon,
-                       int stringDelay, float charSpeed) {
-        backGroundSprite = GameManager.addSprite(R.drawable.briefbackground, 0, 1 - height / 2.0f, width,
+    public BriefWindow(List<String> messages, float x, float y, float width, float height, Sprite icon,
+                       int stringDelay, float charSpeed, float lineHeight) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.lineHeight = lineHeight;
+        backGroundSprite = GameManager.addSprite(R.drawable.briefbackground, x, y, width,
                 height);
         iconSprite = icon;
         iconSprite.setScale(0.8f * height, 0.8f * height);
-        iconSprite.setPosition(0 - width / 2.0f + icon.getScaleX() / 2.0f + 0.1f * height, 1.0f - height / 2.0f);
+        iconSprite.setPosition(x - width / 2.0f + icon.getScaleX() / 2.0f + 0.1f * height, y);
         this.stringDelay = stringDelay;
         this.charSpeed = charSpeed;
         this.messages = messages;
         textLines = new ArrayList<>();
-        float textWidth = width - (icon.getScaleX() + 0.2f);
-        for (String s : messages) {
-            TextLine tl = new TextLine(s, new float[]{0 - width / 2.0f + iconSprite.getScaleX() + 0.2f,
-                    0.87f}, 0.2f, GameManager.getRenderer(), textWidth);
-            tl.setVisibleChars(0);
-            textLines.add(tl);
-        }
+        setMessages(messages);
         charTimer = new Timer();
+    }
+
+    public BriefWindow(List<String> messages, float width, float height, Sprite icon,
+                       int stringDelay, float charSpeed) {
+        this(messages, 0, 1.0f - height / 2.0f, width, height, icon, stringDelay, charSpeed, 0.2f);
     }
 
     public void show() {
@@ -95,6 +102,15 @@ public class BriefWindow {
     }
 
     public void setMessages(List<String> messages) {
-
+        textLines.clear();
+        currentLine = 0;
+        this.messages = messages;
+        float textWidth = width - (iconSprite.getScaleX() + 0.2f);
+        for (String s : messages) {
+            TextLine tl = new TextLine(s, new float[]{x - width / 2.0f + iconSprite.getScaleX() + 0.2f,
+                    y + height / 2.0f - lineHeight / 2.0f - 0.1f * height}, lineHeight, GameManager.getRenderer(), textWidth);
+            tl.setVisibleChars(0);
+            textLines.add(tl);
+        }
     }
 }
