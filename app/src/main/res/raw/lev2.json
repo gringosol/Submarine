@@ -1,0 +1,13 @@
+{
+  "levelname" : "lev2",
+  "background" : "lv2_b",
+  "foreground" : "lv2_m",
+  "pathMap" : "lv2_path",
+  "unitsize" : "0.5",
+  "submarine" : {
+    "type" : "default",
+    "x" : "4.89",
+    "y" : "-6.9",
+    "angle" : "0.0"
+  }
+}

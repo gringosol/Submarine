@@ -86,6 +86,14 @@ public class Gameplay {
         levels.put("testlevel", new Level1());
         levels.put("testlevel2", new Level2());
         levels.put("lev1", new Lev1());
+        levels.put("lev2", new Lev2());
+        levels.put("lev3", new Lev4());
+        levels.put("lev4", new Lev4());
+        levels.put("lev5", new Lev5());
+        levels.put("lev7", new Lev7());
+        levels.put("lev8", new Lev8());
+        levels.put("lev9", new Lev9());
+        levels.put("lev10", new Lev10());
         Layer hud = scene.getLayer("hud");
         float leftScreenSide = -1 / renderer.getAspect();
         if (empButton == null) {
