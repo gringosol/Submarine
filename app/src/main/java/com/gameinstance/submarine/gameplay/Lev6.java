@@ -9,7 +9,7 @@ import java.util.List;
  *
  */
 
-public class Lev5 extends AbstractLevel {
+public class Lev6 extends AbstractLevel {
 
     float [] targetStrait = new float [] { 1.01f, -6.62f};
     float [] empPos = new float[] {-7.32f,  3.22f};

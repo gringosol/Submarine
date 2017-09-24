@@ -1,8 +1,8 @@
 {
-  "levelname" : "lev5",
-  "background" : "lv5_b",
-  "foreground" : "lv5_m",
-  "pathMap" : "lv5_path",
+  "levelname" : "lev6",
+  "background" : "lv6_b",
+  "foreground" : "lv6_m",
+  "pathMap" : "lv6_path",
   "unitsize" : "0.5",
   "submarine" : {
     "type" : "default",

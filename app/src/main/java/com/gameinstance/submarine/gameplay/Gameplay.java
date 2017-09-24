@@ -23,7 +23,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +88,7 @@ public class Gameplay {
         levels.put("lev2", new Lev2());
         levels.put("lev3", new Lev4());
         levels.put("lev4", new Lev4());
-        levels.put("lev5", new Lev5());
+        levels.put("lev6", new Lev6());
         levels.put("lev7", new Lev7());
         levels.put("lev8", new Lev8());
         levels.put("lev9", new Lev9());
