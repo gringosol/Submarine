@@ -51,7 +51,7 @@ public class BriefWindow {
 
     public BriefWindow(List<String> messages, float width, float height, Sprite icon,
                        int stringDelay, float charSpeed) {
-        this(messages, 0, 1.0f - height / 2.0f, width, height, icon, stringDelay, charSpeed, 0.2f);
+        this(messages, 0, 1.0f - height / 2.0f, width, height, icon, stringDelay, charSpeed, 0.1f);
     }
 
     public void show() {
@@ -67,6 +67,7 @@ public class BriefWindow {
                 iconSprite.getAnimation().play(iconSprite);
             }
         }
+        lineDelay = false;
         GameManager.getScene().showText(textLines.get(currentLine), "hud");
         charTimer.schedule(new TimerTask() {
             @Override

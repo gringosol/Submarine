@@ -41,4 +41,9 @@
     <string name="lev1_path_blocked">Путь назад заблокирован. Согласно спутниковым данным, глубоководный проход находится на востоке отсюда.</string>
     <string name="lev1_go_to_emp">Следуйте в указанный район для получения EMP устройства.</string>
 
+    <!-- Lev2 -->
+    <string name="lev2_find_command_center">Определите местоположение командного центра</string>
+    <string name="lev2_cc_found">Командный центр обнаружен</string>
+    <string name="lev2_mission_completed">Миссия выполнена</string>
+
 </resources>

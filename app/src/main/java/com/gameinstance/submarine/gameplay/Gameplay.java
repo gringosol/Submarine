@@ -133,7 +133,7 @@ public class Gameplay {
         GameManager.getScene().getLayer("aircrafts").addSprite(blinkingArrow);
         Sprite admiralSprite = GameManager.addSprite(R.drawable.admiral1, 0, 0, 0.25f, 0.25f);
         admiralSprite.setAnimation(new Animation(300, true, R.drawable.admiral1, R.drawable.admiral2));
-        mainBriefWindow = new BriefWindow(new ArrayList<String>(), 2.0f, 0.5f, admiralSprite, 200, 3);
+        mainBriefWindow = new BriefWindow(new ArrayList<String>(), 2.0f, 0.5f, admiralSprite, 200, 5);
     }
 
     public void update(){

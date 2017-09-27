@@ -13,10 +13,15 @@ import java.util.Map;
 public class Letter extends Sprite {
     char ch;
 
-    public Letter(GameRenderer renderer, int texResourseId, Map<Integer, Primitive> primitives,
-                  float width, float height, char ch) {
+    public Letter(final GameRenderer renderer, int texResourseId, Map<Integer, Primitive> primitives,
+                  float width, float height, final char ch) {
         super(renderer, texResourseId, primitives, width, height);
         this.ch = ch;
-        setTexHandle(LetterGenerator.getCharTexId(ch, renderer));
+        renderer.getSurfaceView().queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                setTexHandle(LetterGenerator.getCharTexId(ch, renderer));
+            }
+        });
     }
 }

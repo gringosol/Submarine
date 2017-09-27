@@ -57,6 +57,7 @@ public class Animation {
                 currentFrame++;
                 if (!enabled) {
                     timer.cancel();
+                    timer = null;
                 }
             }
         }, 0, interval);

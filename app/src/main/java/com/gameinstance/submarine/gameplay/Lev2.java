@@ -13,90 +13,49 @@ import java.util.List;
  */
 
 public class Lev2 extends AbstractLevel {
-    float [] targetStrait = new float [] { 1.01f, -6.62f};
-    float [] empPos = new float[] {-7.32f,  3.22f};
-    float [] targetGate = new float[] {-3.46f, 0.46f};
-    float [] targetExit = new float[] {-2.5f, -6.85f};
+    float [] targetCenter = new float [] { -5.06f, 3.84f};
     float [] currentMarkerPosition = new float[2];
     transient List<float[]> sh1points;
     transient List<float[]> sh2points;
-    transient List<float[]> h1points;
-    transient List<float[]> sh3points;
 
     int currentTarget = 0;
     transient Marker marker;
+    long startTime;
 
     @Override
     public void init() {
-        marker = GameManager.getGameplay().addMarker(targetStrait, true);
-        setMarkerPosition(targetStrait[0], targetStrait[1]);
+        marker = GameManager.getGameplay().addMarker(targetCenter, true);
     }
 
     @Override
     public void run() {
         switch (currentTarget) {
             case 0:
-                if (isSubmarineInPoint(targetStrait, 0.5f)) {
-                    alarm();
-                    //briefMessageGoToEmp
-                    /*GameManager.getGameplay().showBriefWindow(Arrays.asList(R.string.lev1_plunge,
-                            R.string.lev1_path_blocked, R.string.lev1_go_to_emp));
-                    setEmpTarget();*/
+                if (isSubmarineInPoint(targetCenter, 0.8f)) {
+                    currentTarget++;
+                    setMarkerPosition(targetCenter[0], targetCenter[1]);
+                    startTime = System.currentTimeMillis();
+                    GameManager.getGameplay().showBriefWindow(Arrays.asList(R.string.lev2_cc_found,
+                            R.string.lev2_mission_completed));
+                }
+                break;
+            case 1:
+                if (System.currentTimeMillis() - startTime > 4000) {
+
                     currentTarget++;
                     completed = true;
                 }
                 break;
-            /*case 1:
-                if (hasEmp()) {
-                    setGateTarget();
-                    //briefMessageGoToGate
-                    currentTarget++;
-                }
-                break;
-            case 2:
-                if (isSubmarineInPoint(targetGate, 0.3f)) {
-                    //briefMessageApplyEmp
-                    currentTarget++;
-                }
-                break;
-            case 3:
-                if (!hasEmp()) {
-                    //briefMessageGoToExit
-                    setExitTarget();
-                    currentTarget++;
-                }
-                break;
-            case 4:
-                if (isSubmarineInPoint(targetExit, 0.3f)) {
-                    currentTarget++;
-                    completed = true;
-                }
-                break;*/
+
         }
-    }
-
-    private void setEmpTarget() {
-        /*setMarkerPosition(empPos[0], empPos[1]);
-        marker.showOnLand = false;*/
-    }
-
-    private boolean hasEmp() {
-        return GameManager.getGameplay().empCount > 0;
-    }
-
-    private void setGateTarget() {
-        marker.showOnLand = true;
-        setMarkerPosition(targetGate[0], targetGate[1]);
-    }
-
-    private void setExitTarget() {
-        setMarkerPosition(targetExit[0], targetExit[1]);
     }
 
     @Override
     public void restore() {
-        marker = GameManager.getGameplay().addMarker(new float[] {targetStrait[0], targetStrait[1]}, true);
-        setMarkerPosition(currentMarkerPosition[0], currentMarkerPosition[1]);
+        marker = GameManager.getGameplay().addMarker(new float[] {targetCenter[0], targetCenter[1]}, true);
+        if (currentMarkerPosition != null) {
+            setMarkerPosition(currentMarkerPosition[0], currentMarkerPosition[1]);
+        }
     }
 
     @Override
@@ -107,7 +66,7 @@ public class Lev2 extends AbstractLevel {
     @Override
     public void onShow() {
         super.onShow();
-
+        GameManager.getGameplay().showBriefWindow(Arrays.asList(R.string.lev2_find_command_center));
     }
 
     @Override
