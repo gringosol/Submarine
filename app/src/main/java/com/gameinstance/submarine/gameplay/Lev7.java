@@ -1,7 +1,12 @@
 package com.gameinstance.submarine.gameplay;
 
 import com.gameinstance.submarine.GameManager;
+import com.gameinstance.submarine.R;
+import com.gameinstance.submarine.Sprite;
+import com.gameinstance.submarine.utils.MathUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -10,90 +15,75 @@ import java.util.List;
  */
 
 public class Lev7 extends AbstractLevel {
-    float [] targetStrait = new float [] { 1.01f, -6.62f};
-    float [] empPos = new float[] {-7.32f,  3.22f};
-    float [] targetGate = new float[] {-3.46f, 0.46f};
-    float [] targetExit = new float[] {-2.5f, -6.85f};
-    float [] currentMarkerPosition = new float[2];
-    transient List<float[]> sh1points;
-    transient List<float[]> sh2points;
-    transient List<float[]> h1points;
-    transient List<float[]> sh3points;
-
-    int currentTarget = 0;
-    transient Marker marker;
+    transient List<float []> targets = Arrays.asList(new float [] {-3.40f, -2.99f},
+            new float [] { 4.38f,  1.63f},
+            new float [] {-3.88f,  2.41f},
+            new float [] { 0.70f,  4.14f});
+    transient List<float []> items = Arrays.asList(new float [] {-1.97f, -2.83f},
+            new float [] { 4.71f,  1.01f},
+            new float [] {-4.03f,  1.84f},
+            new float [] { 0.22f,  3.70f});
+    transient List<Sprite> itemSprites = new ArrayList<>();
+    transient List<Marker> markers = new ArrayList<>();
+    List<Boolean> itemVisibility = new ArrayList<>();
 
     @Override
     public void init() {
-        marker = GameManager.getGameplay().addMarker(targetStrait, true);
-        setMarkerPosition(targetStrait[0], targetStrait[1]);
+        for (int i = 0; i < items.size(); i++) {
+            itemSprites.add(GameManager.addSprite(R.drawable.receiver, items.get(i)[0], items.get(i)[1], 0.5f, 0.5f));
+            itemSprites.get(i).setRotation((float)(Math.random() * 360.0));
+            GameManager.getScene().getLayer("submarines").addSprite(itemSprites.get(itemSprites.size() - 1));
+            itemVisibility.add(false);
+            itemSprites.get(i).setVisible(false);
+            markers.add(GameManager.getGameplay().addMarker(targets.get(i), true));
+        }
     }
 
     @Override
     public void run() {
-        switch (currentTarget) {
-            case 0:
-                if (isSubmarineInPoint(targetStrait, 0.5f)) {
-                    alarm();
-                    //briefMessageGoToEmp
-                    /*GameManager.getGameplay().showBriefWindow(Arrays.asList(R.string.lev1_plunge,
-                            R.string.lev1_path_blocked, R.string.lev1_go_to_emp));
-                    setEmpTarget();*/
-                    currentTarget++;
-                    completed = true;
+        boolean notCompl = false;
+        for (int i = 0; i < items.size(); i++) {
+            if (!itemVisibility.get(i)) {
+                notCompl = true;
+                float dist = MathUtils.distance(targets.get(i), GameManager.getSubmarineMovable()
+                        .getSprite().getPosition());
+                if (dist < 0.9f) {
+                    itemVisibility.set(i, true);
+                    itemSprites.get(i).setVisible(true);
+                    GameManager.getGameplay().removeMarker(markers.get(i));
+                    GameManager.getSoundManager().playSound(R.raw.two_rings_from_ship_bell, false);
                 }
-                break;
-            /*case 1:
-                if (hasEmp()) {
-                    setGateTarget();
-                    //briefMessageGoToGate
-                    currentTarget++;
-                }
-                break;
-            case 2:
-                if (isSubmarineInPoint(targetGate, 0.3f)) {
-                    //briefMessageApplyEmp
-                    currentTarget++;
-                }
-                break;
-            case 3:
-                if (!hasEmp()) {
-                    //briefMessageGoToExit
-                    setExitTarget();
-                    currentTarget++;
-                }
-                break;
-            case 4:
-                if (isSubmarineInPoint(targetExit, 0.3f)) {
-                    currentTarget++;
-                    completed = true;
-                }
-                break;*/
+            }
         }
-    }
-
-    private void setEmpTarget() {
-        /*setMarkerPosition(empPos[0], empPos[1]);
-        marker.showOnLand = false;*/
-    }
-
-    private boolean hasEmp() {
-        return GameManager.getGameplay().empCount > 0;
-    }
-
-    private void setGateTarget() {
-        marker.showOnLand = true;
-        setMarkerPosition(targetGate[0], targetGate[1]);
-    }
-
-    private void setExitTarget() {
-        setMarkerPosition(targetExit[0], targetExit[1]);
+        completed = !notCompl;
     }
 
     @Override
     public void restore() {
-        marker = GameManager.getGameplay().addMarker(new float[] {targetStrait[0], targetStrait[1]}, true);
-        setMarkerPosition(currentMarkerPosition[0], currentMarkerPosition[1]);
+        targets = Arrays.asList(new float [] {-3.40f, -2.99f},
+                new float [] { 4.38f,  1.63f},
+                new float [] {-3.88f,  2.41f},
+                new float [] { 0.70f,  4.14f});
+        items = Arrays.asList(new float [] {-5.55f, -0.71f},
+                new float [] {-2.13f,  2.71f},
+                new float [] { 0.37f,  6.99f},
+                new float [] { 4.14f,  3.54f},
+                new float [] { 0.72f, -0.44f});
+        itemSprites = new ArrayList<>();
+        markers = new ArrayList<>();
+        for (int i = 0; i < itemVisibility.size(); i++) {
+            itemSprites.add(GameManager.addSprite(R.drawable.receiver, items.get(i)[0], items.get(i)[1], 0.5f, 0.5f));
+            itemSprites.get(i).setRotation((float)(Math.random() * 360.0));
+            GameManager.getScene().getLayer("submarines").addSprite(itemSprites.get(i));
+            if (itemVisibility.get(i)) {
+                itemSprites.get(i).setVisible(true);
+                markers.add(null);
+
+            } else {
+                markers.add(GameManager.getGameplay().addMarker(items.get(i), true));
+                itemSprites.get(i).setVisible(false);
+            }
+        }
     }
 
     @Override
@@ -125,11 +115,6 @@ public class Lev7 extends AbstractLevel {
         sh3points = Arrays.asList(new float[]{-6.84f, 2.30f}, new float[]{-1.75f, 1.56f},
                 new float[]{1.69f, 2.30f}, new float[]{5.11f, 4.02f});*/
 
-    }
-
-    private void setMarkerPosition(float x, float y) {
-        currentMarkerPosition = new float[]{x, y};
-        marker.setPosition(currentMarkerPosition);
     }
 
     private void alarm() {
