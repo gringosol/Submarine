@@ -1,6 +1,7 @@
 package com.gameinstance.submarine.gameplay;
 
 import com.gameinstance.submarine.GameManager;
+import com.gameinstance.submarine.utils.MathUtils;
 
 import java.util.List;
 
@@ -11,10 +12,9 @@ import java.util.List;
 
 public class Lev6 extends AbstractLevel {
 
-    float [] targetStrait = new float [] { 1.01f, -6.62f};
-    float [] empPos = new float[] {-7.32f,  3.22f};
-    float [] targetGate = new float[] {-3.46f, 0.46f};
-    float [] targetExit = new float[] {-2.5f, -6.85f};
+    float [] targetMeeting = new float [] { 2.45f,  5.10f};
+    float [] targetMeetingA = new float [] { 3.66f,  5.79f};
+    float [] targetIsland = new float [] {-4.71f,  3.77f};
     float [] currentMarkerPosition = new float[2];
     transient List<float[]> sh1points;
     transient List<float[]> sh2points;
@@ -23,77 +23,56 @@ public class Lev6 extends AbstractLevel {
 
     int currentTarget = 0;
     transient Marker marker;
+    long startTime;
 
     @Override
     public void init() {
-        marker = GameManager.getGameplay().addMarker(targetStrait, true);
-        setMarkerPosition(targetStrait[0], targetStrait[1]);
+        marker = GameManager.getGameplay().addMarker(targetMeeting, true);
+        setMarkerPosition(targetMeeting[0], targetMeeting[1]);
     }
 
     @Override
     public void run() {
+        float dist;
         switch (currentTarget) {
             case 0:
-                if (isSubmarineInPoint(targetStrait, 0.5f)) {
-                    alarm();
-                    //briefMessageGoToEmp
-                    /*GameManager.getGameplay().showBriefWindow(Arrays.asList(R.string.lev1_plunge,
-                            R.string.lev1_path_blocked, R.string.lev1_go_to_emp));
-                    setEmpTarget();*/
+                if (isSubmarineInPoint(targetMeeting, 0.5f)) {
+                    ships.get(0).setTarget(targetMeetingA);
+                    marker.setVisible(false);
                     currentTarget++;
-                    completed = true;
                 }
                 break;
-            /*case 1:
-                if (hasEmp()) {
-                    setGateTarget();
-                    //briefMessageGoToGate
+            case 1:
+                dist = MathUtils.distance(ships.get(0).getSprite().getPosition(), targetMeetingA);
+                if (dist < 0.3) {
                     currentTarget++;
                 }
                 break;
             case 2:
-                if (isSubmarineInPoint(targetGate, 0.3f)) {
-                    //briefMessageApplyEmp
+                if (isSubmarineInPoint(targetMeetingA, 0.7f)) {
+                    ships.get(0).setTarget(targetMeetingA);
+                    setMarkerPosition(targetIsland[0], targetIsland[1]);
+                    marker.setVisible(true);
                     currentTarget++;
                 }
                 break;
             case 3:
-                if (!hasEmp()) {
-                    //briefMessageGoToExit
-                    setExitTarget();
+                if (isSubmarineInPoint(targetIsland, 0.8f)) {
                     currentTarget++;
+                    startTime = System.currentTimeMillis();
                 }
                 break;
             case 4:
-                if (isSubmarineInPoint(targetExit, 0.3f)) {
-                    currentTarget++;
+                if (System.currentTimeMillis() - startTime > 3000) {
                     completed = true;
                 }
-                break;*/
+                break;
         }
-    }
-
-    private void setEmpTarget() {
-        /*setMarkerPosition(empPos[0], empPos[1]);
-        marker.showOnLand = false;*/
-    }
-
-    private boolean hasEmp() {
-        return GameManager.getGameplay().empCount > 0;
-    }
-
-    private void setGateTarget() {
-        marker.showOnLand = true;
-        setMarkerPosition(targetGate[0], targetGate[1]);
-    }
-
-    private void setExitTarget() {
-        setMarkerPosition(targetExit[0], targetExit[1]);
     }
 
     @Override
     public void restore() {
-        marker = GameManager.getGameplay().addMarker(new float[] {targetStrait[0], targetStrait[1]}, true);
+        marker = GameManager.getGameplay().addMarker(new float[] {targetMeeting[0], targetMeeting[1]}, true);
         setMarkerPosition(currentMarkerPosition[0], currentMarkerPosition[1]);
     }
 
@@ -131,16 +110,5 @@ public class Lev6 extends AbstractLevel {
     private void setMarkerPosition(float x, float y) {
         currentMarkerPosition = new float[]{x, y};
         marker.setPosition(currentMarkerPosition);
-    }
-
-    private void alarm() {
-        /*ships.get(0).setTarget(sh1points.get(0));
-        ships.get(0).setCurrentTask(new PatrolPoints(ships.get(0), sh1points));
-        ships.get(1).setTarget(sh2points.get(0));
-        ships.get(1).setCurrentTask(new PatrolPoints(ships.get(1), sh2points));
-        helicopters.get(0).setTarget(h1points.get(0));
-        helicopters.get(0).setCurrentTask(new PatrolPoints(helicopters.get(0), h1points));
-        ships.get(2).setTarget(sh3points.get(0));
-        ships.get(2).setCurrentTask(new PatrolPoints(ships.get(2), sh3points));*/
     }
 }

@@ -74,4 +74,11 @@ public class Marker {
         if (showOnLand)
             landMarker.setPosition(pos[0], pos[1]);
     }
+
+    public void setVisible(boolean v) {
+        radarMarker.setVisible(v);
+        if (showOnLand) {
+            landMarker.setVisible(v);
+        }
+    }
 }
