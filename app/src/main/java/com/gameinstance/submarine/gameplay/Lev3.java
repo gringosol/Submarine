@@ -1,6 +1,7 @@
 package com.gameinstance.submarine.gameplay;
 
 import com.gameinstance.submarine.GameManager;
+import com.gameinstance.submarine.utils.MathUtils;
 
 import java.util.List;
 
@@ -10,10 +11,9 @@ import java.util.List;
  */
 
 public class Lev3 extends AbstractLevel {
-    float [] targetStrait = new float [] { 1.01f, -6.62f};
-    float [] empPos = new float[] {-7.32f,  3.22f};
-    float [] targetGate = new float[] {-3.46f, 0.46f};
-    float [] targetExit = new float[] {-2.5f, -6.85f};
+    float [] targetBase = new float [] {-6.4f,  4.50f};
+    float [] targetBase2 = new float [] {-6.58f,  4.14f};
+    float [] targetExit = new float [] {-6.22f, -5.52f};
     float [] currentMarkerPosition = new float[2];
     transient List<float[]> sh1points;
     transient List<float[]> sh2points;
@@ -22,44 +22,50 @@ public class Lev3 extends AbstractLevel {
 
     int currentTarget = 0;
     transient Marker marker;
+    long startTime;
 
     @Override
     public void init() {
-        marker = GameManager.getGameplay().addMarker(targetStrait, true);
-        setMarkerPosition(targetStrait[0], targetStrait[1]);
+        marker = GameManager.getGameplay().addMarker(targetBase, true);
+        setMarkerPosition(targetBase[0], targetBase[1]);
     }
 
     @Override
     public void run() {
+        float dist;
         switch (currentTarget) {
             case 0:
-                if (isSubmarineInPoint(targetStrait, 0.5f)) {
-                    alarm();
-                    //briefMessageGoToEmp
-                    /*GameManager.getGameplay().showBriefWindow(Arrays.asList(R.string.lev1_plunge,
-                            R.string.lev1_path_blocked, R.string.lev1_go_to_emp));
-                    setEmpTarget();*/
+                if (isSubmarineInPoint(targetBase, 0.3f)) {
+                    GameManager.getSubmarineMovable().setMotionDenied(true);
+                    tanks.get(0).getSprite().setVisible(true);
+                    tanks.get(0).getSprite().setPosition(targetBase[0], targetBase[1]);
+                    tanks.get(0).setTarget(targetBase2);
+                    setMarkerPosition(targetBase2[0], targetBase2[1]);
+                    tanks.get(0).setSpeed(0.01f);
                     currentTarget++;
-                    completed = true;
                 }
                 break;
-            /*case 1:
-                if (hasEmp()) {
-                    setGateTarget();
-                    //briefMessageGoToGate
+            case 1:
+                dist = MathUtils.distance(targetBase2, tanks.get(0).getSprite().getPosition());
+                if (dist <= 0.1f) {
+                    startTime = System.currentTimeMillis();
+                    tanks.get(0).getSprite().setVisible(false);
                     currentTarget++;
                 }
                 break;
             case 2:
-                if (isSubmarineInPoint(targetGate, 0.3f)) {
-                    //briefMessageApplyEmp
+                if (System.currentTimeMillis() - startTime > 3000) {
+                    tanks.get(0).getSprite().setVisible(true);
+                    tanks.get(0).setTarget(targetBase);
                     currentTarget++;
                 }
                 break;
             case 3:
-                if (!hasEmp()) {
-                    //briefMessageGoToExit
-                    setExitTarget();
+                dist = MathUtils.distance(targetBase, tanks.get(0).getSprite().getPosition());
+                if (dist <= 0.1f) {
+                    tanks.get(0).getSprite().setVisible(false);
+                    setMarkerPosition(targetExit[0], targetExit[1]);
+                    GameManager.getSubmarineMovable().setMotionDenied(false);
                     currentTarget++;
                 }
                 break;
@@ -68,31 +74,14 @@ public class Lev3 extends AbstractLevel {
                     currentTarget++;
                     completed = true;
                 }
-                break;*/
+                break;
         }
     }
 
-    private void setEmpTarget() {
-        /*setMarkerPosition(empPos[0], empPos[1]);
-        marker.showOnLand = false;*/
-    }
-
-    private boolean hasEmp() {
-        return GameManager.getGameplay().empCount > 0;
-    }
-
-    private void setGateTarget() {
-        marker.showOnLand = true;
-        setMarkerPosition(targetGate[0], targetGate[1]);
-    }
-
-    private void setExitTarget() {
-        setMarkerPosition(targetExit[0], targetExit[1]);
-    }
 
     @Override
     public void restore() {
-        marker = GameManager.getGameplay().addMarker(new float[] {targetStrait[0], targetStrait[1]}, true);
+        marker = GameManager.getGameplay().addMarker(new float[] {targetBase[0], targetBase[1]}, true);
         setMarkerPosition(currentMarkerPosition[0], currentMarkerPosition[1]);
     }
 
@@ -104,7 +93,7 @@ public class Lev3 extends AbstractLevel {
     @Override
     public void onShow() {
         super.onShow();
-
+        tanks.get(0).getSprite().setVisible(false);
     }
 
     @Override

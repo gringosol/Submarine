@@ -86,7 +86,7 @@ public class Gameplay {
         levels.put("testlevel2", new Level2());
         levels.put("lev1", new Lev1());
         levels.put("lev2", new Lev2());
-        levels.put("lev3", new Lev4());
+        levels.put("lev3", new Lev3());
         levels.put("lev4", new Lev4());
         levels.put("lev6", new Lev6());
         levels.put("lev7", new Lev7());
