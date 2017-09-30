@@ -1,6 +1,7 @@
 package com.gameinstance.submarine.gameplay;
 
 import com.gameinstance.submarine.GameManager;
+import com.gameinstance.submarine.utils.MathUtils;
 
 import java.util.List;
 
@@ -10,89 +11,60 @@ import java.util.List;
  */
 
 public class Lev4 extends AbstractLevel {
-    float [] targetStrait = new float [] { 1.01f, -6.62f};
-    float [] empPos = new float[] {-7.32f,  3.22f};
-    float [] targetGate = new float[] {-3.46f, 0.46f};
-    float [] targetExit = new float[] {-2.5f, -6.85f};
+    float [] targetComCenter = new float [] {-4.71f,  3.77f};
+    float [] targetComCenter2 = new float [] {-4.93f,  4.25f};
     float [] currentMarkerPosition = new float[2];
     transient List<float[]> sh1points;
     transient List<float[]> sh2points;
     transient List<float[]> h1points;
     transient List<float[]> sh3points;
+    long startTime;
 
     int currentTarget = 0;
     transient Marker marker;
 
     @Override
     public void init() {
-        marker = GameManager.getGameplay().addMarker(targetStrait, true);
-        setMarkerPosition(targetStrait[0], targetStrait[1]);
+        marker = GameManager.getGameplay().addMarker(targetComCenter, true);
+        setMarkerPosition(targetComCenter[0], targetComCenter[1]);
     }
 
     @Override
     public void run() {
+        float dist;
         switch (currentTarget) {
             case 0:
-                if (isSubmarineInPoint(targetStrait, 0.5f)) {
-                    alarm();
-                    //briefMessageGoToEmp
-                    /*GameManager.getGameplay().showBriefWindow(Arrays.asList(R.string.lev1_plunge,
-                            R.string.lev1_path_blocked, R.string.lev1_go_to_emp));
-                    setEmpTarget();*/
+                if (isSubmarineInPoint(targetComCenter, 0.3f)) {
+                    GameManager.getSubmarineMovable().setMotionDenied(true);
+                    tanks.get(0).getSprite().setVisible(true);
+                    tanks.get(0).getSprite().setPosition(targetComCenter[0], targetComCenter[1]);
+                    tanks.get(0).setTarget(targetComCenter2);
+                    setMarkerPosition(targetComCenter2[0], targetComCenter2[1]);
+                    tanks.get(0).setSpeed(0.01f);
                     currentTarget++;
-                    completed = true;
                 }
                 break;
-            /*case 1:
-                if (hasEmp()) {
-                    setGateTarget();
-                    //briefMessageGoToGate
+            case 1:
+                dist = MathUtils.distance(targetComCenter2, tanks.get(0).getSprite().getPosition());
+                if (dist <= 0.1f) {
+                    startTime = System.currentTimeMillis();
+                    tanks.get(0).getSprite().setVisible(false);
                     currentTarget++;
                 }
                 break;
             case 2:
-                if (isSubmarineInPoint(targetGate, 0.3f)) {
-                    //briefMessageApplyEmp
-                    currentTarget++;
-                }
-                break;
-            case 3:
-                if (!hasEmp()) {
-                    //briefMessageGoToExit
-                    setExitTarget();
-                    currentTarget++;
-                }
-                break;
-            case 4:
-                if (isSubmarineInPoint(targetExit, 0.3f)) {
-                    currentTarget++;
+                if (System.currentTimeMillis() - startTime > 3000) {
                     completed = true;
+                    currentTarget++;
                 }
-                break;*/
+                break;
         }
     }
 
-    private void setEmpTarget() {
-        /*setMarkerPosition(empPos[0], empPos[1]);
-        marker.showOnLand = false;*/
-    }
-
-    private boolean hasEmp() {
-        return GameManager.getGameplay().empCount > 0;
-    }
-
-    private void setGateTarget() {
-        marker.showOnLand = true;
-        setMarkerPosition(targetGate[0], targetGate[1]);
-    }
-
-    private void setExitTarget() {
-        setMarkerPosition(targetExit[0], targetExit[1]);
-    }
 
     @Override
     public void restore() {
-        marker = GameManager.getGameplay().addMarker(new float[] {targetStrait[0], targetStrait[1]}, true);
+        marker = GameManager.getGameplay().addMarker(new float[] {targetComCenter[0], targetComCenter[1]}, true);
         setMarkerPosition(currentMarkerPosition[0], currentMarkerPosition[1]);
     }
 

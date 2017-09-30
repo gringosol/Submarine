@@ -48,7 +48,7 @@ public class GameManager {
     static List<Primitive> primitives = new ArrayList<>();
     static Map<Integer, Primitive> movablePrimitiveMap;
     static Submarine submarineMovable;
-    static List<Integer> levelList = Arrays.asList( /*R.raw.lev1, R.raw.lev2,*/ R.raw.lev3,  R.raw.lev4,
+    static List<Integer> levelList = Arrays.asList( /*R.raw.lev1, R.raw.lev2, R.raw.lev3,*/  R.raw.lev4,
             R.raw.testlevel2, R.raw.lev6,  R.raw.lev7,  R.raw.lev8,  R.raw.lev9,  R.raw.lev10,
             R.raw.testlevel, R.raw.testlevel2);
     static int currentLevel = 0;
